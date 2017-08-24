@@ -1,0 +1,13 @@
+﻿public enum {questName}QuestState
+{
+	{states}
+}
+
+public class {questName} : SectorComponent<{questName}QuestState>
+{
+}
+
+public class {questName}Quest : SectorBehaviour<{questName}, {questName}QuestState>
+{
+	{statesMethods}
+}

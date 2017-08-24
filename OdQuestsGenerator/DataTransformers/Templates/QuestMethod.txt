@@ -1,0 +1,5 @@
+﻿[State({enumName}.{stateName})]
+private IEnumerator<object> {stateName}Task()
+{
+	yield break;
+}
