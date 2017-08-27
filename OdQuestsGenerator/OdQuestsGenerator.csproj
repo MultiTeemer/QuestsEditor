@@ -46,6 +46,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTransformers\Templates\QuestClassTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuestClassTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataTransformers\Templates\QuestClassTemplate.Fields.cs" />
+    <Compile Include="DataTransformers\Templates\QuestComponentTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuestComponentTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataTransformers\Templates\QuestComponentTemplate.Fields.cs" />
+    <Compile Include="DataTransformers\Templates\StateTaskTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StateTaskTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataTransformers\Templates\StateTaskTemplate.Fields.cs" />
     <Compile Include="DataTransformers\ToCodeTransformer.cs" />
     <Compile Include="Data\IsItOkForCodeGeneration.cs" />
     <Compile Include="Data\Quest.cs" />
@@ -93,12 +111,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DataTransformers\Templates\QuestClass.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="DataTransformers\Templates\QuestClassTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>QuestClassTemplate.cs</LastGenOutput>
     </Content>
-    <Content Include="DataTransformers\Templates\QuestMethod.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="DataTransformers\Templates\QuestComponentTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>QuestComponentTemplate.cs</LastGenOutput>
     </Content>
+    <Content Include="DataTransformers\Templates\StateTaskTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>StateTaskTemplate.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

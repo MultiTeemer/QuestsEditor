@@ -1,0 +1,7 @@
+﻿<#@ template language="C#" #>
+
+[State(<#= StateEnumName #>.<#= StateName #>)]
+private IEnumerator<object> <#= StateName #>Task()
+{
+	yield break;
+}

@@ -1,0 +1,29 @@
+﻿<#@ template language="C#" #>
+<# var enumName = $"{Quest.Name}QuestState"; #>
+
+public enum <#= enumName #>
+{
+<#
+	PushIndent("\t");
+	 foreach (var state in Quest.States) { #>
+<#= state.Name #>,
+<#
+	}
+	ClearIndent();
+#>
+}
+
+public class <#= Quest.Name #> : SectorComponent<<#= enumName #>>
+{
+}
+
+public class <#= Quest.Name #>Quest : SectorBehaviour<<#= Quest.Name #>, <#= enumName #>>
+{
+<# PushIndent("\t"); #>
+<# foreach (var state in Quest.States) { #>
+	<#= new StateTaskTemplate { StateEnumName = enumName, StateName = state.Name }.TransformText() #>
+<#
+	}
+	ClearIndent();
+#>
+}

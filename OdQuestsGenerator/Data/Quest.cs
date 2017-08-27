@@ -2,7 +2,7 @@
 
 namespace OdQuestsGenerator.Data
 {
-	class Quest
+	public class Quest
 	{
 		public string Name { get; set; }
 		public List<State> States { get; set; }
@@ -10,7 +10,14 @@ namespace OdQuestsGenerator.Data
 
 		public static Quest Default => new Quest {
 			Name = "Default",
-			States = new List<State>(),
+			States = new List<State> {
+				new State {
+					Name = "Initial",
+				},
+				new State {
+					Name = "Final",
+				},
+			},
 		};
 	}
 }
