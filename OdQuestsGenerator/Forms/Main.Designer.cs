@@ -29,8 +29,8 @@
 		{
 			this.resultViewer = new System.Windows.Forms.RichTextBox();
 			this.changeNameBtn = new System.Windows.Forms.Button();
-			this.statesViewer = new System.Windows.Forms.ListBox();
 			this.addStateButton = new System.Windows.Forms.Button();
+			this.statesViewer = new System.Windows.Forms.ListBox();
 			this.SuspendLayout();
 			// 
 			// resultViewer
@@ -51,14 +51,6 @@
 			this.changeNameBtn.UseVisualStyleBackColor = true;
 			this.changeNameBtn.Click += new System.EventHandler(this.changeNameBtn_Click);
 			// 
-			// statesViewer
-			// 
-			this.statesViewer.FormattingEnabled = true;
-			this.statesViewer.Location = new System.Drawing.Point(896, 81);
-			this.statesViewer.Name = "statesViewer";
-			this.statesViewer.Size = new System.Drawing.Size(248, 290);
-			this.statesViewer.TabIndex = 2;
-			// 
 			// addStateButton
 			// 
 			this.addStateButton.Location = new System.Drawing.Point(896, 402);
@@ -67,14 +59,24 @@
 			this.addStateButton.TabIndex = 3;
 			this.addStateButton.Text = "Add state";
 			this.addStateButton.UseVisualStyleBackColor = true;
+			this.addStateButton.Click += new System.EventHandler(this.addStateButton_Click);
+			// 
+			// statesViewer
+			// 
+			this.statesViewer.FormattingEnabled = true;
+			this.statesViewer.Location = new System.Drawing.Point(896, 74);
+			this.statesViewer.Name = "statesViewer";
+			this.statesViewer.Size = new System.Drawing.Size(247, 316);
+			this.statesViewer.TabIndex = 4;
+			this.statesViewer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.statesViewer_MouseDoubleClick);
 			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1202, 806);
-			this.Controls.Add(this.addStateButton);
 			this.Controls.Add(this.statesViewer);
+			this.Controls.Add(this.addStateButton);
 			this.Controls.Add(this.changeNameBtn);
 			this.Controls.Add(this.resultViewer);
 			this.Name = "Main";
@@ -87,8 +89,8 @@
 
 		private System.Windows.Forms.RichTextBox resultViewer;
 		private System.Windows.Forms.Button changeNameBtn;
-		private System.Windows.Forms.ListBox statesViewer;
 		private System.Windows.Forms.Button addStateButton;
+		private System.Windows.Forms.ListBox statesViewer;
 	}
 }
 
