@@ -29,6 +29,10 @@ namespace OdQuestsGenerator.Forms
 			if (isValid) {
 				NewName = questNameTextBox.Text;
 			}
+
+			if (e.KeyCode == Keys.Enter && isValid) {
+				okButton_Click(sender, e);
+			}
 		}
 	}
 }
