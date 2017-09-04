@@ -7,5 +7,10 @@
 		public static State Dumb => new State {
 			Name = "Initial",
 		};
+
+		public State Clone()
+		{
+			return MemberwiseClone() as State;
+		}
 	}
 }

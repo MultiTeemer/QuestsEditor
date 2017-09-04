@@ -5,6 +5,7 @@ namespace OdQuestsGenerator.Forms
 {
 	internal enum QuestStateProcessAction
 	{
+		None,
 		Add,
 		Edit,
 		Remove,
@@ -12,14 +13,19 @@ namespace OdQuestsGenerator.Forms
 
 	public partial class QuestState : Form
 	{
-		public readonly State State;
+		public readonly State OriginalState;
+		public readonly State ModifiedState;
+
+		private readonly bool createNew;
 
 		internal QuestStateProcessAction Action { get; private set; }
 
 		public QuestState(State state = null)
 		{
-			State = state ?? State.Dumb;
-			Action = state == null ? QuestStateProcessAction.Add : QuestStateProcessAction.Edit;
+			createNew = state == null;
+			OriginalState = state ?? State.Dumb;
+			Action = QuestStateProcessAction.None;
+			ModifiedState = OriginalState.Clone();
 
 			InitializeComponent();
 
@@ -32,17 +38,23 @@ namespace OdQuestsGenerator.Forms
 				saveButton.Text = "Create";
 			}
 
-			nameTextBox.Text = State.Name;
+			nameTextBox.Text = OriginalState.Name;
 		}
 
 		private void nameTextBox_KeyUp(object sender, KeyEventArgs e)
 		{
-			State.Name = nameTextBox.Text;
-			saveButton.Enabled = IsItOkForCodeGeneration.Check(State.Name);
+			ModifiedState.Name = nameTextBox.Text;
+			saveButton.Enabled = IsItOkForCodeGeneration.Check(ModifiedState.Name);
+
+			if (e.KeyCode == Keys.Enter && saveButton.Enabled) {
+				saveButton_Click(sender, e);
+			}
 		}
 
 		private void saveButton_Click(object sender, System.EventArgs e)
 		{
+			Action = createNew ? QuestStateProcessAction.Add : QuestStateProcessAction.Edit;
+
 			Close();
 		}
 

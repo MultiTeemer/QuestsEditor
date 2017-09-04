@@ -55,14 +55,18 @@ namespace OdQuestsGenerator.Forms
 			var stateForm = new QuestState(state);
 			stateForm.Show(this);
 			stateForm.Closed += (_1, _2) => {
-
-
-
-
-
-				if (stateForm.Accepted) {
-					if (stateForm.CreateNew) {
-						currentQuest.States.Add(stateForm.State);
+				if (stateForm.Action != QuestStateProcessAction.None) {
+					switch (stateForm.Action) {
+						case QuestStateProcessAction.Add:
+							currentQuest.States.Add(stateForm.ModifiedState);
+							break;
+						case QuestStateProcessAction.Remove:
+							currentQuest.States.Remove(stateForm.OriginalState);
+							break;
+						case QuestStateProcessAction.Edit:
+							var idx = currentQuest.States.IndexOf(stateForm.OriginalState);
+							currentQuest.States[idx] = stateForm.ModifiedState;
+							break;
 					}
 
 					OnQuestChanged();
