@@ -58,7 +58,9 @@ namespace OdQuestsGenerator.Forms
 				if (stateForm.Action != QuestStateProcessAction.None) {
 					switch (stateForm.Action) {
 						case QuestStateProcessAction.Add:
-							currentQuest.States.Add(stateForm.ModifiedState);
+							if (currentQuest.States.All(s => s.Name != stateForm.ModifiedState.Name)) {
+								currentQuest.States.Add(stateForm.ModifiedState);
+							}
 							break;
 						case QuestStateProcessAction.Remove:
 							currentQuest.States.Remove(stateForm.OriginalState);
