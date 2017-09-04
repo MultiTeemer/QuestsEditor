@@ -37,6 +37,7 @@
 			// 
 			this.resultViewer.Location = new System.Drawing.Point(21, 74);
 			this.resultViewer.Name = "resultViewer";
+			this.resultViewer.ReadOnly = true;
 			this.resultViewer.Size = new System.Drawing.Size(844, 686);
 			this.resultViewer.TabIndex = 0;
 			this.resultViewer.Text = "";
