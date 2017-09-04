@@ -52,6 +52,12 @@
       <DependentUpon>QuestClassTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="DataTransformers\Templates\QuestClassTemplate.Fields.cs" />
+    <Compile Include="DataTransformers\Templates\ComponentTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ComponentTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataTransformers\Templates\ComponentTemplate.Fields.cs" />
     <Compile Include="DataTransformers\Templates\QuestComponentTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -106,6 +112,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="DataTransformers\Templates\QuestComponentTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>QuestComponentTemplate.cs</LastGenOutput>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -124,9 +134,9 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>QuestClassTemplate.cs</LastGenOutput>
     </Content>
-    <Content Include="DataTransformers\Templates\QuestComponentTemplate.tt">
+    <Content Include="DataTransformers\Templates\ComponentTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>QuestComponentTemplate.cs</LastGenOutput>
+      <LastGenOutput>ComponentTemplate.cs</LastGenOutput>
     </Content>
     <Content Include="DataTransformers\Templates\StateTaskTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>

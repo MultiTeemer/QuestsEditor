@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace OdQuestsGenerator.Data
 {
@@ -8,16 +9,24 @@ namespace OdQuestsGenerator.Data
 		public List<State> States { get; set; }
 		public State FinalState { get; set; }
 
-		public static Quest Default => new Quest {
-			Name = "Default",
-			States = new List<State> {
-				new State {
-					Name = "Initial",
-				},
-				new State {
-					Name = "Final",
-				},
-			},
-		};
+		public static Quest Default
+		{
+			get
+			{
+				var q = new Quest {
+					Name = "Default",
+					States = new List<State> {
+						new State {
+							Name = "Initial",
+						},
+						new State {
+							Name = "Final",
+						},
+					}
+				};
+				q.FinalState = q.States.Last();
+				return q;
+			}
+		}
 	}
 }

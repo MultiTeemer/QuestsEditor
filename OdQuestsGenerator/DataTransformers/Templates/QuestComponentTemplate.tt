@@ -1,5 +1,9 @@
 ﻿<#@ template language="C#" #>
+<# var enumName = $"{Quest.Name}QuestState"; #>
 
-public class <#= QuestName #> : SectorComponent<<#= QuestName #>QuestState>
+public class <#= Quest.Name #> : SectorQuestComponent<<#= enumName #>>
 {
+	public <#= Quest.Name #>()
+		: base(<#= enumName #>.<#= Quest.FinalState.Name #>)
+	{}
 }

@@ -13,9 +13,11 @@ public enum <#= enumName #>
 #>
 }
 
-public class <#= Quest.Name #> : SectorComponent<<#= enumName #>>
-{
-}
+<#=
+	Quest.FinalState == null
+		? new ComponentTemplate { Quest = Quest }.TransformText()
+		: new QuestComponentTemplate { Quest = Quest }.TransformText()
+#>
 
 public class <#= Quest.Name #>Quest : SectorBehaviour<<#= Quest.Name #>, <#= enumName #>>
 {

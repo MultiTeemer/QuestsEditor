@@ -52,7 +52,7 @@ namespace OdQuestsGenerator.Forms
 
 		private void ShowStateForm(State state = null)
 		{
-			var stateForm = new QuestState(state);
+			var stateForm = new QuestState(currentQuest, state);
 			stateForm.Show(this);
 			stateForm.Closed += (_1, _2) => {
 				if (stateForm.Action != QuestStateProcessAction.None) {
@@ -67,6 +67,19 @@ namespace OdQuestsGenerator.Forms
 							var idx = currentQuest.States.IndexOf(stateForm.OriginalState);
 							currentQuest.States[idx] = stateForm.ModifiedState;
 							break;
+					}
+
+					if (stateForm.IsFinal) { 
+						if (
+							stateForm.Action == QuestStateProcessAction.Add
+							|| stateForm.Action == QuestStateProcessAction.Edit
+						) {
+							currentQuest.FinalState = stateForm.ModifiedState;
+						} else if (stateForm.Action == QuestStateProcessAction.Remove) {
+							currentQuest.FinalState = null;
+						}
+					} else if (!stateForm.IsFinal && currentQuest.FinalState == stateForm.OriginalState) {
+						currentQuest.FinalState = null;
 					}
 
 					OnQuestChanged();

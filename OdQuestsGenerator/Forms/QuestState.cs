@@ -16,12 +16,17 @@ namespace OdQuestsGenerator.Forms
 		public readonly State OriginalState;
 		public readonly State ModifiedState;
 
+		private readonly Quest quest;
 		private readonly bool createNew;
+
+		public bool IsFinal { get; private set; }
 
 		internal QuestStateProcessAction Action { get; private set; }
 
-		public QuestState(State state = null)
+		public QuestState(Quest quest, State state = null)
 		{
+			this.quest = quest;
+
 			createNew = state == null;
 			OriginalState = state ?? State.Dumb;
 			Action = QuestStateProcessAction.None;
@@ -39,6 +44,7 @@ namespace OdQuestsGenerator.Forms
 			}
 
 			nameTextBox.Text = OriginalState.Name;
+			isFinalCheckBox.Checked = quest.FinalState == OriginalState;
 		}
 
 		private void nameTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -63,6 +69,11 @@ namespace OdQuestsGenerator.Forms
 			Action = QuestStateProcessAction.Remove;
 
 			Close();
+		}
+
+		private void isFinalCheckBox_CheckedChanged(object sender, System.EventArgs e)
+		{
+			IsFinal = isFinalCheckBox.Checked;
 		}
 	}
 }

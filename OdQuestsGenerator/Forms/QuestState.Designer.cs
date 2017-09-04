@@ -31,6 +31,8 @@
 			this.nameTextBox = new System.Windows.Forms.TextBox();
 			this.saveButton = new System.Windows.Forms.Button();
 			this.deleteButton = new System.Windows.Forms.Button();
+			this.label2 = new System.Windows.Forms.Label();
+			this.isFinalCheckBox = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -70,11 +72,32 @@
 			this.deleteButton.UseVisualStyleBackColor = true;
 			this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
 			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(33, 59);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(40, 13);
+			this.label2.TabIndex = 4;
+			this.label2.Text = "Is final:";
+			// 
+			// isFinalCheckBox
+			// 
+			this.isFinalCheckBox.AutoSize = true;
+			this.isFinalCheckBox.Location = new System.Drawing.Point(100, 61);
+			this.isFinalCheckBox.Name = "isFinalCheckBox";
+			this.isFinalCheckBox.Size = new System.Drawing.Size(15, 14);
+			this.isFinalCheckBox.TabIndex = 5;
+			this.isFinalCheckBox.UseVisualStyleBackColor = true;
+			this.isFinalCheckBox.CheckedChanged += new System.EventHandler(this.isFinalCheckBox_CheckedChanged);
+			// 
 			// QuestState
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(602, 118);
+			this.Controls.Add(this.isFinalCheckBox);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.deleteButton);
 			this.Controls.Add(this.saveButton);
 			this.Controls.Add(this.nameTextBox);
@@ -92,5 +115,7 @@
 		private System.Windows.Forms.TextBox nameTextBox;
 		private System.Windows.Forms.Button saveButton;
 		private System.Windows.Forms.Button deleteButton;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.CheckBox isFinalCheckBox;
 	}
 }

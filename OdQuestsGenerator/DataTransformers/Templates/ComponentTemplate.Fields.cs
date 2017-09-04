@@ -2,7 +2,7 @@
 
 namespace OdQuestsGenerator.DataTransformers.Templates
 {
-	partial class QuestComponentTemplate
+	partial class ComponentTemplate
 	{
 		public Quest Quest { get; set; }
 	}

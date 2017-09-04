@@ -1,0 +1,5 @@
+﻿<#@ template language="C#" #>
+
+public class <#= Quest.Name #> : SectorComponent<<#= Quest.Name #>QuestState>
+{
+}
