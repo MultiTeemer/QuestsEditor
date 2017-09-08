@@ -35,6 +35,8 @@ namespace OdQuestsGenerator.Forms
 
 			statesViewer.Items.Clear();
 			statesViewer.Items.AddRange(currentQuest.States.Select(s => s.Name).ToArray());
+
+			Clipboard.SetText(resultViewer.Text);
 		}
 
 		private void addStateButton_Click(object sender, EventArgs e)
