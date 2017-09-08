@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms
 {
 	public partial class Main : Form
 	{
 		private readonly Quest currentQuest = Quest.Default;
+
+		private int? draggingStateIndex;
+		private int? currentDraggingStateIndex;
 
 		public Main()
 		{
@@ -31,12 +36,21 @@ namespace OdQuestsGenerator.Forms
 
 		private void OnQuestChanged()
 		{
-			resultViewer.Text = ToCodeTransformer.Transform(currentQuest);
+			GenerateCode();
+			FillStatesViewer();
+		}
 
+		private void GenerateCode()
+		{
+			var generatedCode = ToCodeTransformer.Transform(currentQuest);
+			resultViewer.Text = generatedCode;
+			Clipboard.SetText(generatedCode);
+		}
+
+		private void FillStatesViewer()
+		{
 			statesViewer.Items.Clear();
 			statesViewer.Items.AddRange(currentQuest.States.Select(s => s.Name).ToArray());
-
-			Clipboard.SetText(resultViewer.Text);
 		}
 
 		private void addStateButton_Click(object sender, EventArgs e)
@@ -73,7 +87,7 @@ namespace OdQuestsGenerator.Forms
 							break;
 					}
 
-					if (stateForm.IsFinal) { 
+					if (stateForm.IsFinal) {
 						if (
 							stateForm.Action == QuestStateProcessAction.Add
 							|| stateForm.Action == QuestStateProcessAction.Edit
@@ -89,6 +103,52 @@ namespace OdQuestsGenerator.Forms
 					OnQuestChanged();
 				}
 			};
+		}
+
+		private void statesViewer_DragDrop(object sender, DragEventArgs e)
+		{
+			Point point = statesViewer.PointToClient(new Point(e.X, e.Y));
+			int destIndex = statesViewer.IndexFromPoint(point);
+			if (destIndex < 0) destIndex = statesViewer.Items.Count - 1;
+
+			if (draggingStateIndex.HasValue) {
+				currentQuest.States.Move(draggingStateIndex.Value, destIndex);
+
+				draggingStateIndex = null;
+
+				OnQuestChanged();
+			}
+		}
+
+		private void statesViewer_MouseDown(object sender, MouseEventArgs e)
+		{
+			int index = statesViewer.IndexFromPoint(e.X, e.Y);
+			if (index != -1) {
+				draggingStateIndex = index;
+				currentDraggingStateIndex = index;
+				var s = statesViewer.Items[index].ToString();
+				DragDropEffects effects = DoDragDrop(s, DragDropEffects.Move);
+				statesViewer.DoDragDrop(sender, effects);
+			}
+		}
+
+		private void statesViewer_DragOver(object sender, DragEventArgs e)
+		{
+			e.Effect = DragDropEffects.Move;
+
+			var point = statesViewer.PointToClient(new Point(e.X, e.Y));
+			var destIndex = statesViewer.IndexFromPoint(point);
+			if (destIndex < 0) destIndex = statesViewer.Items.Count - 1;
+
+			if (currentDraggingStateIndex != destIndex) {
+				FillStatesViewer();
+
+				statesViewer.Items.Move(draggingStateIndex.Value, destIndex);
+
+				currentDraggingStateIndex = destIndex;
+
+				statesViewer.Invalidate();
+			}
 		}
 	}
 }

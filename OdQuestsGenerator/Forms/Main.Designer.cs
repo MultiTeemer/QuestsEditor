@@ -31,6 +31,7 @@
 			this.changeNameBtn = new System.Windows.Forms.Button();
 			this.addStateButton = new System.Windows.Forms.Button();
 			this.statesViewer = new System.Windows.Forms.ListBox();
+			this.systemMessagesLabel = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// resultViewer
@@ -64,18 +65,31 @@
 			// 
 			// statesViewer
 			// 
+			this.statesViewer.AllowDrop = true;
 			this.statesViewer.FormattingEnabled = true;
 			this.statesViewer.Location = new System.Drawing.Point(896, 74);
 			this.statesViewer.Name = "statesViewer";
 			this.statesViewer.Size = new System.Drawing.Size(247, 316);
 			this.statesViewer.TabIndex = 4;
+			this.statesViewer.DragDrop += new System.Windows.Forms.DragEventHandler(this.statesViewer_DragDrop);
+			this.statesViewer.DragOver += new System.Windows.Forms.DragEventHandler(this.statesViewer_DragOver);
 			this.statesViewer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.statesViewer_MouseDoubleClick);
+			this.statesViewer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.statesViewer_MouseDown);
+			// 
+			// systemMessagesLabel
+			// 
+			this.systemMessagesLabel.AutoSize = true;
+			this.systemMessagesLabel.Location = new System.Drawing.Point(27, 783);
+			this.systemMessagesLabel.Name = "systemMessagesLabel";
+			this.systemMessagesLabel.Size = new System.Drawing.Size(0, 13);
+			this.systemMessagesLabel.TabIndex = 5;
 			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1202, 806);
+			this.Controls.Add(this.systemMessagesLabel);
 			this.Controls.Add(this.statesViewer);
 			this.Controls.Add(this.addStateButton);
 			this.Controls.Add(this.changeNameBtn);
@@ -83,6 +97,7 @@
 			this.Name = "Main";
 			this.Text = "Ocean Drop quests code generator";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -92,6 +107,7 @@
 		private System.Windows.Forms.Button changeNameBtn;
 		private System.Windows.Forms.Button addStateButton;
 		private System.Windows.Forms.ListBox statesViewer;
+		private System.Windows.Forms.Label systemMessagesLabel;
 	}
 }
 
