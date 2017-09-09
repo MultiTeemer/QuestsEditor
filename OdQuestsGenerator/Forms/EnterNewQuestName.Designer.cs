@@ -69,6 +69,7 @@
 			this.closeButton.TabIndex = 3;
 			this.closeButton.Text = "close";
 			this.closeButton.UseVisualStyleBackColor = true;
+			this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
 			// 
 			// EnterNewQuestName
 			// 

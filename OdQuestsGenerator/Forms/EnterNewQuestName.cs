@@ -34,5 +34,12 @@ namespace OdQuestsGenerator.Forms
 				okButton_Click(sender, e);
 			}
 		}
+
+		private void closeButton_Click(object sender, System.EventArgs e)
+		{
+			Accepted = false;
+
+			Close();
+		}
 	}
 }
