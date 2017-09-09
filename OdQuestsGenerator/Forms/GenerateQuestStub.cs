@@ -8,14 +8,14 @@ using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms
 {
-	public partial class Main : Form
+	public partial class GenerateQuestStub : Form
 	{
 		private readonly Quest currentQuest = Quest.Default;
 
 		private int? draggingStateIndex;
 		private int? currentDraggingStateIndex;
 
-		public Main()
+		public GenerateQuestStub()
 		{
 			InitializeComponent();
 			OnQuestChanged();

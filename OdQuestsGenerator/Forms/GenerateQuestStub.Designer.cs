@@ -1,6 +1,6 @@
 ﻿namespace OdQuestsGenerator.Forms
 {
-	partial class Main
+	partial class GenerateQuestStub
 	{
 		/// <summary>
 		/// Required designer variable.

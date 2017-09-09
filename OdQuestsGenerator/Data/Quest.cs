@@ -6,6 +6,7 @@ namespace OdQuestsGenerator.Data
 	public class Quest
 	{
 		public string Name { get; set; }
+		public string SectorName { get; set; }
 		public List<State> States { get; set; }
 		public State FinalState { get; set; }
 
