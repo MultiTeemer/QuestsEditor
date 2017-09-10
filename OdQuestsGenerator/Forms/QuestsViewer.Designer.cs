@@ -33,6 +33,8 @@
 			this.questCode = new System.Windows.Forms.RichTextBox();
 			this.statesViewer = new System.Windows.Forms.ListBox();
 			this.questNameLabel = new System.Windows.Forms.Label();
+			this.sectorsViewer = new System.Windows.Forms.ListBox();
+			this.questsListBox = new System.Windows.Forms.ListBox();
 			this.openMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -60,40 +62,69 @@
 			// 
 			// questCode
 			// 
-			this.questCode.Location = new System.Drawing.Point(23, 48);
+			this.questCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.questCode.Location = new System.Drawing.Point(233, 48);
 			this.questCode.Name = "questCode";
-			this.questCode.Size = new System.Drawing.Size(731, 641);
+			this.questCode.Size = new System.Drawing.Size(610, 641);
 			this.questCode.TabIndex = 1;
 			this.questCode.Text = "";
 			// 
 			// statesViewer
 			// 
+			this.statesViewer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.statesViewer.FormattingEnabled = true;
-			this.statesViewer.Location = new System.Drawing.Point(783, 89);
+			this.statesViewer.Location = new System.Drawing.Point(852, 89);
 			this.statesViewer.Name = "statesViewer";
-			this.statesViewer.Size = new System.Drawing.Size(245, 589);
+			this.statesViewer.Size = new System.Drawing.Size(176, 589);
 			this.statesViewer.TabIndex = 2;
 			// 
 			// questNameLabel
 			// 
 			this.questNameLabel.AutoSize = true;
-			this.questNameLabel.Location = new System.Drawing.Point(780, 48);
+			this.questNameLabel.Location = new System.Drawing.Point(849, 48);
 			this.questNameLabel.Name = "questNameLabel";
 			this.questNameLabel.Size = new System.Drawing.Size(0, 13);
 			this.questNameLabel.TabIndex = 3;
+			// 
+			// sectorsViewer
+			// 
+			this.sectorsViewer.FormattingEnabled = true;
+			this.sectorsViewer.Location = new System.Drawing.Point(9, 50);
+			this.sectorsViewer.Name = "sectorsViewer";
+			this.sectorsViewer.Size = new System.Drawing.Size(212, 277);
+			this.sectorsViewer.TabIndex = 4;
+			this.sectorsViewer.MouseClick += new System.Windows.Forms.MouseEventHandler(this.sectorsViewer_MouseClick);
+			// 
+			// questsListBox
+			// 
+			this.questsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.questsListBox.FormattingEnabled = true;
+			this.questsListBox.Location = new System.Drawing.Point(11, 352);
+			this.questsListBox.Name = "questsListBox";
+			this.questsListBox.Size = new System.Drawing.Size(209, 342);
+			this.questsListBox.TabIndex = 5;
+			this.questsListBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.questsListBox_MouseClick);
 			// 
 			// QuestsViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(1048, 772);
+			this.Controls.Add(this.questsListBox);
+			this.Controls.Add(this.sectorsViewer);
 			this.Controls.Add(this.questNameLabel);
 			this.Controls.Add(this.statesViewer);
 			this.Controls.Add(this.questCode);
 			this.Controls.Add(this.openMenuStrip);
 			this.MainMenuStrip = this.openMenuStrip;
 			this.Name = "QuestsViewer";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "QuestsViewer";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.openMenuStrip.ResumeLayout(false);
 			this.openMenuStrip.PerformLayout();
 			this.ResumeLayout(false);
@@ -109,5 +140,7 @@
 		private System.Windows.Forms.RichTextBox questCode;
 		private System.Windows.Forms.ListBox statesViewer;
 		private System.Windows.Forms.Label questNameLabel;
+		private System.Windows.Forms.ListBox sectorsViewer;
+		private System.Windows.Forms.ListBox questsListBox;
 	}
 }

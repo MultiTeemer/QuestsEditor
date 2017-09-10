@@ -9,21 +9,30 @@ namespace OdQuestsGenerator.DataTransformers
 {
 	static class FromCodeTransformer
 	{
-		public static Quest FromCode(SyntaxTree data)
+		public static Quest ReadQuest(SyntaxTree data)
 		{
-			var @namespace = data.GetRoot().GetFirstOfType<NamespaceDeclarationSyntax>();
-
+			var @namespace = FetchNameSpaceDecl(data);
 			var states = FetchStates(@namespace);
 
 			return new Quest {
-				SectorName = FetchSector(@namespace),
+				SectorName = FetchSectorName(@namespace),
 				Name = FetchQuestName(@namespace),
 				States = states,
 				FinalState = FetchFinalState(@namespace, states),
 			};
 		}
 
-		private static string FetchSector(NamespaceDeclarationSyntax @namespace)
+		public static string FetchSectorName(SyntaxTree data)
+		{
+			return FetchSectorName(FetchNameSpaceDecl(data));
+		}
+
+		private static NamespaceDeclarationSyntax FetchNameSpaceDecl(SyntaxTree data)
+		{
+			return data.GetRoot().GetFirstOfType<NamespaceDeclarationSyntax>();
+		}
+
+		private static string FetchSectorName(NamespaceDeclarationSyntax @namespace)
 		{
 			return (@namespace.Name as QualifiedNameSyntax)?.Right?.ToString();
 		}

@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace OdQuestsGenerator.Utils
 {
@@ -11,6 +13,12 @@ namespace OdQuestsGenerator.Utils
 					return reader.ReadToEnd();
 				}
 			}
+		}
+
+		public static SyntaxTree ReadCodeFromFile(string filePath)
+		{
+			var content = ReadFileContents(filePath);
+			return CSharpSyntaxTree.ParseText(content);
 		}
 	}
 }
