@@ -1,4 +1,6 @@
-﻿namespace OdQuestsGenerator.Forms
+﻿using System.Reflection;
+
+namespace OdQuestsGenerator.Forms
 {
 	partial class QuestsViewer
 	{
@@ -27,14 +29,19 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QuestsViewer));
+			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
 			this.openMenuStrip = new System.Windows.Forms.MenuStrip();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openQuestFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.questCode = new System.Windows.Forms.RichTextBox();
 			this.statesViewer = new System.Windows.Forms.ListBox();
 			this.questNameLabel = new System.Windows.Forms.Label();
 			this.sectorsViewer = new System.Windows.Forms.ListBox();
 			this.questsListBox = new System.Windows.Forms.ListBox();
+			this.display = new Dataweb.NShape.WinFormsUI.Display();
+			this.diagramSetController = new Dataweb.NShape.Controllers.DiagramSetController();
+			this.project = new Dataweb.NShape.Project(this.components);
 			this.openMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -59,17 +66,6 @@
 			// 
 			this.openQuestFileDialog.FileName = "openQuestFileDialog";
 			this.openQuestFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openQuestFileDialog_FileOk);
-			// 
-			// questCode
-			// 
-			this.questCode.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.questCode.Location = new System.Drawing.Point(233, 48);
-			this.questCode.Name = "questCode";
-			this.questCode.Size = new System.Drawing.Size(610, 641);
-			this.questCode.TabIndex = 1;
-			this.questCode.Text = "";
 			// 
 			// statesViewer
 			// 
@@ -108,23 +104,64 @@
 			this.questsListBox.TabIndex = 5;
 			this.questsListBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.questsListBox_MouseClick);
 			// 
+			// display
+			// 
+			this.display.AllowDrop = true;
+			this.display.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.display.BackColorGradient = System.Drawing.SystemColors.Control;
+			this.display.DiagramSetController = this.diagramSetController;
+			this.display.GridColor = System.Drawing.Color.Gainsboro;
+			this.display.GridSize = 19;
+			this.display.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.display.Location = new System.Drawing.Point(237, 48);
+			this.display.Name = "display";
+			this.display.PropertyController = null;
+			this.display.SelectionHilightColor = System.Drawing.Color.Firebrick;
+			this.display.SelectionInactiveColor = System.Drawing.Color.Gray;
+			this.display.SelectionInteriorColor = System.Drawing.Color.WhiteSmoke;
+			this.display.SelectionNormalColor = System.Drawing.Color.DarkGreen;
+			this.display.Size = new System.Drawing.Size(606, 668);
+			this.display.SnapToGrid = false;
+			this.display.TabIndex = 6;
+			this.display.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
+			this.display.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+			// 
+			// diagramSetController
+			// 
+			this.diagramSetController.ActiveTool = null;
+			this.diagramSetController.Project = this.project;
+			// 
+			// project
+			// 
+			this.project.AutoLoadLibraries = true;
+			this.project.Description = null;
+			this.project.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project.LibrarySearchPaths")));
+			this.project.Name = null;
+			this.project.Repository = null;
+			roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+			roleBasedSecurityManager1.CurrentRoleName = "Administrator";
+			this.project.SecurityManager = roleBasedSecurityManager1;
+			// 
 			// QuestsViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(1048, 772);
+			this.Controls.Add(this.display);
 			this.Controls.Add(this.questsListBox);
 			this.Controls.Add(this.sectorsViewer);
 			this.Controls.Add(this.questNameLabel);
 			this.Controls.Add(this.statesViewer);
-			this.Controls.Add(this.questCode);
 			this.Controls.Add(this.openMenuStrip);
 			this.MainMenuStrip = this.openMenuStrip;
 			this.Name = "QuestsViewer";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "QuestsViewer";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Load += new System.EventHandler(this.QuestsViewer_Load);
 			this.openMenuStrip.ResumeLayout(false);
 			this.openMenuStrip.PerformLayout();
 			this.ResumeLayout(false);
@@ -137,10 +174,12 @@
 		private System.Windows.Forms.MenuStrip openMenuStrip;
 		private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
 		private System.Windows.Forms.OpenFileDialog openQuestFileDialog;
-		private System.Windows.Forms.RichTextBox questCode;
 		private System.Windows.Forms.ListBox statesViewer;
 		private System.Windows.Forms.Label questNameLabel;
 		private System.Windows.Forms.ListBox sectorsViewer;
 		private System.Windows.Forms.ListBox questsListBox;
+		private Dataweb.NShape.WinFormsUI.Display display;
+		private Dataweb.NShape.Controllers.DiagramSetController diagramSetController;
+		private Dataweb.NShape.Project project;
 	}
 }

@@ -7,13 +7,17 @@ using Microsoft.CodeAnalysis.CSharp;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
 using OdQuestsGenerator.Utils;
+using Dataweb.NShape.GeneralShapes;
+using OdQuestsGenerator.Forms.QuestsViewerStuff;
 
 namespace OdQuestsGenerator.Forms
 {
 	public partial class QuestsViewer : Form
 	{
-		private readonly List<Sector> sectors = new List<Sector>();
+		private readonly SectorsLoader loader = new SectorsLoader();
+		private readonly SectorsFlowScheme flowScheme;
 
+		private Flow flow;
 		private Quest selectedQuest;
 		private Sector selectedSector;
 		private string selectedFolder;
@@ -21,77 +25,37 @@ namespace OdQuestsGenerator.Forms
 		public QuestsViewer()
 		{
 			InitializeComponent();
+
+			flowScheme = new SectorsFlowScheme(diagramSetController, project, display);
 		}
 
 		private void LoadSectors()
 		{
-			var gameDir = Directory.EnumerateDirectories(selectedFolder).FirstOrDefault(p => p.EndsWith(".Game"));
-			if (gameDir == null) {
-				MessageBox.Show("Couldn't find \"*.Game\" directory");
-				return;
-			}
+			//try {
+				flow = loader.Load(selectedFolder);
 
-			var sectorsDir = Path.Combine(gameDir, "Sectors");
-			if (!Directory.Exists(sectorsDir)) {
-				MessageBox.Show($"Couldn't find \"{sectorsDir}\" directory");
-				return;
-			}
+				FillSectors();
 
-			var sectorsDirs = Directory.EnumerateDirectories(sectorsDir)
-				.Where(p => new DirectoryInfo(p).Name.StartsWith("Sector"));
-			foreach (var dir in sectorsDirs) {
-				LoadSector(dir);
-			}
-
-			FillSectors();
-
-			if (sectors.Count > 0) {
-				SelectSector(0);
-			}
-		}
-
-		private void LoadSector(string dirPath)
-		{
-			var sectorFile = Directory.EnumerateFiles(dirPath)
-				.FirstOrDefault(p => new FileInfo(p).Name.StartsWith("Sector"));
-			if (sectorFile == null) {
-				return;
-			}
-
-			var tree = FileSystem.ReadCodeFromFile(Path.Combine(dirPath, sectorFile));
-			var sector = new Sector {
-				Name = FromCodeTransformer.FetchSectorName(tree),
-				Quests = new List<Quest>(),
-			};
-
-			var questsDir = Path.Combine(dirPath, "Quests");
-			if (Directory.Exists(questsDir)) {
-				var files = Directory.EnumerateFiles(questsDir);
-				foreach (var filePath in files) {
-					sector.Quests.Add(LoadQuest(filePath));
+				if (flow.Sectors.Count > 0) {
+					SelectSector(0);
 				}
-			}
 
-			sectors.Add(sector);
-		}
-
-		private Quest LoadQuest(string path)
-		{
-			var tree = FileSystem.ReadCodeFromFile(path);
-			var quest = FromCodeTransformer.ReadQuest(tree);
-
-			return quest;
+				flowScheme.Display(flow.Graph);
+			//} catch (Exception e) {
+				//throw;
+				//MessageBox.Show($"During operation performing exception has been thrown: {e.Message}");
+			//}
 		}
 
 		private void SelectSector(int idx)
 		{
-			selectedSector = sectors[idx];
+			selectedSector = flow.Sectors[idx];
 			SectorSelected();
 		}
 
 		private void SelectSector(string name)
 		{
-			var sectorToSelect = sectors.FirstOrDefault(s => s.Name == name);
+			var sectorToSelect = flow.Sectors.FirstOrDefault(s => s.Name == name);
 			if (sectorToSelect == null) {
 				MessageBox.Show($"Couldn't find sector with name {name}");
 				return;
@@ -113,7 +77,6 @@ namespace OdQuestsGenerator.Forms
 
 			selectedQuest = null;
 			statesViewer.Items.Clear();
-			questCode.Clear();
 		}
 
 		private void QuestSelected()
@@ -136,7 +99,7 @@ namespace OdQuestsGenerator.Forms
 
 		private void FillSectors()
 		{
-			var sectorsItems = sectors.Select(s => s.Name).ToArray();
+			var sectorsItems = flow.Sectors.Select(s => s.Name).ToArray();
 			sectorsViewer.Fill(sectorsItems);
 		}
 
@@ -162,7 +125,6 @@ namespace OdQuestsGenerator.Forms
 		{
 			var filePath = openQuestFileDialog.InitialDirectory + openQuestFileDialog.FileName;
 			var content = FileSystem.ReadFileContents(filePath);
-			questCode.Text = content;
 			var tree = CSharpSyntaxTree.ParseText(content);
 			selectedQuest = FromCodeTransformer.ReadQuest(tree);
 			QuestSelected();
@@ -182,6 +144,19 @@ namespace OdQuestsGenerator.Forms
 			if (index != ListBox.NoMatches) {
 				SelectQuest(index);
 			}
+		}
+
+		private void QuestsViewer_Load(object sender, EventArgs e)
+		{
+			string programFilesDir = Environment.GetEnvironmentVariable(string.Format("ProgramFiles{0}", (IntPtr.Size == sizeof(long)) ? "(x86)" : ""));
+			project.LibrarySearchPaths.Add(Path.Combine(programFilesDir, string.Format("dataweb{0}NShape{0}bin", Path.DirectorySeparatorChar)));
+
+			// Add general shapes library and define that it should not be unloaded when closing the project
+			project.AddLibrary(typeof(Ellipse).Assembly, false);
+
+			project.Name = "ff";
+			// Create a new NShape project
+			project.Create();
 		}
 	}
 }

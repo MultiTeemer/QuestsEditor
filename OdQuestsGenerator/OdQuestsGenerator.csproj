@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,11 +33,24 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dataweb.NShape, Version=2.1.0.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Include\Dataweb.NShape.dll</HintPath>
+    </Reference>
+    <Reference Include="Dataweb.NShape.GeneralShapes, Version=2.1.0.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Include\Dataweb.NShape.GeneralShapes.dll</HintPath>
+    </Reference>
+    <Reference Include="Dataweb.NShape.WinFormsUI, Version=2.1.0.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Include\Dataweb.NShape.WinFormsUI.dll</HintPath>
+    </Reference>
     <Reference Include="Esent.Interop, Version=1.9.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ManagedEsent.1.9.4\lib\net40\Esent.Interop.dll</HintPath>
     </Reference>
@@ -191,6 +205,7 @@
     </Compile>
     <Compile Include="DataTransformers\Templates\StateTaskTemplate.Fields.cs" />
     <Compile Include="DataTransformers\ToCodeTransformer.cs" />
+    <Compile Include="Data\Graph.cs" />
     <Compile Include="Data\IsItOkForCodeGeneration.cs" />
     <Compile Include="Data\Quest.cs" />
     <Compile Include="Data\Sector.cs" />
@@ -219,11 +234,14 @@
     <Compile Include="Forms\QuestsViewer.Designer.cs">
       <DependentUpon>QuestsViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\QuestsViewerStuff\SectrosFlowScheme.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\SectorsLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\FileSystem.cs" />
     <Compile Include="Utils\IListExtensions.cs" />
     <Compile Include="Utils\ListBoxExtensions.cs" />
+    <Compile Include="Utils\ObjectExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <EmbeddedResource Include="Forms\EnterNewQuestName.resx">
       <DependentUpon>EnterNewQuestName.cs</DependentUpon>
