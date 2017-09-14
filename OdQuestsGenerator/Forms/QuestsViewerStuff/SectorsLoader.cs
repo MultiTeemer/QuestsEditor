@@ -78,14 +78,19 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 				}
 			}
 
+			code.RegisterSectorForCodeBulk(sector, codeBulk);
+
 			return sector;
 		}
 
 		public Quest LoadQuest(string path)
 		{
 			var codeBulk = code.ReadFromFile(path, CodeBulkType.Quest);
+			var quest = FromCodeTransformer.ReadQuest(codeBulk.Tree);
 
-			return FromCodeTransformer.ReadQuest(codeBulk.Tree);
+			code.RegisterQuestforCodeBulk(quest, codeBulk);
+
+			return quest;
 		}
 
 		private List<Tuple<string, string>> LoadQuestLinks(string dirPath)
