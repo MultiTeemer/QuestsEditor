@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using OdQuestsGenerator.Data;
+using OdQuestsGenerator.DataValidators;
 
 namespace OdQuestsGenerator.Forms
 {

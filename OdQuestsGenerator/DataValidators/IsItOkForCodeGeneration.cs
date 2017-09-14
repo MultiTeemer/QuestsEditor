@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace OdQuestsGenerator.Data
+namespace OdQuestsGenerator.DataValidators
 {
 	static class IsItOkForCodeGeneration
 	{

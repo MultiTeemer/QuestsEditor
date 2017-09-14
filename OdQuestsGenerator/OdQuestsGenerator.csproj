@@ -215,7 +215,7 @@
     <Compile Include="DataTransformers\ToCodeTransformer.cs" />
     <Compile Include="Data\Flow.cs" />
     <Compile Include="Data\Graph.cs" />
-    <Compile Include="Data\IsItOkForCodeGeneration.cs" />
+    <Compile Include="DataValidators\IsItOkForCodeGeneration.cs" />
     <Compile Include="Data\Quest.cs" />
     <Compile Include="Data\Sector.cs" />
     <Compile Include="Data\State.cs" />
