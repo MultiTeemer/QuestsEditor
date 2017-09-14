@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Dataweb.NShape;
 using Dataweb.NShape.Controllers;
 using Dataweb.NShape.GeneralShapes;
-using Dataweb.NShape.Layouters;
 using Dataweb.NShape.WinFormsUI;
+using Microsoft.Msagl.Miscellaneous;
 using OdQuestsGenerator.Data;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff
@@ -29,7 +30,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			diagram.Size = new System.Drawing.Size(5000, 2500);
 
 			InitShapes(graph, diagram);
-			Layout(diagram, graph);
 
 			display.Diagram = diagram;
 		}
@@ -39,14 +39,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var node2shape = new Dictionary<Node, Shape>();
 			var link2arrow = new Dictionary<Link, Shape>();
 
+			var OriginalGraph = new Microsoft.Msagl.Core.Layout.GeometryGraph();
+			var LayoutAlgorithmSettings = new Microsoft.Msagl.Layout.Layered.SugiyamaLayoutSettings();
+
 			foreach (var n in graph.Nodes) {
-				var shape = (Ellipse)project.ShapeTypes["Ellipse"].CreateInstance();
+				var shape = (Box)project.ShapeTypes["Box"].CreateInstance();
 				shape.SetCaptionText(0, n.Quest.Name);
 				node2shape.Add(n, shape);
 				diagram.Shapes.Add(shape);
 
 				shape.Width =  ShapeSize;
 				shape.Height = ShapeSize / 2;
+
+				var node = new Microsoft.Msagl.Core.Layout.Node(Microsoft.Msagl.Core.Geometry.Curves.CurveFactory.CreateRectangle(ShapeSize, ShapeSize, new Microsoft.Msagl.Core.Geometry.Point()), n); ;
+
+				OriginalGraph.Nodes.Add(node);
 			}
 
 			foreach (var l in graph.Links) {
@@ -61,17 +68,23 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 				link2arrow.Add(l, arrow);
 				diagram.Shapes.Add(arrow);
-			}
-		}
 
-		private void Layout(Diagram diagram, Graph graph)
-		{
-			var layouter = new FlowLayouter(project);
-			layouter.AllShapes = diagram.Shapes;
-			layouter.Shapes = diagram.Shapes;
-			layouter.Prepare();
-			layouter.Execute(10);
-			layouter.Fit(ShapeSize, ShapeSize, diagram.Width - ShapeSize, diagram.Height - ShapeSize);
+				var n1 = OriginalGraph.Nodes.FirstOrDefault(n => n.UserData == l.Node1);
+				var n2 = OriginalGraph.Nodes.FirstOrDefault(n => n.UserData == l.Node2);
+
+				var e = new Microsoft.Msagl.Core.Layout.Edge(n1, n2);
+
+
+				OriginalGraph.Edges.Add(e);
+			}
+
+			LayoutHelpers.CalculateLayout(OriginalGraph, LayoutAlgorithmSettings, null);
+
+			foreach (var kv in node2shape) {
+				var pos = OriginalGraph.Nodes.First(n => n.UserData == kv.Key).Center;
+				kv.Value.X = (int)pos.X;
+				kv.Value.Y = (int)pos.Y;
+			}
 		}
 	}
 }
