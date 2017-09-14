@@ -237,6 +237,7 @@
     <Compile Include="Forms\QuestsViewer.Designer.cs">
       <DependentUpon>QuestsViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\QuestsViewerStuff\Code.cs" />
     <Compile Include="Forms\QuestsViewerStuff\SectrosFlowScheme.cs" />
     <Compile Include="Forms\QuestsViewerStuff\SectorsLoader.cs" />
     <Compile Include="Program.cs" />

@@ -22,16 +22,23 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 	class SectorsLoader
 	{
+		private readonly Code code;
+
+		public SectorsLoader(Code code)
+		{
+			this.code = code;
+		}
+
 		public Flow Load(string folder)
 		{
 			var gameDir = Directory.EnumerateDirectories(folder).FirstOrDefault(p => p.EndsWith(".Game"));
 			if (gameDir == null) {
-				throw new System.Exception("Couldn't find \"*.Game\" directory");
+				throw new Exception("Couldn't find \"*.Game\" directory");
 			}
 
 			var sectorsDir = Path.Combine(gameDir, "Sectors");
 			if (!Directory.Exists(sectorsDir)) {
-				throw new System.Exception($"Couldn't find \"{sectorsDir}\" directory");
+				throw new Exception($"Couldn't find \"{sectorsDir}\" directory");
 			}
 
 			var graph = new Graph();
@@ -42,6 +49,65 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var sectors = secsDirs.Select(LoadSector).ToList();
 			var links = secsDirs.SelectMany(LoadQuestLinks);
 
+			BuildGraph(graph, sectors, links);
+
+			LoadConfig(gameDir);
+
+			return new Flow(graph, sectors);
+		}
+
+		public Sector LoadSector(string dirPath)
+		{
+			var sectorFile = Directory.EnumerateFiles(dirPath)
+				.FirstOrDefault(p => new FileInfo(p).Name.StartsWith("Sector"));
+			if (sectorFile == null) {
+				throw new System.Exception("Cannot find file describing sector");
+			}
+
+			var codeBulk = code.ReadFromFile(Path.Combine(dirPath, sectorFile), CodeBulkType.Sector);
+			var sector = new Sector {
+				Name = FromCodeTransformer.FetchSectorName(codeBulk.Tree),
+				Quests = new List<Quest>(),
+			};
+
+			var questsDir = Path.Combine(dirPath, "Quests");
+			if (Directory.Exists(questsDir)) {
+				var files = Directory.EnumerateFiles(questsDir);
+				foreach (var filePath in files) {
+					sector.Quests.Add(LoadQuest(filePath));
+				}
+			}
+
+			return sector;
+		}
+
+		public Quest LoadQuest(string path)
+		{
+			var codeBulk = code.ReadFromFile(path, CodeBulkType.Quest);
+
+			return FromCodeTransformer.ReadQuest(codeBulk.Tree);
+		}
+
+		private List<Tuple<string, string>> LoadQuestLinks(string dirPath)
+		{
+			var sectorFile = Directory.EnumerateFiles(dirPath)
+				.FirstOrDefault(p => new FileInfo(p).Name.StartsWith("Sector"));
+			var tree = FileSystem.ReadCodeFromFile(Path.Combine(dirPath, sectorFile));
+			return FromCodeTransformer.FetchQuestToQuestLink(tree);
+		}
+
+		private void LoadConfig(string gameDirectory)
+		{
+			var configsDir = Path.Combine(gameDirectory, "Configs");
+			if (!Directory.Exists(configsDir)) {
+				throw new Exception($"Couldn't find \"{configsDir}\" directory");
+			}
+			var configFilePath = Path.Combine(configsDir, "QuestsConfig.cs");
+			code.ReadFromFile(configFilePath, CodeBulkType.Config);
+		}
+
+		private void BuildGraph(Graph graph, List<Sector> sectors, IEnumerable<Tuple<string, string>> links)
+		{
 			foreach (var sector in sectors) {
 				foreach (var quest in sector.Quests) {
 					graph.AddNode(quest);
@@ -62,43 +128,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 				graph.AddLink(n1, n2);
 			}
-
-			return new Flow(graph, sectors);
-		}
-
-		public Sector LoadSector(string dirPath)
-		{
-			var sectorFile = Directory.EnumerateFiles(dirPath)
-				.FirstOrDefault(p => new FileInfo(p).Name.StartsWith("Sector"));
-			if (sectorFile == null) {
-				throw new System.Exception("Cannot find file describing sector");
-			}
-
-			var tree = FileSystem.ReadCodeFromFile(Path.Combine(dirPath, sectorFile));
-			var sector = new Sector {
-				Name = FromCodeTransformer.FetchSectorName(tree),
-				Quests = new List<Quest>(),
-			};
-
-			var questsDir = Path.Combine(dirPath, "Quests");
-			if (Directory.Exists(questsDir)) {
-				var files = Directory.EnumerateFiles(questsDir);
-				foreach (var filePath in files) {
-					sector.Quests.Add(LoadQuest(filePath));
-				}
-			}
-
-			return sector;
-		}
-
-		public Quest LoadQuest(string path) => FromCodeTransformer.ReadQuest(FileSystem.ReadCodeFromFile(path));
-
-		private List<Tuple<string, string>> LoadQuestLinks(string dirPath)
-		{
-			var sectorFile = Directory.EnumerateFiles(dirPath)
-				.FirstOrDefault(p => new FileInfo(p).Name.StartsWith("Sector"));
-			var tree = FileSystem.ReadCodeFromFile(Path.Combine(dirPath, sectorFile));
-			return FromCodeTransformer.FetchQuestToQuestLink(tree);
 		}
 	}
 }

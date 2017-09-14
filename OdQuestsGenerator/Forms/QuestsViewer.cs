@@ -14,7 +14,8 @@ namespace OdQuestsGenerator.Forms
 {
 	public partial class QuestsViewer : Form
 	{
-		private readonly SectorsLoader loader = new SectorsLoader();
+		private readonly Code code = new Code();
+		private readonly SectorsLoader loader;
 		private readonly SectorsFlowScheme flowScheme;
 
 		private Flow flow;
@@ -26,6 +27,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			InitializeComponent();
 
+			loader = new SectorsLoader(code);
 			flowScheme = new SectorsFlowScheme(diagramSetController, project, display);
 		}
 
