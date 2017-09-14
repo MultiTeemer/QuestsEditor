@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -15,7 +14,7 @@ namespace OdQuestsGenerator.Forms
 	public partial class QuestsViewer : Form
 	{
 		private readonly Code code = new Code();
-		private readonly SectorsLoader loader;
+		private readonly Loader loader;
 		private readonly SectorsFlowScheme flowScheme;
 
 		private Flow flow;
@@ -27,7 +26,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			InitializeComponent();
 
-			loader = new SectorsLoader(code);
+			loader = new Loader(code);
 			flowScheme = new SectorsFlowScheme(diagramSetController, project, display);
 		}
 

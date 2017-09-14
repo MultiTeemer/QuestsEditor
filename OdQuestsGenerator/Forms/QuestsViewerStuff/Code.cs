@@ -54,6 +54,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private readonly Dictionary<Sector, CodeBulk> sectorToCodeBulk = new Dictionary<Sector, CodeBulk>();
 
 		public IReadOnlyList<CodeBulk> AllCode => codeBulks;
+		public IReadOnlyList<CodeBulk> SectorsCode => CodeBulksOfType(CodeBulkType.Sector).ToList();
+		public IReadOnlyList<CodeBulk> QuestsCode => CodeBulksOfType(CodeBulkType.Quest).ToList();
+		public IReadOnlyList<CodeBulk> ConfigsCode => CodeBulksOfType(CodeBulkType.Config).ToList();
 
 		public CodeBulk ReadFromFile(string path, CodeBulkType type)
 		{
@@ -91,6 +94,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			}
 		}
 
+		public IReadOnlyList<CodeBulk> CodeBulksOfTypes(params CodeBulkType[] types) =>
+			types.SelectMany(type => CodeBulksOfType(type)).ToList();
+
 		private void WriteCodeToFile(SyntaxTree tree, string filePath)
 		{
 			using (var writer = new StreamWriter(File.OpenWrite(filePath))) {
@@ -111,5 +117,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 			return bulk;
 		}
+
+		private IEnumerable<CodeBulk> CodeBulksOfType(CodeBulkType type) => codeBulks.Where(cb => cb.Type == type);
 	}
 }
