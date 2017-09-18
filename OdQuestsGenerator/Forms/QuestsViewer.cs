@@ -8,6 +8,8 @@ using OdQuestsGenerator.DataTransformers;
 using OdQuestsGenerator.Utils;
 using Dataweb.NShape.GeneralShapes;
 using OdQuestsGenerator.Forms.QuestsViewerStuff;
+using Newtonsoft.Json;
+using OdQuestsGenerator.ApplicationData;
 
 namespace OdQuestsGenerator.Forms
 {
@@ -47,6 +49,33 @@ namespace OdQuestsGenerator.Forms
 				//MessageBox.Show($"During operation performing exception has been thrown: {e.Message}");
 			//}
 		}
+
+		private void LoadPreferences()
+		{
+			var path = GetPreferencesPath();
+			if (File.Exists(path)) {
+				var contents = FileSystem.ReadFileContents(path);
+				Program.Preferences = JsonConvert.DeserializeObject<Preferences>(contents);
+				selectedFolder = Program.Preferences.LastProjectPath;
+				LoadSectors();
+			}
+		}
+
+		private void SavePreferences()
+		{
+			if (!Directory.Exists(GetPreferencesDirPath())) {
+				Directory.CreateDirectory(GetPreferencesDirPath());
+			}
+
+			File.WriteAllText(GetPreferencesPath(), JsonConvert.SerializeObject(Program.Preferences));
+		}
+
+		private string GetPreferencesPath() => Path.Combine(GetPreferencesDirPath(), "preferences.userprefs");
+
+		private string GetPreferencesDirPath() => Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				"OdQuestsEditor"
+			);
 
 		private void SelectSector(int idx)
 		{
@@ -113,10 +142,12 @@ namespace OdQuestsGenerator.Forms
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			using (var fbd = new FolderBrowserDialog()) {
-				fbd.SelectedPath = Environment.CurrentDirectory;
+				fbd.SelectedPath = selectedFolder;
 				DialogResult result = fbd.ShowDialog();
 				if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath)) {
 					selectedFolder = fbd.SelectedPath;
+					Program.Preferences.LastProjectPath = selectedFolder;
+					SavePreferences();
 					LoadSectors();
 				}
 			}
@@ -158,6 +189,8 @@ namespace OdQuestsGenerator.Forms
 			project.Name = "ff";
 			// Create a new NShape project
 			project.Create();
+
+			LoadPreferences();
 		}
 	}
 }

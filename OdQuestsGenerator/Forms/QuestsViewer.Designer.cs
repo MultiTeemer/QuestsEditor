@@ -31,7 +31,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QuestsViewer));
-			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
+			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager3 = new Dataweb.NShape.RoleBasedSecurityManager();
 			this.openMenuStrip = new System.Windows.Forms.MenuStrip();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openQuestFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -42,6 +42,9 @@ namespace OdQuestsGenerator.Forms
 			this.display = new Dataweb.NShape.WinFormsUI.Display();
 			this.diagramSetController = new Dataweb.NShape.Controllers.DiagramSetController();
 			this.project = new Dataweb.NShape.Project(this.components);
+			this.toolSetController = new Dataweb.NShape.Controllers.ToolSetController();
+			this.toolsListView = new System.Windows.Forms.ListView();
+			this.toolSetListViewPresenter = new Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter(this.components);
 			this.openMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -122,7 +125,7 @@ namespace OdQuestsGenerator.Forms
 			this.display.SelectionInactiveColor = System.Drawing.Color.Gray;
 			this.display.SelectionInteriorColor = System.Drawing.Color.WhiteSmoke;
 			this.display.SelectionNormalColor = System.Drawing.Color.DarkGreen;
-			this.display.Size = new System.Drawing.Size(606, 668);
+			this.display.Size = new System.Drawing.Size(606, 609);
 			this.display.SnapToGrid = false;
 			this.display.TabIndex = 6;
 			this.display.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
@@ -140,9 +143,35 @@ namespace OdQuestsGenerator.Forms
 			this.project.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project.LibrarySearchPaths")));
 			this.project.Name = null;
 			this.project.Repository = null;
-			roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
-			roleBasedSecurityManager1.CurrentRoleName = "Administrator";
-			this.project.SecurityManager = roleBasedSecurityManager1;
+			roleBasedSecurityManager3.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+			roleBasedSecurityManager3.CurrentRoleName = "Administrator";
+			this.project.SecurityManager = roleBasedSecurityManager3;
+			// 
+			// toolSetController
+			// 
+			this.toolSetController.DiagramSetController = this.diagramSetController;
+			// 
+			// toolsListView
+			// 
+			this.toolsListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.toolsListView.FullRowSelect = true;
+			this.toolsListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.toolsListView.HideSelection = false;
+			this.toolsListView.Location = new System.Drawing.Point(237, 663);
+			this.toolsListView.MultiSelect = false;
+			this.toolsListView.Name = "toolsListView";
+			this.toolsListView.ShowItemToolTips = true;
+			this.toolsListView.Size = new System.Drawing.Size(606, 97);
+			this.toolsListView.TabIndex = 8;
+			this.toolsListView.UseCompatibleStateImageBehavior = false;
+			// 
+			// toolSetListViewPresenter
+			// 
+			this.toolSetListViewPresenter.HideDeniedMenuItems = false;
+			this.toolSetListViewPresenter.ListView = this.toolsListView;
+			this.toolSetListViewPresenter.ShowDefaultContextMenu = true;
+			this.toolSetListViewPresenter.ToolSetController = this.toolSetController;
 			// 
 			// QuestsViewer
 			// 
@@ -150,6 +179,7 @@ namespace OdQuestsGenerator.Forms
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(1048, 772);
+			this.Controls.Add(this.toolsListView);
 			this.Controls.Add(this.display);
 			this.Controls.Add(this.questsListBox);
 			this.Controls.Add(this.sectorsViewer);
@@ -181,5 +211,8 @@ namespace OdQuestsGenerator.Forms
 		private Dataweb.NShape.WinFormsUI.Display display;
 		private Dataweb.NShape.Controllers.DiagramSetController diagramSetController;
 		private Dataweb.NShape.Project project;
+		private Dataweb.NShape.Controllers.ToolSetController toolSetController;
+		private System.Windows.Forms.ListView toolsListView;
+		private Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter toolSetListViewPresenter;
 	}
 }
