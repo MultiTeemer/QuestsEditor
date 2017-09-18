@@ -7,18 +7,22 @@ namespace OdQuestsGenerator.CodeReaders
 {
 	interface ICodeReader
 	{
+		CodeBulkType[] AcceptedTypes { get; }
+
 		void Read(CodeBulk codeBulk, Code code, ref Flow flow);
 	}
 
 	abstract class CodeReader : ICodeReader
 	{
+		public abstract CodeBulkType[] AcceptedTypes { get; }
+
 		public abstract void Read(CodeBulk codeBulk, Code code, ref Flow flow);
 	}
 
 	static class CodeReadersRepo
 	{
 		private static Dictionary<Type, ICodeReader> readers = new Dictionary<Type, ICodeReader>();
-		
+
 		static CodeReadersRepo()
 		{
 			RegisterReaderType<SectorReader>();

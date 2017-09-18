@@ -7,6 +7,8 @@ namespace OdQuestsGenerator.CodeReaders
 {
 	class ReachedConditionReader : CodeReader
 	{
+		public override CodeBulkType[] AcceptedTypes => new[] { CodeBulkType.Sector };
+
 		public override void Read(CodeBulk codeBulk, Code code, ref Flow flow)
 		{
 			var links = FromCodeTransformer.FetchQuestToQuestLink(codeBulk.Tree);

@@ -8,6 +8,8 @@ namespace OdQuestsGenerator.CodeReaders
 {
 	class QuestReader : CodeReader
 	{
+		public override CodeBulkType[] AcceptedTypes => new[] { CodeBulkType.Quest,  };
+
 		public override void Read(CodeBulk codeBulk, Code code, ref Flow flow)
 		{
 			var quest = FromCodeTransformer.ReadQuest(codeBulk.Tree);

@@ -7,6 +7,8 @@ namespace OdQuestsGenerator.CodeReaders
 {
 	class SectorReader : CodeReader
 	{
+		public override CodeBulkType[] AcceptedTypes => new[] { CodeBulkType.Sector };
+
 		public override void Read(CodeBulk codeBulk, Code code, ref Flow flow)
 		{
 			var sectorName = FromCodeTransformer.FetchSectorName(codeBulk.Tree);

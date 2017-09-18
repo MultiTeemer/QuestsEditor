@@ -9,14 +9,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 {
 	class Loader
 	{
-		private static readonly Dictionary<Type, CodeBulkType[]> readersForCodeBulks = new Dictionary<Type, CodeBulkType[]> {
-			[typeof(SectorReader)] = new [] { CodeBulkType.Sector  },
-			[typeof(QuestReader)] = new [] { CodeBulkType.Quest },
-			[typeof(ConfigReader)] = new [] { CodeBulkType.Config },
-			[typeof(ReachedConditionReader)] = new [] { CodeBulkType.Sector },
-		};
-
-		private static readonly Type[] readersOrder = new[] {
+		private static readonly Type[] readersOrder = {
 			typeof(SectorReader),
 			typeof(QuestReader),
 			typeof(ConfigReader),
@@ -55,7 +48,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 			foreach (var readerType in readersOrder) {
 				var reader = CodeReadersRepo.GetReader(readerType);
-				var codeBulks = code.CodeBulksOfTypes(readersForCodeBulks[readerType]);
+				var codeBulks = code.CodeBulksOfTypes(reader.AcceptedTypes);
 				foreach (var codeBulk in codeBulks) {
 					reader.Read(codeBulk, code, ref flow);
 				}
