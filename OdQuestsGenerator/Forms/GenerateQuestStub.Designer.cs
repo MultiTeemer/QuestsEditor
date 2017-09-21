@@ -73,8 +73,10 @@
 			this.statesViewer.TabIndex = 4;
 			this.statesViewer.DragDrop += new System.Windows.Forms.DragEventHandler(this.statesViewer_DragDrop);
 			this.statesViewer.DragOver += new System.Windows.Forms.DragEventHandler(this.statesViewer_DragOver);
+			this.statesViewer.KeyDown += new System.Windows.Forms.KeyEventHandler(this.statesViewer_KeyDown);
 			this.statesViewer.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.statesViewer_MouseDoubleClick);
 			this.statesViewer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.statesViewer_MouseDown);
+			this.statesViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.statesViewer_MouseMove);
 			// 
 			// systemMessagesLabel
 			// 
@@ -84,7 +86,7 @@
 			this.systemMessagesLabel.Size = new System.Drawing.Size(0, 13);
 			this.systemMessagesLabel.TabIndex = 5;
 			// 
-			// Main
+			// GenerateQuestStub
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -94,7 +96,7 @@
 			this.Controls.Add(this.addStateButton);
 			this.Controls.Add(this.changeNameBtn);
 			this.Controls.Add(this.resultViewer);
-			this.Name = "Main";
+			this.Name = "GenerateQuestStub";
 			this.Text = "Ocean Drop quests code generator";
 			this.ResumeLayout(false);
 			this.PerformLayout();

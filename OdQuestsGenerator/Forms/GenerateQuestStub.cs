@@ -10,10 +10,13 @@ namespace OdQuestsGenerator.Forms
 {
 	public partial class GenerateQuestStub : Form
 	{
+		private const float DeltaPosToStartDragging = 0.5f;
+
 		private readonly Quest currentQuest = Quest.Default;
 
 		private int? draggingStateIndex;
 		private int? currentDraggingStateIndex;
+		private Point? mousePressLocation;
 
 		public GenerateQuestStub()
 		{
@@ -109,7 +112,9 @@ namespace OdQuestsGenerator.Forms
 		{
 			Point point = statesViewer.PointToClient(new Point(e.X, e.Y));
 			int destIndex = statesViewer.IndexFromPoint(point);
-			if (destIndex < 0) destIndex = statesViewer.Items.Count - 1;
+			if (destIndex < 0) {
+				destIndex = statesViewer.Items.Count - 1;
+			}
 
 			if (draggingStateIndex.HasValue) {
 				currentQuest.States.Move(draggingStateIndex.Value, destIndex);
@@ -122,14 +127,7 @@ namespace OdQuestsGenerator.Forms
 
 		private void statesViewer_MouseDown(object sender, MouseEventArgs e)
 		{
-			int index = statesViewer.IndexFromPoint(e.X, e.Y);
-			if (index != -1) {
-				draggingStateIndex = index;
-				currentDraggingStateIndex = index;
-				var s = statesViewer.Items[index].ToString();
-				DragDropEffects effects = DoDragDrop(s, DragDropEffects.Move);
-				statesViewer.DoDragDrop(sender, effects);
-			}
+			mousePressLocation = e.Location;
 		}
 
 		private void statesViewer_DragOver(object sender, DragEventArgs e)
@@ -138,7 +136,9 @@ namespace OdQuestsGenerator.Forms
 
 			var point = statesViewer.PointToClient(new Point(e.X, e.Y));
 			var destIndex = statesViewer.IndexFromPoint(point);
-			if (destIndex < 0) destIndex = statesViewer.Items.Count - 1;
+			if (destIndex < 0) {
+				destIndex = statesViewer.Items.Count - 1;
+			}
 
 			if (currentDraggingStateIndex != destIndex) {
 				FillStatesViewer();
@@ -148,6 +148,35 @@ namespace OdQuestsGenerator.Forms
 				currentDraggingStateIndex = destIndex;
 
 				statesViewer.Invalidate();
+			}
+		}
+
+		private void statesViewer_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Delete && statesViewer.SelectedIndex != -1) {
+				currentQuest.States.RemoveAt(statesViewer.SelectedIndex);
+				OnQuestChanged();
+			}
+		}
+
+		private void statesViewer_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (mousePressLocation.HasValue) {
+				Func<double, double> sqr = s => Math.Pow(s, 2);
+				var dpos = Math.Sqrt(
+					sqr(mousePressLocation.Value.X - e.Location.X) + sqr(mousePressLocation.Value.Y - e.Location.Y)
+				);
+				if (dpos > DeltaPosToStartDragging) {
+					int index = statesViewer.IndexFromPoint(mousePressLocation.Value);
+					if (index != -1) {
+						draggingStateIndex = index;
+						currentDraggingStateIndex = index;
+						var s = statesViewer.Items[index].ToString();
+						DragDropEffects effects = DoDragDrop(s, DragDropEffects.Move);
+						statesViewer.DoDragDrop(sender, effects);
+					}
+				}
+				mousePressLocation = null;
 			}
 		}
 	}
