@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Options;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Utils;
 
@@ -48,6 +49,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 	class Code
 	{
 		private readonly List<CodeBulk> codeBulks = new List<CodeBulk>();
+		private readonly List<string> filesToDelete = new List<string>();
 		private readonly Dictionary<string, CodeBulk> fileToCodeBulk = new Dictionary<string, CodeBulk>();
 		private readonly Dictionary<CodeBulk, string> codeBulkToFile = new Dictionary<CodeBulk, string>();
 		private readonly Dictionary<Quest, CodeBulk> questToCodeBulk = new Dictionary<Quest, CodeBulk>();
@@ -87,6 +89,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public void Save()
 		{
+			foreach (var filePath in filesToDelete) {
+				File.Delete(filePath);
+			}
+			filesToDelete.Clear();
+
 			var modifiedCodeBulks = codeBulks.Where(cb => cb.WasModified);
 			foreach (var codeBulk in modifiedCodeBulks) {
 				WriteCodeToFile(codeBulk.Tree, codeBulkToFile[codeBulk]);
@@ -94,15 +101,27 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			}
 		}
 
+		public void RenameFile(CodeBulk codeBulk, string newFileName)
+		{
+			var path = codeBulkToFile[codeBulk];
+			filesToDelete.Add(path);
+			fileToCodeBulk.Remove(path);
+
+			var newPath = Path.Combine(Path.GetDirectoryName(path), newFileName);
+			fileToCodeBulk[newPath] = codeBulk;
+			codeBulkToFile[codeBulk] = newPath;
+		}
+
 		public IReadOnlyList<CodeBulk> CodeBulksOfTypes(params CodeBulkType[] types) =>
 			types.SelectMany(type => CodeBulksOfType(type)).ToList();
+
+		public string GetPathToFile(CodeBulk bulk) => codeBulkToFile.ContainsKey(bulk) ? codeBulkToFile[bulk] : null;
 
 		private void WriteCodeToFile(SyntaxTree tree, string filePath)
 		{
 			using (var writer = new StreamWriter(File.OpenWrite(filePath))) {
 				var workspace = new AdhocWorkspace();
-				var options = workspace.Options.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInTypes, true);
-				var res = Formatter.Format(tree.GetRoot(), workspace, options);
+				var res = Formatter.Format(tree.GetRoot(), workspace, GetFormattingOptions(workspace));
 				writer.WriteLine(res);
 			}
 		}
@@ -119,5 +138,13 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		}
 
 		private IEnumerable<CodeBulk> CodeBulksOfType(CodeBulkType type) => codeBulks.Where(cb => cb.Type == type);
+
+		private OptionSet GetFormattingOptions(Workspace workspace) =>
+			workspace.Options
+			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInTypes, true)
+			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInControlBlocks, false)
+			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInLambdaExpressionBody, false)
+			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInObjectCollectionArrayInitializers, false)
+			.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, "C#"), true);
 	}
 }

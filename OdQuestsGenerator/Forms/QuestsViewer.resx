@@ -139,6 +139,9 @@
         b2dyYW0gRmlsZXMgKHg4NilcZGF0YXdlYlxOU2hhcGVcYmluCw==
 </value>
   </data>
+  <metadata name="cachedRepository.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>893, 17</value>
+  </metadata>
   <metadata name="toolSetController.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>562, 17</value>
   </metadata>

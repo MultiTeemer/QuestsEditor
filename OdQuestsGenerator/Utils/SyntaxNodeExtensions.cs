@@ -9,13 +9,13 @@ namespace OdQuestsGenerator.Utils
 		public static TNodeType GetFirstOfType<TNodeType>(this SyntaxNode node)
 			where TNodeType : SyntaxNode
 		{
-			return node.ChildNodes().FirstOrDefault(n => n is TNodeType) as TNodeType;
+			return node.DescendantNodes().FirstOrDefault(n => n is TNodeType) as TNodeType;
 		}
 
 		public static IEnumerable<TNodeType> OfType<TNodeType>(this SyntaxNode node)
 			where TNodeType : SyntaxNode
 		{
-			return node.ChildNodes().OfType<TNodeType>().Select(n => n as TNodeType);
+			return node.DescendantNodes().OfType<TNodeType>().Select(n => n as TNodeType);
 		}
 	}
 }

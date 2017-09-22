@@ -2,68 +2,91 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dataweb.NShape;
+using Dataweb.NShape.Advanced;
 using Dataweb.NShape.Controllers;
-using Dataweb.NShape.GeneralShapes;
 using Dataweb.NShape.WinFormsUI;
 using Microsoft.Msagl.Miscellaneous;
 using OdQuestsGenerator.Data;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 {
-	class SectorsFlowScheme
+	class FlowView
 	{
-		const int ShapeSize = 200;
+		public const int ShapeSize = 200;
 
 		private readonly DiagramSetController controller;
 		private readonly Project project;
 		private readonly Display display;
+		private readonly ShapeTemplatesFactory templates;
 
 		private Dictionary<Node, Shape> node2shape = new Dictionary<Node, Shape>();
+		private Dictionary<Shape, Node> shape2node = new Dictionary<Shape, Node>();
 		private Dictionary<Link, Shape> link2arrow = new Dictionary<Link, Shape>();
+		private Dictionary<Shape, Link> arrow2link = new Dictionary<Shape, Link>();
 
 		private Diagram diagram;
 
-		public SectorsFlowScheme(DiagramSetController controller, Project project, Display display)
+		public FlowView(
+			DiagramSetController controller,
+			Project project,
+			Display display,
+			ShapeTemplatesFactory templates
+		)
 		{
 			this.controller = controller;
 			this.project = project;
 			this.display = display;
+			this.templates = templates;
 		}
 
 		public void Display(Graph graph)
 		{
 			diagram = new Diagram("Foo");
+			display.Diagram = diagram;
 			diagram.Size = new System.Drawing.Size(3000, 1500);
 
 			InitShapes(graph, diagram);
 			LayoutShapes(graph);
 
-			display.Diagram = diagram;
+			project.Repository.InsertAll(diagram.Shapes, diagram);
+		}
+
+		public Node GetNodeForShape(Shape shape)
+		{
+			return shape2node.ContainsKey(shape) ? shape2node[shape] : null;
+		}
+
+		public Link? GetLinkForShape(Shape shape)
+		{
+			return arrow2link.ContainsKey(shape) ? arrow2link[shape] : (Link?)null;
+		}
+
+		public CaptionedShapeBase GetShapeForQuest(Quest quest)
+		{
+			var key = node2shape.Keys.FirstOrDefault(n => n.Quest == quest);
+			return key != null ? node2shape[key] as CaptionedShapeBase : null;
 		}
 
 		private void InitShapes(Graph graph, Diagram diagram)
 		{
 			foreach (var n in graph.Nodes) {
-				var shape = (Box)project.ShapeTypes["Box"].CreateInstance();
-				shape.SetCaptionText(0, n.Quest.Name);
+				var shape = templates.GetQuestTemplate(n.Quest.Name);
 				node2shape.Add(n, shape);
+				shape2node.Add(shape, n);
 				diagram.Shapes.Add(shape);
-
-				shape.Width =  ShapeSize;
-				shape.Height = ShapeSize / 2;
 			}
 
 			foreach (var l in graph.Links) {
-				var arrow = (Polyline)project.ShapeTypes["Polyline"].CreateInstance();
+				var arrow = templates.GetLinkTemplate();
 
 				var shape1 = node2shape[l.Node1];
 				var shape2 = node2shape[l.Node2];
-
-				arrow.EndCapStyle = project.Design.CapStyles.ClosedArrow;
 				arrow.Connect(ControlPointId.FirstVertex, shape1, ControlPointId.Reference);
 				arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
 
 				link2arrow.Add(l, arrow);
+				arrow2link.Add(arrow, l);
 				diagram.Shapes.Add(arrow);
 			}
 		}

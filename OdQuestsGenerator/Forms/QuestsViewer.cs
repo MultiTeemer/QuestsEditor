@@ -2,22 +2,29 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Microsoft.CodeAnalysis.CSharp;
-using OdQuestsGenerator.Data;
-using OdQuestsGenerator.DataTransformers;
-using OdQuestsGenerator.Utils;
+using Dataweb.NShape;
 using Dataweb.NShape.GeneralShapes;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
+using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using OdQuestsGenerator.ApplicationData;
+using OdQuestsGenerator.Data;
+using OdQuestsGenerator.DataTransformers;
+using OdQuestsGenerator.Forms.QuestsViewerStuff;
+using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
+using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms
 {
 	public partial class QuestsViewer : Form
 	{
 		private readonly Code code = new Code();
+		private readonly CodeEditor editor;
 		private readonly Loader loader;
-		private readonly SectorsFlowScheme flowScheme;
+		private readonly FlowView flowView;
+		private readonly ShapeTemplatesFactory templates;
+		private readonly ToolsManager toolsManager;
+		private readonly CommandsHistory history = new CommandsHistory();
 
 		private Flow flow;
 		private Quest selectedQuest;
@@ -28,14 +35,18 @@ namespace OdQuestsGenerator.Forms
 		{
 			InitializeComponent();
 
+			templates = new ShapeTemplatesFactory(project);
 			loader = new Loader(code);
-			flowScheme = new SectorsFlowScheme(diagramSetController, project, display);
+			editor = new CodeEditor(code);
+			flowView = new FlowView(diagramSetController, project, display, templates);
+			toolsManager = new ToolsManager(toolSetController);
 		}
 
 		private void LoadSectors()
 		{
 			//try {
 				flow = loader.Load(selectedFolder);
+				editor.Initialize();
 
 				FillSectors();
 
@@ -43,7 +54,7 @@ namespace OdQuestsGenerator.Forms
 					SelectSector(0);
 				}
 
-				flowScheme.Display(flow.Graph);
+				flowView.Display(flow.Graph);
 			//} catch (Exception e) {
 				//throw;
 				//MessageBox.Show($"During operation performing exception has been thrown: {e.Message}");
@@ -180,17 +191,41 @@ namespace OdQuestsGenerator.Forms
 
 		private void QuestsViewer_Load(object sender, EventArgs e)
 		{
-			string programFilesDir = Environment.GetEnvironmentVariable(string.Format("ProgramFiles{0}", (IntPtr.Size == sizeof(long)) ? "(x86)" : ""));
-			project.LibrarySearchPaths.Add(Path.Combine(programFilesDir, string.Format("dataweb{0}NShape{0}bin", Path.DirectorySeparatorChar)));
+			InitProject();
+			InitTools();
+			LoadPreferences();
+		}
 
-			// Add general shapes library and define that it should not be unloaded when closing the project
+		private void InitProject()
+		{
+			var programFilesDir = Environment.GetEnvironmentVariable(
+				string.Format("ProgramFiles{0}", (IntPtr.Size == sizeof(long)) ? "(x86)" : "")
+			);
+			project.LibrarySearchPaths.Add(
+				Path.Combine(programFilesDir, string.Format("dataweb{0}NShape{0}bin", Path.DirectorySeparatorChar))
+			);
+
 			project.AddLibrary(typeof(Ellipse).Assembly, false);
 
 			project.Name = "ff";
-			// Create a new NShape project
 			project.Create();
+		}
 
-			LoadPreferences();
+		private void InitTools()
+		{
+			toolsManager.Clear();
+
+			var context = new EditingContext(project, history, flowView, code, editor);
+
+			toolsManager.AddTool(new SelectionTool(), new QuestsManipulatorWrapper(context));
+			toolsManager.AddTool(
+				new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate())),
+				new StubWrapper(context)
+			);
+			toolsManager.AddTool(
+				new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate())),
+				new StubWrapper(context)
+			);
 		}
 	}
 }

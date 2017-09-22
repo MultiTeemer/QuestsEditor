@@ -15,7 +15,7 @@ namespace OdQuestsGenerator.DataTransformers.Templates
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\ComponentTemplate.tt"
+    #line 1 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\ComponentTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class ComponentTemplate : ComponentTemplateBase
     {
@@ -27,14 +27,14 @@ namespace OdQuestsGenerator.DataTransformers.Templates
         {
             this.Write("\r\npublic class ");
             
-            #line 3 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\ComponentTemplate.tt"
+            #line 3 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\ComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Quest.Name));
             
             #line default
             #line hidden
             this.Write(" : SectorComponent<");
             
-            #line 3 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\ComponentTemplate.tt"
+            #line 3 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\ComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Quest.Name));
             
             #line default

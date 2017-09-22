@@ -15,7 +15,7 @@ namespace OdQuestsGenerator.DataTransformers.Templates
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+    #line 1 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class QuestComponentTemplate : QuestComponentTemplateBase
     {
@@ -26,42 +26,42 @@ namespace OdQuestsGenerator.DataTransformers.Templates
         public virtual string TransformText()
         {
             
-            #line 2 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+            #line 2 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
  var enumName = $"{Quest.Name}QuestState"; 
             
             #line default
             #line hidden
             this.Write("\r\npublic class ");
             
-            #line 4 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+            #line 4 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Quest.Name));
             
             #line default
             #line hidden
             this.Write(" : SectorQuestComponent<");
             
-            #line 4 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+            #line 4 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(enumName));
             
             #line default
             #line hidden
             this.Write(">\r\n{\r\n\tpublic ");
             
-            #line 6 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+            #line 6 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Quest.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n\t\t: base(");
             
-            #line 7 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+            #line 7 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(enumName));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 7 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
+            #line 7 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\QuestComponentTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Quest.FinalState.Name));
             
             #line default

@@ -15,7 +15,7 @@ namespace OdQuestsGenerator.DataTransformers.Templates
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
+    #line 1 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "15.0.0.0")]
     public partial class StateTaskTemplate : StateTaskTemplateBase
     {
@@ -27,21 +27,21 @@ namespace OdQuestsGenerator.DataTransformers.Templates
         {
             this.Write("\r\n[State(");
             
-            #line 3 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
+            #line 3 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(StateEnumName));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 3 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
+            #line 3 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(StateName));
             
             #line default
             #line hidden
             this.Write(")]\r\nprivate IEnumerator<object> ");
             
-            #line 4 "D:\Works\C#\ODQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
+            #line 4 "D:\Git\OdQuestsGenerator\OdQuestsGenerator\DataTransformers\Templates\StateTaskTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(StateName));
             
             #line default

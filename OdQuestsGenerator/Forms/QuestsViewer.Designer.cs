@@ -31,7 +31,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QuestsViewer));
-			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager3 = new Dataweb.NShape.RoleBasedSecurityManager();
+			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
 			this.openMenuStrip = new System.Windows.Forms.MenuStrip();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openQuestFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -45,6 +45,7 @@ namespace OdQuestsGenerator.Forms
 			this.toolSetController = new Dataweb.NShape.Controllers.ToolSetController();
 			this.toolsListView = new System.Windows.Forms.ListView();
 			this.toolSetListViewPresenter = new Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter(this.components);
+			this.cachedRepository = new Dataweb.NShape.Advanced.CachedRepository();
 			this.openMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -142,10 +143,10 @@ namespace OdQuestsGenerator.Forms
 			this.project.Description = null;
 			this.project.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project.LibrarySearchPaths")));
 			this.project.Name = null;
-			this.project.Repository = null;
-			roleBasedSecurityManager3.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
-			roleBasedSecurityManager3.CurrentRoleName = "Administrator";
-			this.project.SecurityManager = roleBasedSecurityManager3;
+			this.project.Repository = this.cachedRepository;
+			roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+			roleBasedSecurityManager1.CurrentRoleName = "Administrator";
+			this.project.SecurityManager = roleBasedSecurityManager1;
 			// 
 			// toolSetController
 			// 
@@ -172,6 +173,12 @@ namespace OdQuestsGenerator.Forms
 			this.toolSetListViewPresenter.ListView = this.toolsListView;
 			this.toolSetListViewPresenter.ShowDefaultContextMenu = true;
 			this.toolSetListViewPresenter.ToolSetController = this.toolSetController;
+			// 
+			// cachedRepository
+			// 
+			this.cachedRepository.ProjectName = null;
+			this.cachedRepository.Store = null;
+			this.cachedRepository.Version = 0;
 			// 
 			// QuestsViewer
 			// 
@@ -214,5 +221,6 @@ namespace OdQuestsGenerator.Forms
 		private Dataweb.NShape.Controllers.ToolSetController toolSetController;
 		private System.Windows.Forms.ListView toolsListView;
 		private Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter toolSetListViewPresenter;
+		private Dataweb.NShape.Advanced.CachedRepository cachedRepository;
 	}
 }
