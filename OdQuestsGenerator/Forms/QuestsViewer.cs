@@ -18,6 +18,8 @@ namespace OdQuestsGenerator.Forms
 {
 	public partial class QuestsViewer : Form
 	{
+		private const string Title = "OD Quests Editor";
+
 		private readonly Code code = new Code();
 		private readonly CodeEditor editor;
 		private readonly Loader loader;
@@ -30,9 +32,12 @@ namespace OdQuestsGenerator.Forms
 		private Quest selectedQuest;
 		private Sector selectedSector;
 		private string selectedFolder;
+		private int lastSavedActionIdx = -1;
 
 		public QuestsViewer()
 		{
+			KeyPreview = true;
+
 			InitializeComponent();
 
 			templates = new ShapeTemplatesFactory(project);
@@ -40,6 +45,59 @@ namespace OdQuestsGenerator.Forms
 			editor = new CodeEditor(code);
 			flowView = new FlowView(diagramSetController, project, display, templates);
 			toolsManager = new ToolsManager(toolSetController);
+
+			code.Saved += Code_Saved;
+
+			history.Done += History_Done;
+			history.Undone += History_Undone;
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData.HasFlag(Keys.Control)) {
+				if (keyData.HasFlag(Keys.S)) {
+					code.Save();
+
+					return true;
+				} else if (keyData.HasFlag(Keys.Z)) {
+					history.Undo();
+
+					return true;
+				} else if (keyData.HasFlag(Keys.Y)) {
+					history.Do();
+
+					return true;
+				}
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
+
+		private void Code_Saved()
+		{
+			lastSavedActionIdx = history.LastPerformedCommandIdx;
+
+			UpdateTitle();
+		}
+
+		private void History_Undone(ICommand command)
+		{
+			UpdateTitle();
+		}
+
+		private void History_Done(ICommand command)
+		{
+			UpdateTitle();
+		}
+
+		private void UpdateTitle()
+		{
+			var title = Title;
+			if (history.LastPerformedCommandIdx != lastSavedActionIdx) {
+				title += " (NOT SAVED)";
+			}
+
+			Text = title;
 		}
 
 		private void LoadSectors()

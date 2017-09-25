@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -60,6 +61,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		public IReadOnlyList<CodeBulk> QuestsCode => CodeBulksOfType(CodeBulkType.Quest).ToList();
 		public IReadOnlyList<CodeBulk> ConfigsCode => CodeBulksOfType(CodeBulkType.Config).ToList();
 
+		public event Action Saved;
+
 		public CodeBulk ReadFromFile(string path, CodeBulkType type)
 		{
 			return !fileToCodeBulk.ContainsKey(path)
@@ -99,6 +102,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 				WriteCodeToFile(codeBulk.Tree, codeBulkToFile[codeBulk]);
 				codeBulk.WasModified = false;
 			}
+
+			Saved?.Invoke();
 		}
 
 		public void RenameFile(CodeBulk codeBulk, string newFileName)

@@ -27,7 +27,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 			SetViewName(newName);
 			RenameQuestInCode(oldName, newName);
-			Context.Code.Save(); // TODO: remove this
 		}
 
 		public override void Undo()

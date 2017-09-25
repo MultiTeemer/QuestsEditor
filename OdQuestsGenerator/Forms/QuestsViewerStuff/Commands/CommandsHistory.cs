@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 {
@@ -6,31 +7,43 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 	{
 		private readonly List<ICommand> commands = new List<ICommand>();
 
-		private int lastPerformedCommandIdx = -1;
+		public int LastPerformedCommandIdx { get; private set; } = -1;
+
+		public event Action<ICommand> Done;
+		public event Action<ICommand> Undone;
 
 		public void Do(ICommand command)
 		{
 			command.Do();
 
-			if (lastPerformedCommandIdx != commands.Count - 1) {
-				commands.RemoveRange(lastPerformedCommandIdx + 1, commands.Count);
+			if (LastPerformedCommandIdx != commands.Count - 1) {
+				commands.RemoveRange(LastPerformedCommandIdx + 1, commands.Count);
 			}
 			commands.Add(command);
+
+			LastPerformedCommandIdx = commands.Count - 1;
+
+			Done?.Invoke(command);
 		}
 
 		public void Do()
 		{
-			if (lastPerformedCommandIdx < commands.Count - 1) {
-				commands[lastPerformedCommandIdx + 1].Do();
-				++lastPerformedCommandIdx;
+			if (LastPerformedCommandIdx < commands.Count - 1) {
+				var command = commands[LastPerformedCommandIdx + 1];
+				command.Do();
+				++LastPerformedCommandIdx;
+				Done?.Invoke(command);
+
 			}
 		}
 		
 		public void Undo()
 		{
-			if (lastPerformedCommandIdx > -1) {
-				commands[lastPerformedCommandIdx].Undo();
-				--lastPerformedCommandIdx;
+			if (LastPerformedCommandIdx > -1) {
+				var command = commands[LastPerformedCommandIdx];
+				command.Undo();
+				--LastPerformedCommandIdx;
+				Undone?.Invoke(command);
 			}
 		}
 	}
