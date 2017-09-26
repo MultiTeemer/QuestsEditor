@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{166C696C-69F7-45B6-B921-8CF9763E7854}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OdQuestsGenerator</RootNamespace>
     <AssemblyName>OdQuestsGenerator</AssemblyName>
@@ -248,11 +248,17 @@
     <Compile Include="Forms\QuestsViewerStuff\Code.cs" />
     <Compile Include="Forms\QuestsViewerStuff\CodeEditor.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\CommandsHistory.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\Commands\CompositeCommand.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\Commands\RemoveQuestCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\ICommand.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\Commands\RemoveLinkCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\RenameQuestCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\FlowView.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Loader.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ShapeTemplates.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\SyntaxRewriters\ClassConstructorCallRemover.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\SyntaxRewriters\ComponentIsFinishedCallInInitializerRemover.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\SyntaxRewriters\SyntaxRewriter.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\IToolWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\QuestsManipulatorWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\StubWrapper.cs" />
@@ -264,6 +270,7 @@
     <Compile Include="Utils\ListBoxExtensions.cs" />
     <Compile Include="Utils\ObjectExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
+    <Compile Include="Utils\TwoWayDictionary.cs" />
     <EmbeddedResource Include="Forms\EnterNewQuestName.resx">
       <DependentUpon>EnterNewQuestName.cs</DependentUpon>
     </EmbeddedResource>
@@ -325,6 +332,7 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

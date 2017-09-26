@@ -1,20 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
+using OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 {
+	class CodeSnapshot
+	{
+		public readonly Dictionary<CodeBulk, SyntaxTree> PreviousCode = new Dictionary<CodeBulk, SyntaxTree>();
+
+		public CodeSnapshot Merge(CodeSnapshot snapshot)
+		{
+			foreach (var kv in snapshot.PreviousCode) {
+				if (!PreviousCode.ContainsKey(kv.Key)) {
+					PreviousCode[kv.Key] = kv.Value;
+				}
+			}
+
+			return this;
+		}
+	}
+
 	class CodeEditor
 	{
 		private readonly Code code;
-		private readonly List<Document> documents = new List<Document>();
-		private readonly Dictionary<CodeBulk, Document> codeBulk2document = new Dictionary<CodeBulk, Document>();
-		private readonly Dictionary<Document, CodeBulk> document2codeBulk = new Dictionary<Document, CodeBulk>();
+		private readonly TwoWayDictionary<CodeBulk, DocumentId> codeBulksAndDocumentsIds = new TwoWayDictionary<CodeBulk, DocumentId>();
 
-		private Solution solution;
-		private Compilation compilation;
+		public Solution Solution { get; private set; }
+		public Compilation Compilation { get; private set; }
 
 		public CodeEditor(Code code)
 		{
@@ -26,52 +44,110 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			BuildSolution();
 		}
 
-		public CodeBulk Rename(CodeBulk codeBulk, SyntaxNode decl, string newName)
+		public void Add(CodeBulk codeBulk)
 		{
-			var doc = codeBulk2document[codeBulk];
-			var sol = solution;
+			code.Add(codeBulk);
+
+			var project = Solution.Projects.First();
+			var doc = project.AddDocument(codeBulk.PathToFile, codeBulk.Tree.GetRoot());
+			codeBulksAndDocumentsIds[codeBulk] = doc.Id;
+
+			SetSolution(doc.Project.Solution);
+		}
+
+		public void Remove(CodeBulk codeBulk)
+		{
+			code.Remove(codeBulk);
+
+			var doc = codeBulksAndDocumentsIds[codeBulk];
+			codeBulksAndDocumentsIds.Remove(codeBulk);
+
+			SetSolution(Solution.RemoveDocument(doc));
+		}
+
+		public void Rename(CodeBulk codeBulk, SyntaxNode decl, string newName)
+		{
+			var docId = codeBulksAndDocumentsIds[codeBulk];
+			var doc = Solution.GetDocument(docId);
 			var syntaxTree = doc.GetSyntaxTreeAsync().Result;
-			var model = compilation.GetSemanticModel(syntaxTree);
+			var model = Compilation.GetSemanticModel(syntaxTree);
 			var locDecl = syntaxTree.GetRoot().DescendantNodesAndSelf().First(n => n.IsEquivalentTo(decl));
 			var symbol = model.GetDeclaredSymbol(locDecl);
 
-			var options = solution.Workspace.Options;
+			var options = Solution.Workspace.Options;
 
 			var refs = SymbolFinder
-				.FindReferencesAsync(symbol, solution)
+				.FindReferencesAsync(symbol, Solution)
 				.Result;
 
 			var modifiedDocs = SymbolFinder
-				.FindReferencesAsync(symbol, solution)
+				.FindReferencesAsync(symbol, Solution)
 				.Result
 				.SelectMany(r => r.Locations.Select(l => l.Document))
 				.ToList();
 			modifiedDocs.Add(doc);
 
-			sol = Renamer.RenameSymbolAsync(sol, symbol, newName, null).Result;
+			var newSolution = Renamer.RenameSymbolAsync(Solution, symbol, newName, null).Result;
 
-			CodeBulk res = null;
-			for (int i = 0; i < documents.Count; ++i) {
-				var oldDoc = documents[i];
-				var cb = document2codeBulk[oldDoc];
-				var newDoc = sol.Projects.First().Documents.First(d => d.Name == oldDoc.Name);
-
-				if (document2codeBulk[oldDoc] == codeBulk) {
-					res = cb;
-				}
-				if (modifiedDocs.Any(d => d.Name == oldDoc.Name)) {
-					cb.Tree = newDoc.GetSyntaxTreeAsync().Result;
-				}
-				documents[i] = newDoc;
-				codeBulk2document[cb] = newDoc;
-				document2codeBulk[newDoc] = cb;
-				document2codeBulk.Remove(oldDoc);
+			foreach (var d in modifiedDocs) {
+				var cb = codeBulksAndDocumentsIds[d.Id];
+				cb.Tree = newSolution.GetDocument(d.Id).GetSyntaxTreeAsync().Result;
 			}
 
-			solution = sol;
-			compilation = solution.Projects.First().GetCompilationAsync().Result;
+			SetSolution(newSolution);
+		}
+
+		public ISymbol GetSymbolFor(SyntaxNode node, CodeBulk containingCode)
+		{
+			var docId = codeBulksAndDocumentsIds[containingCode];
+			var syntaxTree = Solution.GetDocument(docId).GetSyntaxTreeAsync().Result;
+			var model = Compilation.GetSemanticModel(syntaxTree);
+			var locDecl = syntaxTree.GetRoot().DescendantNodesAndSelf().First(n => n.IsEquivalentTo(node, topLevel: true));
+
+			return model.GetDeclaredSymbol(locDecl);
+		}
+
+		public CodeSnapshot ApplySyntaxRewriters(params SyntaxRewriter[] rewriters)
+		{
+			return ApplySyntaxRewriters(rewriters.ToList());
+		}
+
+		public CodeSnapshot ApplySyntaxRewriters(List<SyntaxRewriter> rewriters)
+		{
+			var newSolution = Solution;
+
+			var res = new CodeSnapshot();
+			var allDocsIdsToModify = rewriters.SelectMany(r => r.GetDocumentsIdsToModify()).ToList();
+			foreach (var id in allDocsIdsToModify) {
+				var cb = codeBulksAndDocumentsIds[id];
+				res.PreviousCode[cb] = cb.Tree;
+			}
+
+			foreach (var rewriter in rewriters) {
+				var docsToModify = rewriter.GetDocumentsIdsToModify();
+				var project = Solution.Projects.First();
+				foreach (var id in docsToModify) {
+					var syntaxRoot = rewriter.Visit(Solution.GetDocument(id).GetSyntaxRootAsync().Result);
+					codeBulksAndDocumentsIds[id].Tree = syntaxRoot.SyntaxTree;
+					newSolution = newSolution.WithDocumentSyntaxRoot(id, syntaxRoot);
+				}
+			}
+
+			SetSolution(newSolution);
 
 			return res;
+		}
+
+		public void ApplySnapshot(CodeSnapshot snapshot)
+		{
+			var newSolution = Solution;
+
+			foreach (var kv in snapshot.PreviousCode) {
+				kv.Key.Tree = kv.Value;
+				newSolution = newSolution.WithDocumentSyntaxRoot(codeBulksAndDocumentsIds[kv.Key], kv.Value.GetRoot());
+			}
+
+			SetSolution(newSolution);
 		}
 
 		private void BuildSolution()
@@ -90,16 +166,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var project = ws.AddProject(projInfo);
 
 			foreach (var cb in code.AllCode) {
-				var d = project.AddDocument(code.GetPathToFile(cb), cb.Tree.GetRoot());
+				var d = project.AddDocument(cb.PathToFile, cb.Tree.GetRoot());
 				project = d.Project;
-
-				codeBulk2document[cb] = d;
-				document2codeBulk[d] = cb;
-				documents.Add(d);
+				codeBulksAndDocumentsIds[d.Id] = cb;
 			}
 
-			solution = project.Solution;
-			compilation = project.GetCompilationAsync().Result;
+			SetSolution(project.Solution);
+		}
+
+		private void SetSolution(Solution solution)
+		{
+			Solution = solution;
+			Compilation = solution.Projects.First().GetCompilationAsync().Result;
 		}
 	}
 }

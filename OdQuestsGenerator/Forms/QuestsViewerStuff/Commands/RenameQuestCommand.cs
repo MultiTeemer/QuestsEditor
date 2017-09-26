@@ -39,7 +39,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 		private void SetViewName(string name)
 		{
-			var shape = Context.View.GetShapeForQuest(quest);
+			var shape = Context.FlowView.GetShapeForQuest(quest);
 			shape.SetCaptionText(0, name);
 		}
 
@@ -54,9 +54,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 			var enumName = $"{newName}QuestState";
 			var questName = $"{newName}Quest";
 
-			codeBulk = Context.CodeEditor.Rename(codeBulk, questDecl, questName);
-			codeBulk = Context.CodeEditor.Rename(codeBulk, componentDecl, componentName);
-			codeBulk = Context.CodeEditor.Rename(codeBulk, enumDecl, enumName);
+			Context.CodeEditor.Rename(codeBulk, questDecl, questName);
+			Context.CodeEditor.Rename(codeBulk, componentDecl, componentName);
+			Context.CodeEditor.Rename(codeBulk, enumDecl, enumName);
 
 			Context.Code.RenameFile(codeBulk, $"{questName}.cs");
 		}

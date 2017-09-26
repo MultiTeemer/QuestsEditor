@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Dataweb.NShape;
 using Dataweb.NShape.Controllers;
@@ -11,7 +10,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		private readonly ToolSetController toolSetController;
 		private readonly Dictionary<Tool, IToolWrapper> toolSet = new Dictionary<Tool, IToolWrapper>();
 
-		private IToolWrapper currentActiveToolWrapper;
+		public IToolWrapper CurrentActiveToolWrapper { get; private set; }
+		public Tool CurrentActiveTool => toolSetController.SelectedTool;
 
 		public ToolsManager(ToolSetController toolSetController)
 		{
@@ -24,17 +24,17 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 		private void Repository_ShapesDeleted(object sender, RepositoryShapesEventArgs e)
 		{
-			currentActiveToolWrapper?.ShapesDeleted(e.Shapes.ToList());
+			CurrentActiveToolWrapper?.ShapesDeleted(e.Shapes.ToList());
 		}
 
 		private void Repository_ShapesUpdated(object sender, RepositoryShapesEventArgs e)
 		{
-			currentActiveToolWrapper?.ShapesUpdated(e.Shapes.ToList());
+			CurrentActiveToolWrapper?.ShapesUpdated(e.Shapes.ToList());
 		}
 
 		private void Repository_ShapesInserted(object sender, RepositoryShapesEventArgs e)
 		{
-			currentActiveToolWrapper?.ShapesInserted(e.Shapes.ToList());
+			CurrentActiveToolWrapper?.ShapesInserted(e.Shapes.ToList());
 		}
 
 		private void ToolSetController_ToolSelected(object sender, ToolEventArgs e)
@@ -58,7 +58,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 		private void ActivateToolWrapper(IToolWrapper toolWrapper)
 		{
-			currentActiveToolWrapper = toolWrapper;
+			CurrentActiveToolWrapper = toolWrapper;
 		}
 	}
 }

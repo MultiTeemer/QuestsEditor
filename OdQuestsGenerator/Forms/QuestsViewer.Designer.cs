@@ -42,10 +42,10 @@ namespace OdQuestsGenerator.Forms
 			this.display = new Dataweb.NShape.WinFormsUI.Display();
 			this.diagramSetController = new Dataweb.NShape.Controllers.DiagramSetController();
 			this.project = new Dataweb.NShape.Project(this.components);
+			this.cachedRepository = new Dataweb.NShape.Advanced.CachedRepository();
 			this.toolSetController = new Dataweb.NShape.Controllers.ToolSetController();
 			this.toolsListView = new System.Windows.Forms.ListView();
 			this.toolSetListViewPresenter = new Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter(this.components);
-			this.cachedRepository = new Dataweb.NShape.Advanced.CachedRepository();
 			this.openMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -131,6 +131,7 @@ namespace OdQuestsGenerator.Forms
 			this.display.TabIndex = 6;
 			this.display.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
 			this.display.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+			this.display.KeyUp += new System.Windows.Forms.KeyEventHandler(this.display_KeyUp);
 			// 
 			// diagramSetController
 			// 
@@ -147,6 +148,12 @@ namespace OdQuestsGenerator.Forms
 			roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
 			roleBasedSecurityManager1.CurrentRoleName = "Administrator";
 			this.project.SecurityManager = roleBasedSecurityManager1;
+			// 
+			// cachedRepository
+			// 
+			this.cachedRepository.ProjectName = null;
+			this.cachedRepository.Store = null;
+			this.cachedRepository.Version = 0;
 			// 
 			// toolSetController
 			// 
@@ -173,12 +180,6 @@ namespace OdQuestsGenerator.Forms
 			this.toolSetListViewPresenter.ListView = this.toolsListView;
 			this.toolSetListViewPresenter.ShowDefaultContextMenu = true;
 			this.toolSetListViewPresenter.ToolSetController = this.toolSetController;
-			// 
-			// cachedRepository
-			// 
-			this.cachedRepository.ProjectName = null;
-			this.cachedRepository.Store = null;
-			this.cachedRepository.Version = 0;
 			// 
 			// QuestsViewer
 			// 

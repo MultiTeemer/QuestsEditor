@@ -27,6 +27,7 @@ namespace OdQuestsGenerator.Forms
 		private readonly ShapeTemplatesFactory templates;
 		private readonly ToolsManager toolsManager;
 		private readonly CommandsHistory history = new CommandsHistory();
+		private readonly EditingContext editingContext;
 
 		private Flow flow;
 		private Quest selectedQuest;
@@ -45,6 +46,7 @@ namespace OdQuestsGenerator.Forms
 			editor = new CodeEditor(code);
 			flowView = new FlowView(diagramSetController, project, display, templates);
 			toolsManager = new ToolsManager(toolSetController);
+			editingContext = new EditingContext(flow, project, history, flowView, code, editor, toolsManager);
 
 			code.Saved += Code_Saved;
 
@@ -104,6 +106,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			//try {
 				flow = loader.Load(selectedFolder);
+				editingContext.Flow = flow;
 				editor.Initialize();
 
 				FillSectors();
@@ -273,17 +276,20 @@ namespace OdQuestsGenerator.Forms
 		{
 			toolsManager.Clear();
 
-			var context = new EditingContext(project, history, flowView, code, editor);
-
-			toolsManager.AddTool(new SelectionTool(), new QuestsManipulatorWrapper(context));
+			toolsManager.AddTool(new SelectionTool(), new QuestsManipulatorWrapper(editingContext));
 			toolsManager.AddTool(
 				new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate())),
-				new StubWrapper(context)
+				new StubWrapper(editingContext)
 			);
 			toolsManager.AddTool(
 				new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate())),
-				new StubWrapper(context)
+				new StubWrapper(editingContext)
 			);
+		}
+
+		private void display_KeyUp(object sender, KeyEventArgs e)
+		{
+			toolsManager.CurrentActiveToolWrapper?.KeyUp(e.KeyCode);
 		}
 	}
 }

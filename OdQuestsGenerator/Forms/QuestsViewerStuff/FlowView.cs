@@ -20,10 +20,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private readonly Display display;
 		private readonly ShapeTemplatesFactory templates;
 
-		private Dictionary<Node, Shape> node2shape = new Dictionary<Node, Shape>();
-		private Dictionary<Shape, Node> shape2node = new Dictionary<Shape, Node>();
-		private Dictionary<Link, Shape> link2arrow = new Dictionary<Link, Shape>();
-		private Dictionary<Shape, Link> arrow2link = new Dictionary<Shape, Link>();
+		private TwoWayDictionary<Node, Shape> nodesAndShapes = new TwoWayDictionary<Node, Shape>();
+		private TwoWayDictionary<Link, Shape> linksAndArrows = new TwoWayDictionary<Link, Shape>();
 
 		private Diagram diagram;
 
@@ -54,40 +52,63 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public Node GetNodeForShape(Shape shape)
 		{
-			return shape2node.ContainsKey(shape) ? shape2node[shape] : null;
+			return nodesAndShapes.Contains(shape) ? nodesAndShapes[shape] : null;
 		}
 
 		public Link? GetLinkForShape(Shape shape)
 		{
-			return arrow2link.ContainsKey(shape) ? arrow2link[shape] : (Link?)null;
+			return linksAndArrows.Contains(shape) ? linksAndArrows[shape] : (Link?)null;
 		}
 
 		public CaptionedShapeBase GetShapeForQuest(Quest quest)
 		{
-			var key = node2shape.Keys.FirstOrDefault(n => n.Quest == quest);
-			return key != null ? node2shape[key] as CaptionedShapeBase : null;
+			var key = nodesAndShapes.Values1.FirstOrDefault(n => n.Quest == quest);
+			return key != null ? nodesAndShapes[key] as CaptionedShapeBase : null;
+		}
+
+		public void AddShapeForNode(Node node, Shape shape)
+		{
+			nodesAndShapes[node] = shape;
+			diagram.Shapes.Add(shape);
+		}
+
+		public void RemoveNodeShape(Shape shape)
+		{
+			nodesAndShapes.Remove(shape);
+			diagram.Shapes.Remove(shape);
+		}
+
+		public void RemoveShapeLink(Link link)
+		{
+			if (linksAndArrows.Contains(link)) {
+				var shape = linksAndArrows[link];
+				diagram.Shapes.Remove(shape);
+				linksAndArrows.Remove(link);
+			}
+		}
+
+		public void AddShapeLink(Link link)
+		{
+			var arrow = templates.GetLinkTemplate();
+			var shape1 = nodesAndShapes[link.Node1];
+			var shape2 = nodesAndShapes[link.Node2];
+			arrow.Connect(ControlPointId.FirstVertex, shape1, ControlPointId.Reference);
+			arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
+
+			linksAndArrows.Add(link, arrow);
+			diagram.Shapes.Add(arrow);
 		}
 
 		private void InitShapes(Graph graph, Diagram diagram)
 		{
 			foreach (var n in graph.Nodes) {
 				var shape = templates.GetQuestTemplate(n.Quest.Name);
-				node2shape.Add(n, shape);
-				shape2node.Add(shape, n);
+				nodesAndShapes.Add(n, shape);
 				diagram.Shapes.Add(shape);
 			}
 
 			foreach (var l in graph.Links) {
-				var arrow = templates.GetLinkTemplate();
-
-				var shape1 = node2shape[l.Node1];
-				var shape2 = node2shape[l.Node2];
-				arrow.Connect(ControlPointId.FirstVertex, shape1, ControlPointId.Reference);
-				arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
-
-				link2arrow.Add(l, arrow);
-				arrow2link.Add(arrow, l);
-				diagram.Shapes.Add(arrow);
+				AddShapeLink(l);
 			}
 		}
 
@@ -131,7 +152,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 			LayoutHelpers.CalculateLayout(geomGraph, layoutSettings, null);
 
-			foreach (var kv in node2shape) {
+			foreach (var kv in nodesAndShapes) {
 				var pos = geomGraph.Nodes.FirstOrDefault(n => n.UserData == kv.Key)?.Center;
 				if (pos.HasValue) {
 					kv.Value.X = (int)pos.Value.X + ShapeSize;
@@ -146,7 +167,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		{
 			var xs = geometry.Nodes.Select(n => n.Center.X);
 			var right = xs.Max() + ShapeSize * 3;
-			var freeShapes = node2shape.Where(kv => geometry.Nodes.All(n => n.UserData != kv.Key)).Select(kv => kv.Value).ToArray();
+			var freeShapes = nodesAndShapes.Where(kv => geometry.Nodes.All(n => n.UserData != kv.Key)).Select(kv => kv.Value).ToArray();
 			var width = diagram.Size.Width - right;
 			var columnsCount = Math.Max(1, width / ShapeSize - 1);
 			int curColumn = 0;

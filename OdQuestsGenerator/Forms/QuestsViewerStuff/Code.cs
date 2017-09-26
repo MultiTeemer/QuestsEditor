@@ -21,6 +21,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 	class CodeBulk
 	{
 		public readonly CodeBulkType Type;
+		public readonly string PathToFile;
 
 		private SyntaxTree tree;
 
@@ -38,10 +39,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 	
 		public bool WasModified { get; set; }
 
-		public CodeBulk(CodeBulkType type, SyntaxTree tree)
+		public CodeBulk(CodeBulkType type, SyntaxTree tree, string pathToFile)
 		{
 			Type = type;
 			Tree = tree;
+			PathToFile = pathToFile;
 
 			WasModified = false;
 		}
@@ -50,9 +52,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 	class Code
 	{
 		private readonly List<CodeBulk> codeBulks = new List<CodeBulk>();
-		private readonly List<string> filesToDelete = new List<string>();
+		private readonly List<CodeBulk> bulksToDelete = new List<CodeBulk>();
 		private readonly Dictionary<string, CodeBulk> fileToCodeBulk = new Dictionary<string, CodeBulk>();
-		private readonly Dictionary<CodeBulk, string> codeBulkToFile = new Dictionary<CodeBulk, string>();
 		private readonly Dictionary<Quest, CodeBulk> questToCodeBulk = new Dictionary<Quest, CodeBulk>();
 		private readonly Dictionary<Sector, CodeBulk> sectorToCodeBulk = new Dictionary<Sector, CodeBulk>();
 
@@ -92,35 +93,50 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public void Save()
 		{
-			foreach (var filePath in filesToDelete) {
-				File.Delete(filePath);
+			foreach (var cb in bulksToDelete) {
+				File.Delete(cb.PathToFile);
 			}
-			filesToDelete.Clear();
+			bulksToDelete.Clear();
 
 			var modifiedCodeBulks = codeBulks.Where(cb => cb.WasModified);
 			foreach (var codeBulk in modifiedCodeBulks) {
-				WriteCodeToFile(codeBulk.Tree, codeBulkToFile[codeBulk]);
+				WriteCodeToFile(codeBulk.Tree, codeBulk.PathToFile);
 				codeBulk.WasModified = false;
 			}
 
 			Saved?.Invoke();
 		}
 
-		public void RenameFile(CodeBulk codeBulk, string newFileName)
+		public CodeBulk RenameFile(CodeBulk codeBulk, string newFileName)
 		{
-			var path = codeBulkToFile[codeBulk];
-			filesToDelete.Add(path);
-			fileToCodeBulk.Remove(path);
+			codeBulks.Remove(codeBulk);
+			bulksToDelete.Add(codeBulk);
+			fileToCodeBulk.Remove(codeBulk.PathToFile);
 
-			var newPath = Path.Combine(Path.GetDirectoryName(path), newFileName);
-			fileToCodeBulk[newPath] = codeBulk;
-			codeBulkToFile[codeBulk] = newPath;
+			var newPath = Path.Combine(Path.GetDirectoryName(codeBulk.PathToFile), newFileName);
+			var newCb = new CodeBulk(codeBulk.Type, codeBulk.Tree, newPath);
+			codeBulks.Add(newCb);
+			fileToCodeBulk[newPath] = newCb;
+			newCb.WasModified = true;
+
+			return newCb;
+		}
+
+		public void Add(CodeBulk codeBulk)
+		{
+			codeBulks.Add(codeBulk);
+			fileToCodeBulk.Add(codeBulk.PathToFile, codeBulk);
+		}
+
+		public void Remove(CodeBulk codeBulk)
+		{
+			codeBulks.Remove(codeBulk);
+			bulksToDelete.Add(codeBulk);
+			fileToCodeBulk.Remove(codeBulk.PathToFile);
 		}
 
 		public IReadOnlyList<CodeBulk> CodeBulksOfTypes(params CodeBulkType[] types) =>
 			types.SelectMany(type => CodeBulksOfType(type)).ToList();
-
-		public string GetPathToFile(CodeBulk bulk) => codeBulkToFile.ContainsKey(bulk) ? codeBulkToFile[bulk] : null;
 
 		private void WriteCodeToFile(SyntaxTree tree, string filePath)
 		{
@@ -134,10 +150,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private CodeBulk ReadFromFileAndCache(string path, CodeBulkType type)
 		{
 			var tree = FileSystem.ReadCodeFromFile(path);
-			var bulk = new CodeBulk(type, tree);
+			var bulk = new CodeBulk(type, tree, path);
 			codeBulks.Add(bulk);
-			fileToCodeBulk.Add(path, bulk);
-			codeBulkToFile.Add(bulk, path);
+			fileToCodeBulk[path] = bulk;
 
 			return bulk;
 		}
