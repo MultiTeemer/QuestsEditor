@@ -38,6 +38,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 		{
 			Context.CodeEditor.ApplySnapshot(snapshot);
 
+			Context.Flow.Graph.AddLink(link);
+
 			Context.FlowView.AddShapeLink(link);
 		}
 
