@@ -75,28 +75,29 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		public void RemoveNodeShape(Shape shape)
 		{
 			nodesAndShapes.Remove(shape);
-			diagram.Shapes.Remove(shape);
+			RemoveShape(shape);
 		}
 
 		public void RemoveShapeLink(Link link)
 		{
 			if (linksAndArrows.Contains(link)) {
-				var shape = linksAndArrows[link];
-				diagram.Shapes.Remove(shape);
+				RemoveShape(linksAndArrows[link]);
 				linksAndArrows.Remove(link);
 			}
 		}
 
 		public void AddShapeLink(Link link)
 		{
-			var arrow = templates.GetLinkTemplate();
-			var shape1 = nodesAndShapes[link.Node1];
-			var shape2 = nodesAndShapes[link.Node2];
-			arrow.Connect(ControlPointId.FirstVertex, shape1, ControlPointId.Reference);
-			arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
+			if (!linksAndArrows.Contains(link)) {
+				var arrow = templates.GetLinkTemplate();
+				var shape1 = nodesAndShapes[link.Node1];
+				var shape2 = nodesAndShapes[link.Node2];
+				arrow.Connect(ControlPointId.FirstVertex, shape1, ControlPointId.Reference);
+				arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
 
-			linksAndArrows.Add(link, arrow);
-			AddShape(arrow);
+				linksAndArrows.Add(link, arrow);
+				AddShape(arrow);
+			}
 		}
 
 		private void AddShape(Shape shape)
@@ -105,6 +106,16 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			DiagramEdited = true;
 			project.Repository.Insert(shape, diagram);
 			DiagramEdited = false;
+		}
+
+		private void RemoveShape(Shape shape)
+		{
+			if (diagram.Shapes.Contains(shape)) {
+				diagram.Shapes.Remove(shape);
+				DiagramEdited = true;
+				project.Repository.Delete(shape);
+				DiagramEdited = false;
+			}
 		}
 
 		private void InitShapes(Graph graph, Diagram diagram)
