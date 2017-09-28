@@ -17,7 +17,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 			command.Do();
 
 			if (LastPerformedCommandIdx != commands.Count - 1) {
-				commands.RemoveRange(LastPerformedCommandIdx + 1, commands.Count);
+				var idx = LastPerformedCommandIdx + 1;
+				commands.RemoveRange(idx, Math.Min(commands.Count, commands.Count - idx));
 			}
 			commands.Add(command);
 
