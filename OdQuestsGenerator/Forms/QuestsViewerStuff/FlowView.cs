@@ -143,8 +143,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 					geomGraph.Nodes.Add(_node);
 					return _node;
-				}
-				else {
+				} else {
 					return res;
 				}
 			};
