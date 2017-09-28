@@ -45,7 +45,7 @@ namespace OdQuestsGenerator.Forms
 			loader = new Loader(code);
 			editor = new CodeEditor(code);
 			flowView = new FlowView(diagramSetController, project, display, templates);
-			toolsManager = new ToolsManager(toolSetController);
+			toolsManager = new ToolsManager(toolSetController, flowView);
 			editingContext = new EditingContext(flow, project, history, flowView, code, editor, toolsManager);
 
 			code.Saved += Code_Saved;

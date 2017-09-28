@@ -7,14 +7,16 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
 	class ToolsManager
 	{
+		private readonly FlowView flowView;
 		private readonly ToolSetController toolSetController;
 		private readonly Dictionary<Tool, IToolWrapper> toolSet = new Dictionary<Tool, IToolWrapper>();
 
 		public IToolWrapper CurrentActiveToolWrapper { get; private set; }
 		public Tool CurrentActiveTool => toolSetController.SelectedTool;
 
-		public ToolsManager(ToolSetController toolSetController)
+		public ToolsManager(ToolSetController toolSetController, FlowView flowView)
 		{
+			this.flowView = flowView;
 			this.toolSetController = toolSetController;
 			toolSetController.ToolSelected += ToolSetController_ToolSelected;
 			toolSetController.Project.Repository.ShapesInserted += Repository_ShapesInserted;
@@ -24,23 +26,29 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 		private void Repository_ShapesDeleted(object sender, RepositoryShapesEventArgs e)
 		{
-			CurrentActiveToolWrapper?.ShapesDeleted(e.Shapes.ToList());
+			if (!flowView.DiagramEdited) {
+				CurrentActiveToolWrapper?.ShapesDeleted(e.Shapes.ToList());
+			}
 		}
 
 		private void Repository_ShapesUpdated(object sender, RepositoryShapesEventArgs e)
 		{
-			CurrentActiveToolWrapper?.ShapesUpdated(e.Shapes.ToList());
+			if (!flowView.DiagramEdited) {
+				CurrentActiveToolWrapper?.ShapesUpdated(e.Shapes.ToList());
+			}
 		}
 
 		private void Repository_ShapesInserted(object sender, RepositoryShapesEventArgs e)
 		{
-			CurrentActiveToolWrapper?.ShapesInserted(e.Shapes.ToList());
+			if (!flowView.DiagramEdited) {
+				CurrentActiveToolWrapper?.ShapesInserted(e.Shapes.ToList());
+			}
 		}
 
 		private void ToolSetController_ToolSelected(object sender, ToolEventArgs e)
 		{
 			if (e.Tool != null && toolSet.ContainsKey(e.Tool)) {
-				ActivateToolWrapper(toolSet[e.Tool]);
+				ActivateTool(e.Tool);
 			}
 		}
 
@@ -56,9 +64,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			toolSet.Clear();
 		}
 
-		private void ActivateToolWrapper(IToolWrapper toolWrapper)
+		private void ActivateTool(Tool tool)
 		{
-			CurrentActiveToolWrapper = toolWrapper;
+			CurrentActiveToolWrapper = toolSet[tool];
 		}
 	}
 }

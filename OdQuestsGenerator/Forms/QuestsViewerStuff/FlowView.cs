@@ -25,6 +25,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		private Diagram diagram;
 
+		public bool DiagramEdited { get; private set; }
+
 		public FlowView(
 			DiagramSetController controller,
 			Project project,
@@ -46,8 +48,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 			InitShapes(graph, diagram);
 			LayoutShapes(graph);
-
-			project.Repository.InsertAll(diagram.Shapes, diagram);
 		}
 
 		public Node GetNodeForShape(Shape shape)
@@ -69,7 +69,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		public void AddShapeForNode(Node node, Shape shape)
 		{
 			nodesAndShapes[node] = shape;
-			diagram.Shapes.Add(shape);
+			AddShape(shape);
 		}
 
 		public void RemoveNodeShape(Shape shape)
@@ -96,15 +96,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
 
 			linksAndArrows.Add(link, arrow);
-			diagram.Shapes.Add(arrow);
+			AddShape(arrow);
+		}
+
+		private void AddShape(Shape shape)
+		{
+			diagram.Shapes.Add(shape);
+			DiagramEdited = true;
+			project.Repository.Insert(shape, diagram);
+			DiagramEdited = false;
 		}
 
 		private void InitShapes(Graph graph, Diagram diagram)
 		{
 			foreach (var n in graph.Nodes) {
-				var shape = templates.GetQuestTemplate(n.Quest.Name);
-				nodesAndShapes.Add(n, shape);
-				diagram.Shapes.Add(shape);
+				AddShapeForNode(n, templates.GetQuestTemplate(n.Quest.Name));
 			}
 
 			foreach (var l in graph.Links) {
