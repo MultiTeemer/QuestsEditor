@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Dataweb.NShape;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.Data;
@@ -22,7 +21,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 		{
 			quest = questToDelete;
 			node = Context.Flow.Graph.FindNodeForQuest(quest);
-			codeBulk = Context.Code.GetCodeForQuest(quest);
+			codeBulk = Context.Code.QuestsAndCodeBulks[quest];
 			shape = Context.FlowView.GetShapeForQuest(quest);
 		}
 
@@ -34,13 +33,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 			foreach (var classDecl in classDecls) {
 				var typeRemover = new ClassConstructorCallRemover(
 					Context.CodeEditor.GetSymbolFor(classDecl, codeBulk),
-					Context.CodeEditor.Solution,
-					Context.CodeEditor.Compilation
+					Context.Code
 				);
 				snapshot.Merge(Context.CodeEditor.ApplySyntaxRewriters(typeRemover));
 			}
 			Context.Flow.Graph.RemoveNode(node);
-			Context.CodeEditor.Remove(codeBulk);
+			Context.Code.Remove(codeBulk);
 
 			var shape = Context.FlowView.GetShapeForQuest(quest);
 			if (shape != null) {
@@ -50,10 +48,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 		public override void Undo()
 		{
-			Context.CodeEditor.Add(codeBulk);
+			Context.Code.Add(codeBulk);
+
 			Context.CodeEditor.ApplySnapshot(snapshot);
 
-			Context.Code.RegisterQuestforCodeBulk(quest, codeBulk);
+			Context.Code.QuestsAndCodeBulks[quest] = codeBulk;
 
 			Context.FlowView.AddShapeForNode(node, shape);
 

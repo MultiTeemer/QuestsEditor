@@ -45,7 +45,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 		private void RenameQuestInCode(string oldName, string newName)
 		{
-			var codeBulk = Context.Code.GetCodeForQuest(quest);
+			var codeBulk = Context.Code.QuestsAndCodeBulks[quest];
 			var enumDecl = codeBulk.Tree.GetRoot().GetFirstOfType<EnumDeclarationSyntax>();
 			var componentDecl = codeBulk.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().First();
 			var questDecl = codeBulk.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Last();

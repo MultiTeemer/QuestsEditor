@@ -296,7 +296,7 @@ namespace OdQuestsGenerator.DataTransformers.Templates
                 if ((method == null))
                 {
                     return objectToConvert.ToString();
-                }
+                } 
                 else
                 {
                     return ((string)(method.Invoke(objectToConvert, new object[] {

@@ -29,6 +29,7 @@ namespace OdQuestsGenerator.CodeReaders
 			RegisterReaderType<QuestReader>();
 			RegisterReaderType<ConfigReader>();
 			RegisterReaderType<ReachedConditionReader>();
+			RegisterReaderType<QuestInitializationReader>();
 		}
 
 		public static void RegisterReaderType(Type type)

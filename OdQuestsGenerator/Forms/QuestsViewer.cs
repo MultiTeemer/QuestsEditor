@@ -7,6 +7,7 @@ using Dataweb.NShape.GeneralShapes;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using OdQuestsGenerator.ApplicationData;
+using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
 using OdQuestsGenerator.Forms.QuestsViewerStuff;
@@ -69,6 +70,12 @@ namespace OdQuestsGenerator.Forms
 					history.Do();
 
 					return true;
+				} else if (keyData.HasFlag(Keys.C)) {
+					var firstIncompleteQuest = flow.Sectors.SelectMany(s => s.Quests).FirstOrDefault(q => !q.IsActive());
+					if (firstIncompleteQuest != null) {
+						history.Do(new ActivateQuestCommand(firstIncompleteQuest, editingContext));
+						flowView.Update();
+					}
 				}
 			}
 
@@ -107,7 +114,7 @@ namespace OdQuestsGenerator.Forms
 			//try {
 				flow = loader.Load(selectedFolder);
 				editingContext.Flow = flow;
-				editor.Initialize();
+				//editor.Initialize();
 
 				FillSectors();
 
@@ -145,9 +152,9 @@ namespace OdQuestsGenerator.Forms
 		private string GetPreferencesPath() => Path.Combine(GetPreferencesDirPath(), "preferences.userprefs");
 
 		private string GetPreferencesDirPath() => Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				"OdQuestsEditor"
-			);
+			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+			"OdQuestsEditor"
+		);
 
 		private void SelectSector(int idx)
 		{
@@ -279,7 +286,7 @@ namespace OdQuestsGenerator.Forms
 			toolsManager.AddTool(new SelectionTool(), new QuestsManipulatorWrapper(editingContext));
 			toolsManager.AddTool(
 				new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate())),
-				new StubWrapper(editingContext)
+				new AddLinkWrapper(editingContext)
 			);
 			toolsManager.AddTool(
 				new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate())),

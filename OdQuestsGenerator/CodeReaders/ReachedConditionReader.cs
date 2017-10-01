@@ -1,17 +1,75 @@
 ﻿using System;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.DataTransformers;
 using OdQuestsGenerator.Forms.QuestsViewerStuff;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.CodeReaders
 {
 	class ReachedConditionReader : CodeReader
 	{
+		private class LinksReader : SyntaxVisitor
+		{
+			private class QuestNameFetcher : SyntaxVisitor
+			{
+				public readonly List<string> Results = new List<string>();
+
+				public QuestNameFetcher(Code code)
+					: base(code)
+				{}
+
+				public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+				{
+					base.VisitMemberAccessExpression(node);
+
+					var left = node.Expression as MemberAccessExpressionSyntax;
+					if (left != null) {
+						var str = left.Expression.ToString();
+						var questName = CodeEditor.FromQuestVarNameToQuestName(str);
+
+						if (!Results.Contains(questName)) {
+							Results.Add(questName);
+						}
+					}
+				}
+			}
+
+			public readonly List<Tuple<string, string>> Results = new List<Tuple<string, string>>();
+
+			public LinksReader(Code code)
+				: base(code)
+			{}
+
+			public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+			{
+				base.VisitObjectCreationExpression(node);
+
+				var linkExpr = node.Initializer != null ? node.Initializer.FindLinkExpression() : null;
+				if (linkExpr != null && linkExpr.Right.IsEditableInterQuestLinkExpression()) {
+					var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
+					var linkedQuestType = model.GetTypeInfo(node).Type;
+					var linkedQuestName = CodeEditor.FromQuestClassNametoQuestName(linkedQuestType.Name);
+
+					var fetcher = new QuestNameFetcher(Code);
+					fetcher.Visit(linkExpr.Right);
+					foreach (var r in fetcher.Results) {
+						Results.Add(Tuple.Create(r, linkedQuestName));
+					}
+				}
+			}
+		}
+
 		public override CodeBulkType[] AcceptedTypes => new[] { CodeBulkType.Sector };
 
 		public override void Read(CodeBulk codeBulk, Code code, ref Flow flow)
 		{
-			var links = FromCodeTransformer.FetchQuestToQuestLink(codeBulk.Tree);
+			var linksReader = new LinksReader(code);
+			linksReader.Visit(codeBulk);
+			var links = linksReader.Results;
 			foreach (var link in links) {
 				var n1 = flow.Graph.FindNodeForQuest(link.Item1);
 				var n2 = flow.Graph.FindNodeForQuest(link.Item2);

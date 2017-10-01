@@ -31,13 +31,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			set
 			{
 				if (value != tree) {
+					var oldValue = tree;
 					tree = value;
 					WasModified = true;
+
+					TreeUpdated?.Invoke(this, oldValue);
 				}
 			}
 		}
 	
 		public bool WasModified { get; set; }
+
+		public event Action<CodeBulk, SyntaxTree> TreeUpdated;
 
 		public CodeBulk(CodeBulkType type, SyntaxTree tree, string pathToFile)
 		{
@@ -51,44 +56,34 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 	class Code
 	{
+		public readonly TwoWayDictionary<CodeBulk, DocumentId> CodeBulksAndDocumentsIds = new TwoWayDictionary<CodeBulk, DocumentId>();
+		public readonly TwoWayDictionary<Quest, CodeBulk> QuestsAndCodeBulks = new TwoWayDictionary<Quest, CodeBulk>();
+		public readonly TwoWayDictionary<Sector, CodeBulk> SectorsAndCodeBulks = new TwoWayDictionary<Sector, CodeBulk>();
+
 		private readonly List<CodeBulk> codeBulks = new List<CodeBulk>();
 		private readonly List<CodeBulk> bulksToDelete = new List<CodeBulk>();
 		private readonly Dictionary<string, CodeBulk> fileToCodeBulk = new Dictionary<string, CodeBulk>();
-		private readonly Dictionary<Quest, CodeBulk> questToCodeBulk = new Dictionary<Quest, CodeBulk>();
-		private readonly Dictionary<Sector, CodeBulk> sectorToCodeBulk = new Dictionary<Sector, CodeBulk>();
 
 		public IReadOnlyList<CodeBulk> AllCode => codeBulks;
 		public IReadOnlyList<CodeBulk> SectorsCode => CodeBulksOfType(CodeBulkType.Sector).ToList();
 		public IReadOnlyList<CodeBulk> QuestsCode => CodeBulksOfType(CodeBulkType.Quest).ToList();
 		public IReadOnlyList<CodeBulk> ConfigsCode => CodeBulksOfType(CodeBulkType.Config).ToList();
 
+		public Solution Solution { get; private set; }
+		public Compilation Compilation { get; private set; }
+
 		public event Action Saved;
+
+		public Code()
+		{
+			BuildSolution();
+		}
 
 		public CodeBulk ReadFromFile(string path, CodeBulkType type)
 		{
 			return !fileToCodeBulk.ContainsKey(path)
 				? ReadFromFileAndCache(path, type)
 				: fileToCodeBulk[path];
-		}
-
-		public void RegisterQuestforCodeBulk(Quest quest, CodeBulk codeBulk)
-		{
-			questToCodeBulk[quest] = codeBulk;
-		}
-
-		public void RegisterSectorForCodeBulk(Sector sector, CodeBulk codeBulk)
-		{
-			sectorToCodeBulk[sector] = codeBulk;
-		}
-
-		public CodeBulk GetCodeForQuest(Quest quest)
-		{
-			return questToCodeBulk[quest];
-		}
-
-		public CodeBulk GetCodeForSector(Sector sector)
-		{
-			return sectorToCodeBulk[sector];
 		}
 
 		public void Save()
@@ -109,15 +104,26 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public CodeBulk RenameFile(CodeBulk codeBulk, string newFileName)
 		{
-			codeBulks.Remove(codeBulk);
-			bulksToDelete.Add(codeBulk);
-			fileToCodeBulk.Remove(codeBulk.PathToFile);
-
 			var newPath = Path.Combine(Path.GetDirectoryName(codeBulk.PathToFile), newFileName);
 			var newCb = new CodeBulk(codeBulk.Type, codeBulk.Tree, newPath);
-			codeBulks.Add(newCb);
-			fileToCodeBulk[newPath] = newCb;
 			newCb.WasModified = true;
+
+			Quest quest = null;
+			Sector sector = null;
+			if (QuestsAndCodeBulks.Contains(codeBulk)) {
+				quest = QuestsAndCodeBulks[codeBulk];
+			} else if (SectorsAndCodeBulks.Contains(codeBulk)) {
+				sector = SectorsAndCodeBulks[codeBulk];
+			}
+
+			Remove(codeBulk);
+			Add(newCb);
+
+			if (quest != null) {
+				QuestsAndCodeBulks[quest] = newCb;
+			} else if (sector != null) {
+				SectorsAndCodeBulks[sector] = newCb;
+			}
 
 			return newCb;
 		}
@@ -126,6 +132,14 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		{
 			codeBulks.Add(codeBulk);
 			fileToCodeBulk.Add(codeBulk.PathToFile, codeBulk);
+
+			var project = Solution.Projects.First();
+			var doc = project.AddDocument(codeBulk.PathToFile, codeBulk.Tree.GetRoot());
+			CodeBulksAndDocumentsIds[codeBulk] = doc.Id;
+
+			codeBulk.TreeUpdated += CodeBulk_TreeUpdated;
+
+			SetSolution(doc.Project.Solution);
 		}
 
 		public void Remove(CodeBulk codeBulk)
@@ -133,10 +147,52 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			codeBulks.Remove(codeBulk);
 			bulksToDelete.Add(codeBulk);
 			fileToCodeBulk.Remove(codeBulk.PathToFile);
+
+			var docId = CodeBulksAndDocumentsIds[codeBulk];
+			CodeBulksAndDocumentsIds.Remove(codeBulk);
+
+			if (codeBulk.Type == CodeBulkType.Quest) {
+				QuestsAndCodeBulks.Remove(codeBulk);
+			} else if (codeBulk.Type == CodeBulkType.Sector) {
+				SectorsAndCodeBulks.Remove(codeBulk);
+			}
+
+			codeBulk.TreeUpdated -= CodeBulk_TreeUpdated;
+
+			SetSolution(Solution.RemoveDocument(docId));
 		}
 
 		public IReadOnlyList<CodeBulk> CodeBulksOfTypes(params CodeBulkType[] types) =>
 			types.SelectMany(type => CodeBulksOfType(type)).ToList();
+
+		public void SetSolution(Solution solution)
+		{
+			Solution = solution;
+			Compilation = solution.Projects.First().GetCompilationAsync().Result;
+		}
+
+		public ISymbol GetSymbolFor(SyntaxNode node, CodeBulk containingCode)
+		{
+			var docId = CodeBulksAndDocumentsIds[containingCode];
+			var syntaxTree = Solution.GetDocument(docId).GetSyntaxTreeAsync().Result;
+			var model = Compilation.GetSemanticModel(syntaxTree);
+			var locDecl = syntaxTree.GetRoot().DescendantNodesAndSelf().First(n => n.IsEquivalentTo(node, topLevel: true));
+
+			return model.GetDeclaredSymbol(locDecl);
+		}
+
+		public Document GetMappedCode(CodeBulk codeBulk)
+		{
+			return Solution.GetDocument(CodeBulksAndDocumentsIds[codeBulk]);
+		}
+
+		public CodeBulk GetCodeBulkByTreeFromSolution(SyntaxTree treeInSolution)
+		{
+			var doc = Solution.Projects.SelectMany(p => p.Documents).FirstOrDefault(d => d.GetSyntaxTreeAsync().Result == treeInSolution);
+			if (doc == null) return null;
+
+			return CodeBulksAndDocumentsIds[doc.Id];
+		}
 
 		private void WriteCodeToFile(SyntaxTree tree, string filePath)
 		{
@@ -151,8 +207,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		{
 			var tree = FileSystem.ReadCodeFromFile(path);
 			var bulk = new CodeBulk(type, tree, path);
-			codeBulks.Add(bulk);
-			fileToCodeBulk[path] = bulk;
+
+			Add(bulk);
 
 			return bulk;
 		}
@@ -166,5 +222,34 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInLambdaExpressionBody, false)
 			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInObjectCollectionArrayInitializers, false)
 			.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, "C#"), true);
+
+		private void BuildSolution()
+		{
+			var ws = new AdhocWorkspace();
+			var Mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+			var references = new List<MetadataReference>() { Mscorlib };
+			var projInfo = ProjectInfo.Create(
+				ProjectId.CreateNewId(),
+				VersionStamp.Default,
+				"MyProject",
+				"MyAssembly",
+				"C#",
+				metadataReferences: references
+			);
+			var project = ws.AddProject(projInfo);
+
+			SetSolution(project.Solution);
+		}
+
+		private void UpdateMappedDocument(CodeBulk codeBulk)
+		{
+			var docId = CodeBulksAndDocumentsIds[codeBulk];
+			SetSolution(Solution.WithDocumentSyntaxRoot(docId, codeBulk.Tree.GetRoot()));
+		}
+
+		private void CodeBulk_TreeUpdated(CodeBulk codeBulk, SyntaxTree oldTree)
+		{
+			UpdateMappedDocument(codeBulk);
+		}
 	}
 }

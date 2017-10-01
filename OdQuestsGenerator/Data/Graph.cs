@@ -84,6 +84,11 @@ namespace OdQuestsGenerator.Data
 			}
 		}
 
+		public void RemoveLink(Link link)
+		{
+			links.Remove(link);
+		}
+
 		public Node FindNodeForQuest(Quest quest)
 		{
 			return nodes.FirstOrDefault(n => n.Quest == quest);

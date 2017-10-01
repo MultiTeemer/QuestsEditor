@@ -7,13 +7,13 @@ using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 {
-	class RemoveLinkCommand : Command
+	class AddLinkCommand : Command
 	{
 		private readonly Link link;
 
 		private CodeSnapshot snapshot;
 
-		public RemoveLinkCommand(Link link, EditingContext context)
+		public AddLinkCommand(Link link, EditingContext context)
 			: base(context)
 		{
 			this.link = link;
@@ -23,23 +23,25 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 		{
 			var sym1 = GetQuestClassSymbol(link.Node1.Quest);
 			var sym2 = GetQuestClassSymbol(link.Node2.Quest);
-			var rewriter = new ComponentIsFinishedCallInInitializerRemover(
-				sym2,
+			var rewriter = new ComponentIsFinishedCallAdder(
+				link.Node1.Quest,
+				link.Node2.Quest,
 				sym1,
+				sym2,
 				Context.Code
 			);
 			snapshot = Context.CodeEditor.ApplySyntaxRewriters(rewriter);
 
-			Context.FlowView.RemoveShapeLink(link);
+			Context.FlowView.AddShapeLink(link);
 		}
 
 		public override void Undo()
 		{
+			Context.Flow.Graph.RemoveLink(link);
+
 			Context.CodeEditor.ApplySnapshot(snapshot);
 
-			Context.Flow.Graph.AddLink(link);
-
-			Context.FlowView.AddShapeLink(link);
+			Context.FlowView.RemoveShapeLink(link);
 		}
 
 		private ISymbol GetQuestClassSymbol(Quest quest)

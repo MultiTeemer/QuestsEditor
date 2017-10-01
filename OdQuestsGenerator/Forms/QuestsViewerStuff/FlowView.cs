@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Dataweb.NShape;
 using Dataweb.NShape.Advanced;
@@ -19,6 +18,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private readonly Project project;
 		private readonly Display display;
 		private readonly ShapeTemplatesFactory templates;
+		private readonly PresentersManager presentersManager = new PresentersManager();
 
 		private TwoWayDictionary<Node, Shape> nodesAndShapes = new TwoWayDictionary<Node, Shape>();
 		private TwoWayDictionary<Link, Shape> linksAndArrows = new TwoWayDictionary<Link, Shape>();
@@ -50,6 +50,16 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			LayoutShapes(graph);
 		}
 
+		public void Update()
+		{
+			foreach (var kv in nodesAndShapes) {
+				presentersManager.GetPresenterFor(kv.Key).Apply(kv.Value);
+			}
+			foreach (var kv in linksAndArrows) {
+				presentersManager.GetPresenterFor(kv.Key).Apply(kv.Value);
+			}
+		}
+
 		public Node GetNodeForShape(Shape shape)
 		{
 			return nodesAndShapes.Contains(shape) ? nodesAndShapes[shape] : null;
@@ -69,6 +79,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		public void AddShapeForNode(Node node, Shape shape)
 		{
 			nodesAndShapes[node] = shape;
+			presentersManager.GetPresenterFor(node).Apply(shape);
 			AddShape(shape);
 		}
 
@@ -96,6 +107,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 				arrow.Connect(ControlPointId.LastVertex, shape2, ControlPointId.Reference);
 
 				linksAndArrows.Add(link, arrow);
+				presentersManager.GetPresenterFor(link).Apply(arrow);
 				AddShape(arrow);
 			}
 		}
@@ -182,7 +194,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private void LayoutFreeShapes(Microsoft.Msagl.Core.Layout.GeometryGraph geometry)
 		{
 			var xs = geometry.Nodes.Select(n => n.Center.X);
-			var right = xs.Max() + ShapeSize * 3;
+			var right = xs.Count() > 0 ? xs.Max() + ShapeSize * 3 : ShapeSize;
 			var freeShapes = nodesAndShapes.Where(kv => geometry.Nodes.All(n => n.UserData != kv.Key)).Select(kv => kv.Value).ToArray();
 			var width = diagram.Size.Width - right;
 			var columnsCount = Math.Max(1, width / ShapeSize - 1);

@@ -7,13 +7,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 {
 	class ClassConstructorCallRemover : SyntaxRewriter
 	{
-		private readonly Compilation compilation;
 		private readonly ISymbol typeToRemove;
 
-		public ClassConstructorCallRemover(ISymbol typeToRemove, Solution solution, Compilation compilation)
-			: base(solution, compilation)
+		public ClassConstructorCallRemover(ISymbol typeToRemove, Code code)
+			: base(code)
 		{
-			this.compilation = compilation;
 			this.typeToRemove = typeToRemove;
 		}
 
@@ -24,7 +22,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 
 		public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
 		{
-			var model = compilation.GetSemanticModel(node.SyntaxTree);
+			var model = Compilation.GetSemanticModel(node.SyntaxTree);
 			var expr = node.Expression;
 			var oces = expr as ObjectCreationExpressionSyntax;
 			if (oces != null) {
@@ -39,7 +37,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 		public override SyntaxNode VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax node)
 		{
 			if (node.Declaration.Variables.Count == 1) {
-				var model = compilation.GetSemanticModel(node.SyntaxTree);
+				var model = Compilation.GetSemanticModel(node.SyntaxTree);
 				var type = model.GetTypeInfo(node.Declaration.Variables.First().Initializer.Value).Type;
 				if (type == typeToRemove) {
 					return null;

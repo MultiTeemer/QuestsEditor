@@ -8,9 +8,8 @@
 			Name = "Initial",
 		};
 
-		public State Clone()
-		{
-			return MemberwiseClone() as State;
-		}
+		public State Clone() => MemberwiseClone() as State;
+
+		public override string ToString() => Name;
 	}
 }

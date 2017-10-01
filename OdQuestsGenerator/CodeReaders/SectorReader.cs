@@ -18,7 +18,8 @@ namespace OdQuestsGenerator.CodeReaders
 			};
 
 			flow.Sectors.Add(sector);
-			code.RegisterSectorForCodeBulk(sector, codeBulk);
+
+			code.SectorsAndCodeBulks[sector] = codeBulk;
 		}
 	}
 }

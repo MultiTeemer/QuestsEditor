@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 {
@@ -11,35 +12,40 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 		private readonly ISymbol typeOfExpression;
 		private readonly ISymbol typeToRemove;
 
-		public ComponentIsFinishedCallInInitializerRemover(ISymbol typeOfExpression, ISymbol typeToRemove, Solution solution, Compilation compilation)
-			: base(solution, compilation)
+		public ComponentIsFinishedCallInInitializerRemover(ISymbol typeOfExpression, ISymbol typeToRemove, Code code)
+			: base(code)
 		{
 			this.typeOfExpression = typeOfExpression;
 			this.typeToRemove = typeToRemove;
 		}
 
-		public override IReadOnlyList<DocumentId> GetDocumentsIdsToModify()
-		{
-			return GetIdsOfDocsWithReferencesToSymbol(typeToRemove)
-				.Concat(GetIdsOfDocsWithReferencesToSymbol(typeOfExpression))
-				.ToList();
-		}
+		public override IReadOnlyList<DocumentId> GetDocumentsIdsToModify() => GetIdsOfDocsWithReferencesToSymbol(typeOfExpression);
 
-		public override SyntaxNode VisitInitializerExpression(InitializerExpressionSyntax node)
+		public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 		{
-			var isReachedExpr = node.Expressions.OfType<AssignmentExpressionSyntax>().FirstOrDefault(e => e.Left.ToString() == "ReachedCondition");
-			var maes = isReachedExpr?.Right as MemberAccessExpressionSyntax;
-			var parent = node.Parent as ObjectCreationExpressionSyntax;
-			if (parent != null && maes != null && maes.Name.ToString() == "IsFinished") {
-				var model = Compilation.GetSemanticModel(node.SyntaxTree);
-				var t1 = model.GetTypeInfo(parent).Type;
-				var t2 = model.GetTypeInfo((maes.Expression as MemberAccessExpressionSyntax)?.Expression).Type;
-				if (t1 == typeOfExpression && t2 == typeToRemove) {
-					return node.RemoveNode(isReachedExpr, SyntaxRemoveOptions.AddElasticMarker);
+			var model = Compilation.GetSemanticModel(node.SyntaxTree);
+			var callableType = model.GetTypeInfo(node).Type;
+			if (callableType == typeOfExpression) {
+				var linkExpr = node.Initializer.FindLinkExpression();
+				if (linkExpr.Right.IsEditableInterQuestLinkExpression()) {
+					var linksCount = linkExpr.Right.CountOfLinks();
+					if (linksCount == 1) {
+						return node.WithInitializer(node.Initializer.RemoveNode(linkExpr, SyntaxRemoveOptions.KeepNoTrivia));
+					} else {
+						var txt = linkExpr.Right.ToString();
+						var linkTxt = $"{CodeEditor.FormatQuestClassNameForVar(typeToRemove.Name)}.Component.IsFinished";
+						var newTxt = Regex.Replace(Regex.Replace(txt, $"&&\\s+{linkTxt}\\s?", ""), $"\\s?{linkTxt}\\s+&&", "");
+						var newLinkExpr = linkExpr.WithRight(SyntaxFactory.ParseExpression(newTxt));
+						var newInitializer = node.Initializer.ReplaceNode(linkExpr, newLinkExpr);
+
+						return node.WithInitializer(newInitializer);
+					}
 				}
+
+				return node;
 			}
 
-			return base.VisitInitializerExpression(node);
+			return base.VisitObjectCreationExpression(node);
 		}
 	}
 }

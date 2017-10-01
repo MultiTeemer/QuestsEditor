@@ -14,6 +14,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			typeof(QuestReader),
 			typeof(ConfigReader),
 			typeof(ReachedConditionReader),
+			typeof(QuestInitializationReader),
 		};
 
 		private readonly Code code;

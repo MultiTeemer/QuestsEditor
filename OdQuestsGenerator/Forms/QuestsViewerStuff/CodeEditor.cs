@@ -2,11 +2,9 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters;
-using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 {
@@ -29,79 +27,49 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 	class CodeEditor
 	{
 		private readonly Code code;
-		private readonly TwoWayDictionary<CodeBulk, DocumentId> codeBulksAndDocumentsIds = new TwoWayDictionary<CodeBulk, DocumentId>();
-
-		public Solution Solution { get; private set; }
-		public Compilation Compilation { get; private set; }
 
 		public CodeEditor(Code code)
 		{
 			this.code = code;
 		}
 
-		public void Initialize()
-		{
-			BuildSolution();
-		}
-
-		public void Add(CodeBulk codeBulk)
-		{
-			code.Add(codeBulk);
-
-			var project = Solution.Projects.First();
-			var doc = project.AddDocument(codeBulk.PathToFile, codeBulk.Tree.GetRoot());
-			codeBulksAndDocumentsIds[codeBulk] = doc.Id;
-
-			SetSolution(doc.Project.Solution);
-		}
-
-		public void Remove(CodeBulk codeBulk)
-		{
-			code.Remove(codeBulk);
-
-			var doc = codeBulksAndDocumentsIds[codeBulk];
-			codeBulksAndDocumentsIds.Remove(codeBulk);
-
-			SetSolution(Solution.RemoveDocument(doc));
-		}
-
 		public void Rename(CodeBulk codeBulk, SyntaxNode decl, string newName)
 		{
-			var docId = codeBulksAndDocumentsIds[codeBulk];
-			var doc = Solution.GetDocument(docId);
+			var docId = code.CodeBulksAndDocumentsIds[codeBulk];
+			var doc = code.Solution.GetDocument(docId);
 			var syntaxTree = doc.GetSyntaxTreeAsync().Result;
-			var model = Compilation.GetSemanticModel(syntaxTree);
+			var model = code.Compilation.GetSemanticModel(syntaxTree);
 			var locDecl = syntaxTree.GetRoot().DescendantNodesAndSelf().First(n => n.IsEquivalentTo(decl));
 			var symbol = model.GetDeclaredSymbol(locDecl);
 
-			var options = Solution.Workspace.Options;
+			var options = code.Solution.Workspace.Options;
 
 			var refs = SymbolFinder
-				.FindReferencesAsync(symbol, Solution)
+				.FindReferencesAsync(symbol, code.Solution)
 				.Result;
 
 			var modifiedDocs = SymbolFinder
-				.FindReferencesAsync(symbol, Solution)
+				.FindReferencesAsync(symbol, code.Solution)
 				.Result
 				.SelectMany(r => r.Locations.Select(l => l.Document))
 				.ToList();
 			modifiedDocs.Add(doc);
 
-			var newSolution = Renamer.RenameSymbolAsync(Solution, symbol, newName, null).Result;
+			var newSolution = Renamer.RenameSymbolAsync(code.Solution, symbol, newName, null).Result;
 
 			foreach (var d in modifiedDocs) {
-				var cb = codeBulksAndDocumentsIds[d.Id];
+				var cb = code.CodeBulksAndDocumentsIds[d.Id];
 				cb.Tree = newSolution.GetDocument(d.Id).GetSyntaxTreeAsync().Result;
 			}
 
-			SetSolution(newSolution);
+			code.SetSolution(newSolution);
 		}
 
 		public ISymbol GetSymbolFor(SyntaxNode node, CodeBulk containingCode)
 		{
-			var docId = codeBulksAndDocumentsIds[containingCode];
-			var syntaxTree = Solution.GetDocument(docId).GetSyntaxTreeAsync().Result;
-			var model = Compilation.GetSemanticModel(syntaxTree);
+			var docId = code.CodeBulksAndDocumentsIds[containingCode];
+			var syntaxTree = code.Solution.GetDocument(docId).GetSyntaxTreeAsync().Result;
+			var model = code.Compilation.GetSemanticModel(syntaxTree);
 			var locDecl = syntaxTree.GetRoot().DescendantNodesAndSelf().First(n => n.IsEquivalentTo(node, topLevel: true));
 
 			return model.GetDeclaredSymbol(locDecl);
@@ -114,70 +82,53 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public CodeSnapshot ApplySyntaxRewriters(List<SyntaxRewriter> rewriters)
 		{
-			var newSolution = Solution;
+			var newSolution = code.Solution;
 
 			var res = new CodeSnapshot();
 			var allDocsIdsToModify = rewriters.SelectMany(r => r.GetDocumentsIdsToModify()).ToList();
 			foreach (var id in allDocsIdsToModify) {
-				var cb = codeBulksAndDocumentsIds[id];
+				var cb = code.CodeBulksAndDocumentsIds[id];
 				res.PreviousCode[cb] = cb.Tree;
 			}
 
 			foreach (var rewriter in rewriters) {
 				var docsToModify = rewriter.GetDocumentsIdsToModify();
-				var project = Solution.Projects.First();
+				var newTrees = new Dictionary<DocumentId, SyntaxNode>();
 				foreach (var id in docsToModify) {
-					var syntaxRoot = rewriter.Visit(Solution.GetDocument(id).GetSyntaxRootAsync().Result);
-					codeBulksAndDocumentsIds[id].Tree = syntaxRoot.SyntaxTree;
-					newSolution = newSolution.WithDocumentSyntaxRoot(id, syntaxRoot);
+					newTrees[id] = rewriter.Visit(code.Solution.GetDocument(id).GetSyntaxRootAsync().Result);
+				}
+
+				foreach (var id in docsToModify) {
+					code.CodeBulksAndDocumentsIds[id].Tree = newTrees[id].SyntaxTree;
+					newSolution = newSolution.WithDocumentSyntaxRoot(id, newTrees[id]);
 				}
 			}
 
-			SetSolution(newSolution);
+			code.SetSolution(newSolution);
 
 			return res;
 		}
 
 		public void ApplySnapshot(CodeSnapshot snapshot)
 		{
-			var newSolution = Solution;
+			var newSolution = code.Solution;
 
 			foreach (var kv in snapshot.PreviousCode) {
 				kv.Key.Tree = kv.Value;
-				newSolution = newSolution.WithDocumentSyntaxRoot(codeBulksAndDocumentsIds[kv.Key], kv.Value.GetRoot());
+				newSolution = newSolution.WithDocumentSyntaxRoot(code.CodeBulksAndDocumentsIds[kv.Key], kv.Value.GetRoot());
 			}
 
-			SetSolution(newSolution);
+			code.SetSolution(newSolution);
 		}
 
-		private void BuildSolution()
-		{
-			var ws = new AdhocWorkspace();
-			var Mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-			var references = new List<MetadataReference>() { Mscorlib };
-			var projInfo = ProjectInfo.Create(
-				ProjectId.CreateNewId(),
-				VersionStamp.Default,
-				"MyProject",
-				"MyAssembly",
-				"C#",
-				metadataReferences: references
-			);
-			var project = ws.AddProject(projInfo);
+		public static string FormatQuestNameForVar(string questName) => $"{char.ToLower(questName[0])}{questName.Substring(1)}Quest";
 
-			foreach (var cb in code.AllCode) {
-				var d = project.AddDocument(cb.PathToFile, cb.Tree.GetRoot());
-				project = d.Project;
-				codeBulksAndDocumentsIds[d.Id] = cb;
-			}
+		public static string FormatQuestNameForClass(string questName) => $"{questName}Quest";
 
-			SetSolution(project.Solution);
-		}
+		public static string FromQuestVarNameToQuestName(string varName) => $"{char.ToUpper(varName[0])}{varName.Substring(1, varName.Length - "Quest".Length - 1)}";
 
-		private void SetSolution(Solution solution)
-		{
-			Solution = solution;
-			Compilation = solution.Projects.First().GetCompilationAsync().Result;
-		}
+		public static string FromQuestClassNametoQuestName(string className) => className.Substring(0, className.Length - "Quest".Length);
+
+		public static string FormatQuestClassNameForVar(string className) => $"{char.ToLower(className[0])}{className.Substring(1)}";
 	}
 }

@@ -14,6 +14,16 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			: base(context)
 		{}
 
+		public override void ShapesInserted(List<Shape> affectedShapes)
+		{
+			base.ShapesInserted(affectedShapes);
+
+			if (affectedShapes.Count == 1 && affectedShapes.First() is Polyline) {
+				var p = affectedShapes.First() as Polyline;
+				
+			}
+		}
+
 		public override void ShapesUpdated(List<Shape> affectedShapes)
 		{
 			base.ShapesUpdated(affectedShapes);

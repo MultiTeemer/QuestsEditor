@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace OdQuestsGenerator.Data
 {
@@ -12,5 +13,7 @@ namespace OdQuestsGenerator.Data
 			Graph = graph;
 			Sectors = sectors;
 		}
+
+		public Sector GetSectorForQuest(Quest quest) => Sectors.First(s => s.Quests.Contains(quest));
 	}
 }

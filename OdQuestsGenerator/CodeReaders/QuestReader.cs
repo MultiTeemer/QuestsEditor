@@ -20,7 +20,7 @@ namespace OdQuestsGenerator.CodeReaders
 
 			sector.Quests.Add(quest);
 			flow.Graph.AddNode(quest);
-			code.RegisterQuestforCodeBulk(quest, codeBulk);
+			code.QuestsAndCodeBulks[quest] = codeBulk;
 		}
 	}
 }

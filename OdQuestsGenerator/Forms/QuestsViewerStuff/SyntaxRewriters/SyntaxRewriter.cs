@@ -13,10 +13,10 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 
 		public abstract IReadOnlyList<DocumentId> GetDocumentsIdsToModify();
 
-		protected SyntaxRewriter(Solution solution, Compilation compilation)
+		protected SyntaxRewriter(Code code)
 		{
-			Solution = solution;
-			Compilation = compilation;
+			Solution = code.Solution;
+			Compilation = code.Compilation;
 		}
 
 		protected IReadOnlyList<DocumentId> GetIdsOfDocsWithReferencesToSymbol(ISymbol symbol)
