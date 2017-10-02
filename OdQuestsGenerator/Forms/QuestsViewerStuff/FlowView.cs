@@ -18,7 +18,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private readonly Project project;
 		private readonly Display display;
 		private readonly ShapeTemplatesFactory templates;
-		private readonly PresentersManager presentersManager = new PresentersManager();
+		private readonly PresentersManager presentersManager;
 
 		private TwoWayDictionary<Node, Shape> nodesAndShapes = new TwoWayDictionary<Node, Shape>();
 		private TwoWayDictionary<Link, Shape> linksAndArrows = new TwoWayDictionary<Link, Shape>();
@@ -38,6 +38,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			this.project = project;
 			this.display = display;
 			this.templates = templates;
+
+			presentersManager = new PresentersManager(project);
 		}
 
 		public void Display(Graph graph)

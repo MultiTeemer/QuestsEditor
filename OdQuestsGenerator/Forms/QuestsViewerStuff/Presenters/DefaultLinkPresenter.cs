@@ -10,8 +10,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
 			new ColorStyle("", System.Drawing.Color.Black)
 		);
 
-		public DefaultLinkPresenter(ILineStyle style = null)
-			: base(style ?? defaultStrokeStyle)
+		public DefaultLinkPresenter(Project project, LineStyle style = null)
+			: base(style ?? defaultStrokeStyle, project)
 		{}
 	}
 }

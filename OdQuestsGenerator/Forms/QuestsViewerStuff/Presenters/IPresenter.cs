@@ -1,4 +1,5 @@
-﻿using Dataweb.NShape;
+﻿using System;
+using Dataweb.NShape;
 using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
@@ -10,19 +11,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
 
 	interface INodePresenter : IPresenter
 	{
-		IFillStyle FillStyle { get; }
-		ILineStyle StrokeStyle { get; }
+		FillStyle FillStyle { get; }
+		LineStyle StrokeStyle { get; }
 	}
 
 	interface ILinkPresenter : IPresenter
 	{
-		ILineStyle Style { get; }
+		LineStyle Style { get; }
 	}
 
 	abstract class NodePresenter : INodePresenter
 	{
-		public IFillStyle FillStyle { get; set; }
-		public ILineStyle StrokeStyle { get; set; }
+		protected readonly Project Project;
+
+		public FillStyle FillStyle { get; set; }
+		public LineStyle StrokeStyle { get; set; }
 
 		public void Apply(Shape shape)
 		{
@@ -34,25 +37,37 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
 			shape.As<IPlanarShape>().FillStyle = FillStyle;
 		}
 
-		protected NodePresenter(IFillStyle fillStyle, ILineStyle strokeStyle)
+		protected NodePresenter(FillStyle fillStyle, LineStyle strokeStyle, Project project)
 		{
+			Project = project;
 			FillStyle = fillStyle;
 			StrokeStyle = strokeStyle;
+
+			FillStyle.Name = Guid.NewGuid().ToString();
+			StrokeStyle.Name = Guid.NewGuid().ToString();
+			Project.Design.FillStyles.Add(FillStyle, FillStyle);
+			Project.Design.LineStyles.Add(strokeStyle, strokeStyle);
 		}
 	}
 
 	abstract class LinkPresenter : ILinkPresenter
 	{
-		public ILineStyle Style { get; set; }
+		protected readonly Project Project;
+
+		public LineStyle Style { get; set; }
 
 		public void Apply(Shape shape)
 		{
 			shape.LineStyle = Style;
 		}
 
-		protected LinkPresenter(ILineStyle style)
+		protected LinkPresenter(LineStyle style, Project project)
 		{
+			Project = project;
 			Style = style;
+
+			Style.Name = Guid.NewGuid().ToString();
+			project.Design.LineStyles.Add(style, style);
 		}
 	}
 }

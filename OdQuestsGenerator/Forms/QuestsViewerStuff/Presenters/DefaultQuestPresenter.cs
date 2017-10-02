@@ -15,8 +15,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
 			new ColorStyle("", System.Drawing.Color.Black)
 		);
 
-		public DefaultQuestPresenter(IFillStyle fillStyle = null, ILineStyle strokeStyle = null)
-			: base(fillStyle ?? defaultFillStyle, strokeStyle ?? defaultStrokeStyle)
+		public DefaultQuestPresenter(Project project, FillStyle fillStyle = null, LineStyle strokeStyle = null)
+			: base(fillStyle ?? defaultFillStyle, strokeStyle ?? defaultStrokeStyle, project)
 		{}
 	}
 }
