@@ -16,6 +16,17 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			new ColorStyle("", System.Drawing.Color.LightGray)
 		);
 
+		private static readonly FillStyle notEditableLinksFillStyle = new FillStyle(
+			"",
+			new ColorStyle("", System.Drawing.Color.Pink),
+			new ColorStyle("", System.Drawing.Color.LightCoral)
+		);
+		private static readonly LineStyle notEditableLinkStrokeStyle = new LineStyle(
+			"",
+			3,
+			new ColorStyle("", System.Drawing.Color.Red)
+		);
+
 		public PresentersManager(Project project)
 		{
 			this.project = project;
@@ -23,10 +34,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public IPresenter GetPresenterFor(Node node)
 		{
-			var initData = node.Quest.Data.FirstOfTypeOrDefault<InitializationData>();
-			var fillStyle = initData == null || initData.InitializationPlaces.Count == 0 ? notActiveQuestFillStyle : null;
+			FillStyle fillStyle = null;
+			LineStyle strokeStyle = null;
 
-			return new DefaultQuestPresenter(project, fillStyle);
+			var initData = node.Quest.Data.FirstOfTypeOrDefault<InitializationData>();
+			if (initData != null && initData.InitializationPlaces.Count == 0) {
+				fillStyle = notActiveQuestFillStyle;
+			}
+
+			var notEditableLinks = node.Quest.Data.FirstOfTypeOrDefault<NotEditableLinks>();
+			if (notEditableLinks != null) {
+				fillStyle = notEditableLinksFillStyle;
+				strokeStyle = notEditableLinkStrokeStyle;
+			}
+
+			return new DefaultQuestPresenter(project, fillStyle, strokeStyle);
 		}
 
 		public IPresenter GetPresenterFor(Link link)

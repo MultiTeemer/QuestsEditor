@@ -33,7 +33,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
 			if (callableType == type2) {
 				var linkExpr = node.Initializer.FindLinkExpression();
 				var newLinkText = $"{ CodeEditor.FormatQuestNameForVar(quest1.Name) }.Component.IsFinished";
-				InitializerExpressionSyntax newInitializer = null;
+				var newInitializer = node.Initializer;
 				if (linkExpr == null) {
 					var linkExprText = $"ReachedCondition = {newLinkText}";
 					newInitializer = node.Initializer.AddExpressions(SyntaxFactory.ParseExpression(linkExprText));

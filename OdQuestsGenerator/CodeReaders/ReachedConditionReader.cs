@@ -10,6 +10,8 @@ using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.CodeReaders
 {
+	class NotEditableLinks : IData {}
+
 	class ReachedConditionReader : CodeReader
 	{
 		private class LinksReader : SyntaxVisitor
@@ -39,6 +41,7 @@ namespace OdQuestsGenerator.CodeReaders
 			}
 
 			public readonly List<Tuple<string, string>> Results = new List<Tuple<string, string>>();
+			public readonly List<string> NotEditableResults = new List<string>();
 
 			public LinksReader(Code code)
 				: base(code)
@@ -49,15 +52,19 @@ namespace OdQuestsGenerator.CodeReaders
 				base.VisitObjectCreationExpression(node);
 
 				var linkExpr = node.Initializer != null ? node.Initializer.FindLinkExpression() : null;
-				if (linkExpr != null && linkExpr.Right.IsEditableInterQuestLinkExpression()) {
+				if (linkExpr != null) {
 					var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
 					var linkedQuestType = model.GetTypeInfo(node).Type;
 					var linkedQuestName = CodeEditor.FromQuestClassNametoQuestName(linkedQuestType.Name);
 
-					var fetcher = new QuestNameFetcher(Code);
-					fetcher.Visit(linkExpr.Right);
-					foreach (var r in fetcher.Results) {
-						Results.Add(Tuple.Create(r, linkedQuestName));
+					if (linkExpr.Right.IsEditableInterQuestLinkExpression()) {
+						var fetcher = new QuestNameFetcher(Code);
+						fetcher.Visit(linkExpr.Right);
+						foreach (var r in fetcher.Results) {
+							Results.Add(Tuple.Create(r, linkedQuestName));
+						}
+					} else {
+						NotEditableResults.Add(linkedQuestName);
 					}
 				}
 			}
@@ -83,6 +90,10 @@ namespace OdQuestsGenerator.CodeReaders
 				}
 
 				flow.Graph.AddLink(n1, n2);
+			}
+			foreach (var notEditableQuest in linksReader.NotEditableResults) {
+				var n = flow.Graph.FindNodeForQuest(notEditableQuest);
+				n.Quest.Ensure<NotEditableLinks>();
 			}
 		}
 	}
