@@ -41,6 +41,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					var n2 = Context.FlowView.GetNodeForShape(b2);
 					var link = new Link(n1, n2);
 
+					Context.FlowView.RegisterShapeForLink(p, link);
+
 					if (!n1.Quest.IsActive() || !n2.Quest.IsActive()) {
 						var command = new CompositeCommand(Context);
 						if (!n1.Quest.IsActive()) {

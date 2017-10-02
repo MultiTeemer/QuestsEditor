@@ -114,6 +114,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			}
 		}
 
+		public void RegisterShapeForLink(Shape shape, Link link)
+		{
+			linksAndArrows.Add(link, shape);
+			presentersManager.GetPresenterFor(link).Apply(shape);
+		}
+
 		private void AddShape(Shape shape)
 		{
 			diagram.Shapes.Add(shape);
