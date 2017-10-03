@@ -44,6 +44,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			}
 
 			LoadConfigsCode(gameDir);
+			LoadProjectFiles(gameDir);
 
 			var flow = new Flow(new Graph(), new List<Sector>());
 
@@ -85,6 +86,13 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			}
 			var configFilePath = Path.Combine(configsDir, "QuestsConfig.cs");
 			code.ReadFromFile(configFilePath, CodeBulkType.Config);
+		}
+
+		private void LoadProjectFiles(string gameDirectory)
+		{
+			foreach (var file in Directory.EnumerateFiles(gameDirectory, "*.csproj")) {
+				code.AddPathToProjectFile(file);
+			}
 		}
 	}
 }

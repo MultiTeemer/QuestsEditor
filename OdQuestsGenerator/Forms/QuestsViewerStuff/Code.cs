@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Xml;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Formatting;
@@ -62,6 +64,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		private readonly List<CodeBulk> codeBulks = new List<CodeBulk>();
 		private readonly List<CodeBulk> bulksToDelete = new List<CodeBulk>();
+		private readonly List<CodeBulk> bulksToAdd = new List<CodeBulk>();
+		private readonly List<string> pathsToProjectFiles = new List<string>();
 		private readonly Dictionary<string, CodeBulk> fileToCodeBulk = new Dictionary<string, CodeBulk>();
 
 		public IReadOnlyList<CodeBulk> AllCode => codeBulks;
@@ -79,6 +83,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			BuildSolution();
 		}
 
+		public void AddPathToProjectFile(string path)
+		{
+			pathsToProjectFiles.Add(path);
+		}
+
 		public CodeBulk ReadFromFile(string path, CodeBulkType type)
 		{
 			return !fileToCodeBulk.ContainsKey(path)
@@ -88,6 +97,27 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public void Save()
 		{
+			foreach (var projPath in pathsToProjectFiles) {
+				var workingDir = Path.GetDirectoryName(projPath);
+
+				var proj = new XmlDocument();
+				proj.Load(projPath);
+
+				foreach (var cb in bulksToAdd) {
+					AddFileToProject(cb.PathToFile, workingDir, proj);
+				}
+
+				foreach (var cb in bulksToDelete) {
+					RemoveFileFromProject(cb.PathToFile, proj);
+				}
+
+				using (var writer = new XmlTextWriter(projPath, new UTF8Encoding(false))) {
+					writer.Formatting = Formatting.Indented;
+					proj.Save(writer);
+				}
+			}
+
+			bulksToAdd.Clear();
 			foreach (var cb in bulksToDelete) {
 				File.Delete(cb.PathToFile);
 			}
@@ -128,10 +158,13 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			return newCb;
 		}
 
-		public void Add(CodeBulk codeBulk)
+		public void Add(CodeBulk codeBulk, bool newFile = true)
 		{
 			codeBulks.Add(codeBulk);
 			fileToCodeBulk.Add(codeBulk.PathToFile, codeBulk);
+			if (newFile) {
+				bulksToAdd.Add(codeBulk);
+			}
 
 			var project = Solution.Projects.First();
 			var doc = project.AddDocument(codeBulk.PathToFile, codeBulk.Tree.GetRoot());
@@ -194,6 +227,30 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			return CodeBulksAndDocumentsIds[doc.Id];
 		}
 
+		private void AddFileToProject(string filePath, string pathToParentDirectory, XmlDocument proj)
+		{
+			var compileGroup = GetCompileGroup(proj);
+			var item = proj.CreateElement("Compile", proj["Project"].NamespaceURI);
+			var include = item.Attributes.Append(proj.CreateAttribute("Include"));
+			include.Value = filePath.Replace(pathToParentDirectory, "");
+			compileGroup.AppendChild(item);
+		}
+
+		private void RemoveFileFromProject(string filePath, XmlDocument proj)
+		{
+			var compileGroup = GetCompileGroup(proj);
+			var itemToRemove = compileGroup.ChildNodes.Cast<XmlNode>().Where(n => n.Name == "Compile")
+				.FirstOrDefault(n => filePath.EndsWith(n.Attributes["Include"].Value));
+			compileGroup.RemoveChild(itemToRemove);
+		}
+
+		private XmlNode GetCompileGroup(XmlDocument proj)
+		{
+			var doc = proj["Project"];
+			var nodes = doc.ChildNodes.Cast<XmlNode>().Where(n => n.Name == "ItemGroup").ToList();
+			return nodes[1];
+		}
+
 		private void WriteCodeToFile(SyntaxTree tree, string filePath)
 		{
 			using (var writer = new StreamWriter(File.OpenWrite(filePath))) {
@@ -208,7 +265,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var tree = FileSystem.ReadCodeFromFile(path);
 			var bulk = new CodeBulk(type, tree, path);
 
-			Add(bulk);
+			Add(bulk, newFile: false);
 
 			return bulk;
 		}
