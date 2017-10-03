@@ -296,7 +296,7 @@ namespace OdQuestsGenerator.Forms
 
 		private void display_KeyUp(object sender, KeyEventArgs e)
 		{
-			toolsManager.CurrentActiveToolWrapper?.KeyUp(e.KeyCode);
+			toolsManager.CurrentActiveToolWrapper?.OnKeyUp(e.KeyCode);
 		}
 	}
 }

@@ -14,9 +14,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			: base(context)
 		{}
 
-		public override void ShapesInserted(List<Shape> affectedShapes)
+		public override void OnShapesInserted(List<Shape> affectedShapes)
 		{
-			base.ShapesInserted(affectedShapes);
+			base.OnShapesInserted(affectedShapes);
 
 			if (affectedShapes.Count == 1 && affectedShapes.First() is Polyline) {
 				var p = affectedShapes.First() as Polyline;
@@ -24,9 +24,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			}
 		}
 
-		public override void ShapesUpdated(List<Shape> affectedShapes)
+		public override void OnShapesUpdated(List<Shape> affectedShapes)
 		{
-			base.ShapesUpdated(affectedShapes);
+			base.OnShapesUpdated(affectedShapes);
 
 			if (affectedShapes.Count > 0) {
 				var shape = affectedShapes.First() as CaptionedShapeBase;
@@ -34,9 +34,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			}
 		}
 
-		public override void ShapesDeleted(List<Shape> affectedShapes)
+		public override void OnShapesDeleted(List<Shape> affectedShapes)
 		{
-			base.ShapesDeleted(affectedShapes);
+			base.OnShapesDeleted(affectedShapes);
 
 			if (affectedShapes.Count > 0) {
 				var questsToDelete = affectedShapes.OfType<Box>().Select(FindQuestForShape).ToList();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Dataweb.NShape;
 using OdQuestsGenerator.Data;
@@ -8,10 +9,13 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
 	interface IToolWrapper
 	{
-		void KeyUp(Keys keys);
-		void ShapesDeleted(List<Shape> affectedShapes);
-		void ShapesInserted(List<Shape> affectedShapes);
-		void ShapesUpdated(List<Shape> affectedShapes);
+		event Action ToolDeselectedAutoCleared;
+
+		void OnKeyUp(Keys keys);
+		void OnShapesDeleted(List<Shape> affectedShapes);
+		void OnShapesInserted(List<Shape> affectedShapes);
+		void OnShapesUpdated(List<Shape> affectedShapes);
+		void OnToolDeselected();
 	}
 
 	class EditingContext
@@ -49,10 +53,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 	{
 		protected readonly EditingContext Context;
 
-		public virtual void KeyUp(Keys keys) {}
-		public virtual void ShapesDeleted(List<Shape> affectedShapes) {}
-		public virtual void ShapesInserted(List<Shape> affectedShapes) {}
-		public virtual void ShapesUpdated(List<Shape> affectedShapes) {}
+		public event Action ToolDeselectedAutoCleared;
+
+		public virtual void OnKeyUp(Keys keys) {}
+		public virtual void OnShapesDeleted(List<Shape> affectedShapes) {}
+		public virtual void OnShapesInserted(List<Shape> affectedShapes) {}
+		public virtual void OnShapesUpdated(List<Shape> affectedShapes) {}
+
+		public virtual void OnToolDeselected()
+		{
+			ToolDeselectedAutoCleared?.Invoke();
+			ToolDeselectedAutoCleared = null;
+		}
 
 		protected ToolWrapper(EditingContext context)
 		{

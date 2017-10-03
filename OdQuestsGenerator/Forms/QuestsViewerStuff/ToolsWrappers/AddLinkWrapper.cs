@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Dataweb.NShape;
@@ -16,9 +17,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			: base(context)
 		{}
 
-		public override void ShapesInserted(List<Shape> affectedShapes)
+		public override void OnShapesInserted(List<Shape> affectedShapes)
 		{
-			base.ShapesInserted(affectedShapes);
+			base.OnShapesInserted(affectedShapes);
 
 			if (affectedShapes.Count == 1 && affectedShapes.First() is Polyline) {
 				var p = affectedShapes.First() as Polyline;
@@ -44,6 +45,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					var link = new Link(n1, n2);
 
 					if (n2.Quest.Data.Exists<NotEditableLinks>()) {
+						ToolDeselectedAutoCleared += () => p.Diagram.Shapes.Remove(p);
 						var msg = $"Couldn't create link to {n2.Quest.Name} quest - links are editable only through code.";
 						MessageBox.Show(msg);
 						return;

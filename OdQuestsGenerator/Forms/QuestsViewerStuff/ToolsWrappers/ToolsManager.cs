@@ -27,21 +27,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		private void Repository_ShapesDeleted(object sender, RepositoryShapesEventArgs e)
 		{
 			if (!flowView.DiagramEdited) {
-				CurrentActiveToolWrapper?.ShapesDeleted(e.Shapes.ToList());
+				CurrentActiveToolWrapper?.OnShapesDeleted(e.Shapes.ToList());
 			}
 		}
 
 		private void Repository_ShapesUpdated(object sender, RepositoryShapesEventArgs e)
 		{
 			if (!flowView.DiagramEdited) {
-				CurrentActiveToolWrapper?.ShapesUpdated(e.Shapes.ToList());
+				CurrentActiveToolWrapper?.OnShapesUpdated(e.Shapes.ToList());
 			}
 		}
 
 		private void Repository_ShapesInserted(object sender, RepositoryShapesEventArgs e)
 		{
 			if (!flowView.DiagramEdited) {
-				CurrentActiveToolWrapper?.ShapesInserted(e.Shapes.ToList());
+				CurrentActiveToolWrapper?.OnShapesInserted(e.Shapes.ToList());
 			}
 		}
 
@@ -66,6 +66,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 		private void ActivateTool(Tool tool)
 		{
+			CurrentActiveToolWrapper?.OnToolDeselected();
 			CurrentActiveToolWrapper = toolSet[tool];
 		}
 	}
