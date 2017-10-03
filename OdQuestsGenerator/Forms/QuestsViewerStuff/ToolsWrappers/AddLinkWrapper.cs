@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Dataweb.NShape;
 using Dataweb.NShape.GeneralShapes;
 using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
@@ -40,6 +42,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					var n1 = Context.FlowView.GetNodeForShape(b1);
 					var n2 = Context.FlowView.GetNodeForShape(b2);
 					var link = new Link(n1, n2);
+
+					if (n2.Quest.Data.Exists<NotEditableLinks>()) {
+						var msg = $"Couldn't create link to {n2.Quest.Name} quest - links are editable only through code.";
+						MessageBox.Show(msg);
+						return;
+					}
 
 					Context.FlowView.RegisterShapeForLink(p, link);
 

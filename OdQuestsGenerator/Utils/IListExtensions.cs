@@ -41,5 +41,16 @@ namespace OdQuestsGenerator.Utils
 
 			throw new System.Exception("Couldn't find element in list with type");
 		}
+
+		public static bool Exists<TType>(this IList list)
+		{
+			foreach (var i in list) {
+				if (i is TType) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 }

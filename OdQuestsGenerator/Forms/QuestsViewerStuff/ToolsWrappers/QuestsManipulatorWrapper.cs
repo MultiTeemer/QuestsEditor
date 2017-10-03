@@ -53,8 +53,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 						.Where(l => l.HasValue)
 						.Select(l => new RemoveLinkCommand(l.Value, Context))
 						.ToList();
-					var command = new CompositeCommand(Context, commands);
-					Context.History.Do(command);
+					if (commands.Count > 0) {
+						Context.History.Do(new CompositeCommand(Context, commands));
+					}
 				}
 			}
 		}
