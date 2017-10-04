@@ -43,7 +43,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 			cb.Tree = newTree;
 
-			var data = quest.Data.FirstOfType<InitializationData>();
+			var data = quest.Ensure<InitializationData>();
 			data.InitializationPlaces.Add(sector);
 
 			Context.FlowView.Update();
