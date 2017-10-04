@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace OdQuestsGenerator.Utils
@@ -40,5 +41,12 @@ namespace OdQuestsGenerator.Utils
 			=> expr is MemberAccessExpressionSyntax
 				&& expr.As<MemberAccessExpressionSyntax>().Name.Identifier.ValueText == "IsFinished"
 				&& expr.As<MemberAccessExpressionSyntax>().Expression.As<MemberAccessExpressionSyntax>()?.Name.Identifier.ValueText == "Component";
+
+		public static MethodDeclarationSyntax GetSectorInitializationFunction(this SyntaxTree tree)
+		{
+			return tree.GetRoot().DescendantNodes()
+				.OfType<MethodDeclarationSyntax>()
+				.FirstOrDefault(m => m.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.MethodDeclaration) && m.Identifier.ValueText == "Initialize");
+		}
 	}
 }

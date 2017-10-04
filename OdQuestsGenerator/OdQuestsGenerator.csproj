@@ -255,6 +255,7 @@
     </Compile>
     <Compile Include="Forms\QuestsViewerStuff\Code.cs" />
     <Compile Include="Forms\QuestsViewerStuff\CodeEditor.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\CodeFixes.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\ActivateQuestCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\AddLinkCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\AddQuestCommand.cs" />

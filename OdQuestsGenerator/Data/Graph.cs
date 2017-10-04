@@ -104,6 +104,11 @@ namespace OdQuestsGenerator.Data
 			return links.Any(l => l.Node1 == node1 && l.Node2 == node2);
 		}
 
+		public bool ExistsLink(Quest quest1, Quest quest2)
+		{
+			return ExistsLink(FindNodeForQuest(quest1), FindNodeForQuest(quest2));
+		}
+
 		public IEnumerable<Link> GetLinksForNode(Node node)
 		{
 			return links.Where(l => l.Contains(node));

@@ -18,5 +18,16 @@ namespace OdQuestsGenerator.Utils
 		{
 			return node.DescendantNodes().OfType<TNodeType>().Select(n => n as TNodeType);
 		}
+
+		public static TNodeType GetParentOfType<TNodeType>(this SyntaxNode node)
+			where TNodeType : SyntaxNode
+		{
+			var n = node.Parent;
+			while (n != null && !(n is TNodeType)) {
+				n = n.Parent;
+			}
+
+			return (TNodeType)n;
+		}
 	}
 }

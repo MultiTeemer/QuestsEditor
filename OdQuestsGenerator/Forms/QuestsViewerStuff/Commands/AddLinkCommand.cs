@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
+using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 {
@@ -31,6 +32,10 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 				Context.Code
 			);
 			snapshot = Context.CodeEditor.ApplySyntaxRewriters(rewriter);
+
+			Context.Flow.Graph.AddLink(link);
+
+			CodeFixes.FixQuestInitializationOrder(link.Node2.Quest, Context);
 
 			Context.FlowView.AddShapeLink(link);
 		}
