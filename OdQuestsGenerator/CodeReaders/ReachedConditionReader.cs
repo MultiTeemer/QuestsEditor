@@ -30,8 +30,9 @@ namespace OdQuestsGenerator.CodeReaders
 
 					var left = node.Expression as MemberAccessExpressionSyntax;
 					if (left != null) {
-						var str = left.Expression.ToString();
-						var questName = CodeEditor.FromQuestVarNameToQuestName(str);
+						var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
+						var type = model.GetTypeInfo(left.Expression).Type;
+						var questName = CodeEditor.FromQuestClassNametoQuestName(type.Name);
 
 						if (!Results.Contains(questName)) {
 							Results.Add(questName);
