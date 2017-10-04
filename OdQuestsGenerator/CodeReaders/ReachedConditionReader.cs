@@ -12,6 +12,14 @@ namespace OdQuestsGenerator.CodeReaders
 {
 	class NotEditableLinks : IData {}
 
+	public static class NotEditableLinksQuestExtensions
+	{
+		public static bool IsLinksToEditable(this Quest quest)
+		{
+			return quest.Data.FirstOfTypeOrDefault<NotEditableLinks>() == null;
+		}
+	}
+
 	class ReachedConditionReader : CodeReader
 	{
 		private class LinksReader : SyntaxVisitor

@@ -5,6 +5,7 @@ using Dataweb.NShape.Advanced;
 using Dataweb.NShape.Controllers;
 using Dataweb.NShape.WinFormsUI;
 using Microsoft.Msagl.Miscellaneous;
+using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Utils;
 
@@ -210,6 +211,17 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var xs = geometry.Nodes.Select(n => n.Center.X);
 			var right = xs.Count() > 0 ? xs.Max() + ShapeSize * 3 : ShapeSize;
 			var freeShapes = nodesAndShapes.Where(kv => geometry.Nodes.All(n => n.UserData != kv.Key)).Select(kv => kv.Value).ToArray();
+			var priorities = freeShapes.Select(s => {
+				var q = nodesAndShapes[s].Quest;
+				if (!q.IsLinksToEditable()) {
+					return 3;
+				} else if (!q.IsActive()) {
+					return 2;
+				} else {
+					return 1;
+				}
+			}).ToArray();
+			Array.Sort(priorities, freeShapes);
 			var width = diagram.Size.Width - right;
 			var columnsCount = Math.Max(1, width / ShapeSize - 1);
 			int curColumn = 0;

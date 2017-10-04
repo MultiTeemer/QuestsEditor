@@ -14,7 +14,7 @@ namespace OdQuestsGenerator.CodeReaders
 		public readonly List<Sector> InitializationPlaces = new List<Sector>();
 	}
 
-	public static class QuestExtensions
+	public static class InitializationDataQuestExtensions
 	{
 		public static bool IsActive(this Quest quest)
 		{

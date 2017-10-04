@@ -37,13 +37,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			FillStyle fillStyle = null;
 			LineStyle strokeStyle = null;
 
-			var initData = node.Quest.Data.FirstOfTypeOrDefault<InitializationData>();
-			if (initData == null || initData.InitializationPlaces.Count == 0) {
+			if (!node.Quest.IsActive()) {
 				fillStyle = notActiveQuestFillStyle;
 			}
 
-			var notEditableLinks = node.Quest.Data.FirstOfTypeOrDefault<NotEditableLinks>();
-			if (notEditableLinks != null) {
+			if (!node.Quest.IsLinksToEditable()) {
 				fillStyle = notEditableLinksFillStyle;
 				strokeStyle = notEditableLinkStrokeStyle;
 			}
