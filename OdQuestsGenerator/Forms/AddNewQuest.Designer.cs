@@ -77,6 +77,7 @@
 			// 
 			// sectorsComboBox
 			// 
+			this.sectorsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.sectorsComboBox.FormattingEnabled = true;
 			this.sectorsComboBox.Location = new System.Drawing.Point(146, 80);
 			this.sectorsComboBox.Name = "sectorsComboBox";
