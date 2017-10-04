@@ -38,7 +38,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			LineStyle strokeStyle = null;
 
 			var initData = node.Quest.Data.FirstOfTypeOrDefault<InitializationData>();
-			if (initData != null && initData.InitializationPlaces.Count == 0) {
+			if (initData == null || initData.InitializationPlaces.Count == 0) {
 				fillStyle = notActiveQuestFillStyle;
 			}
 
