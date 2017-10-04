@@ -51,6 +51,13 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 						return;
 					}
 
+					if (Context.Flow.Graph.ExistsLink(link)) {
+						ToolDeselectedAutoCleared += () => p.Diagram.Shapes.Remove(p);
+						var msg = $"Couldn't create link from {n1.Quest.Name} to {n2.Quest.Name} quest - link already exists.";
+						MessageBox.Show(msg);
+						return;
+					}
+
 					Context.FlowView.RegisterShapeForLink(p, link);
 
 					if (!n1.Quest.IsActive() || !n2.Quest.IsActive()) {
