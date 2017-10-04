@@ -58,6 +58,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 	class Code
 	{
+		public string PathToProject { get; set; }
 		public readonly TwoWayDictionary<CodeBulk, DocumentId> CodeBulksAndDocumentsIds = new TwoWayDictionary<CodeBulk, DocumentId>();
 		public readonly TwoWayDictionary<Quest, CodeBulk> QuestsAndCodeBulks = new TwoWayDictionary<Quest, CodeBulk>();
 		public readonly TwoWayDictionary<Sector, CodeBulk> SectorsAndCodeBulks = new TwoWayDictionary<Sector, CodeBulk>();
@@ -232,7 +233,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var compileGroup = GetCompileGroup(proj);
 			var item = proj.CreateElement("Compile", proj["Project"].NamespaceURI);
 			var include = item.Attributes.Append(proj.CreateAttribute("Include"));
-			include.Value = filePath.Replace(pathToParentDirectory, "");
+			include.Value = filePath.Replace(pathToParentDirectory, "").TrimStart(Path.DirectorySeparatorChar);
 			compileGroup.AppendChild(item);
 		}
 
@@ -278,6 +279,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInControlBlocks, false)
 			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInLambdaExpressionBody, false)
 			.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInObjectCollectionArrayInitializers, false)
+			.WithChangedOption(CSharpFormattingOptions.NewLineForElse, false)
+			.WithChangedOption(CSharpFormattingOptions.NewLineForCatch, false)
+			.WithChangedOption(CSharpFormattingOptions.NewLineForFinally, false)
 			.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, "C#"), true);
 
 		private void BuildSolution()

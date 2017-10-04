@@ -16,12 +16,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 		private CodeSnapshot snapshot;
 
-		public ActivateQuestCommand(Quest quest, EditingContext context)
+		public ActivateQuestCommand(Quest quest, Sector sector, EditingContext context)
 			: base(context)
 		{
 			this.quest = quest;
-
-			sector = Context.Flow.GetSectorForQuest(quest);
+			this.sector = sector;
 		}
 
 		public override void Do()

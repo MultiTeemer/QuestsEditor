@@ -31,6 +31,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 				throw new Exception("Couldn't find \"*.Game\" directory");
 			}
 
+			code.PathToProject = gameDir;
+
 			var sectorsDir = Path.Combine(gameDir, "Sectors");
 			if (!Directory.Exists(sectorsDir)) {
 				throw new Exception($"Couldn't find \"{sectorsDir}\" directory");

@@ -1,4 +1,9 @@
 ﻿<#@ template language="C#" #>
+using System.Collections.Generic;
+
+namespace OceanSplash.Sectors.<#= Quest.SectorName #>
+{
+<# PushIndent("\t"); #>
 <# var enumName = $"{Quest.Name}QuestState"; #>
 public enum <#= enumName #>
 {
@@ -25,4 +30,6 @@ public class <#= Quest.Name #>Quest : SectorBehaviour<<#= Quest.Name #>, <#= enu
 	}
 	ClearIndent();
 #>
+}
+<# ClearIndent(); #>
 }

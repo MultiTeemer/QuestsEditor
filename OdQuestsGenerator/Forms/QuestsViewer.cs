@@ -73,7 +73,7 @@ namespace OdQuestsGenerator.Forms
 				} else if (keyData.HasFlag(Keys.C)) {
 					var firstIncompleteQuest = flow.Sectors.SelectMany(s => s.Quests).FirstOrDefault(q => !q.IsActive());
 					if (firstIncompleteQuest != null) {
-						history.Do(new ActivateQuestCommand(firstIncompleteQuest, editingContext));
+						history.Do(new ActivateQuestCommand(firstIncompleteQuest, flow.GetSectorForQuest(firstIncompleteQuest), editingContext));
 						flowView.Update();
 					}
 				}
@@ -290,7 +290,7 @@ namespace OdQuestsGenerator.Forms
 			);
 			toolsManager.AddTool(
 				new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate())),
-				new StubWrapper(editingContext)
+				new AddQuestWrapper(editingContext)
 			);
 		}
 

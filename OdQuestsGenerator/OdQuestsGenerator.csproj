@@ -223,6 +223,12 @@
     <Compile Include="Data\Quest.cs" />
     <Compile Include="Data\Sector.cs" />
     <Compile Include="Data\State.cs" />
+    <Compile Include="Forms\AddNewQuest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddNewQuest.Designer.cs">
+      <DependentUpon>AddNewQuest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EnterNewQuestName.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -251,6 +257,7 @@
     <Compile Include="Forms\QuestsViewerStuff\CodeEditor.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\ActivateQuestCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\AddLinkCommand.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\Commands\AddQuestCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\CommandsHistory.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\CompositeCommand.cs" />
     <Compile Include="Forms\QuestsViewerStuff\Commands\DeactivateQuestCommand.cs" />
@@ -270,6 +277,7 @@
     <Compile Include="Forms\QuestsViewerStuff\SyntaxRewriters\ComponentIsFinishedCallInInitializerRemover.cs" />
     <Compile Include="Forms\QuestsViewerStuff\SyntaxRewriters\SyntaxRewriter.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddLinkWrapper.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddQuestWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\IToolWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\QuestsManipulatorWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\StubWrapper.cs" />
@@ -284,6 +292,9 @@
     <Compile Include="Utils\StringExtensions.cs" />
     <Compile Include="Utils\SyntaxNodeExtensions.cs" />
     <Compile Include="Utils\TwoWayDictionary.cs" />
+    <EmbeddedResource Include="Forms\AddNewQuest.resx">
+      <DependentUpon>AddNewQuest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EnterNewQuestName.resx">
       <DependentUpon>EnterNewQuestName.cs</DependentUpon>
     </EmbeddedResource>

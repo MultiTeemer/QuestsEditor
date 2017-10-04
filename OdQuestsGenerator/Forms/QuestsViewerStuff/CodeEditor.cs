@@ -130,5 +130,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		public static string FromQuestClassNametoQuestName(string className) => className.Substring(0, className.Length - "Quest".Length);
 
 		public static string FormatQuestClassNameForVar(string className) => $"{char.ToLower(className[0])}{className.Substring(1)}";
+
+		public static string FormatQuestNameToFileName(string questName) => $"{questName}Quest.cs";
 	}
 }

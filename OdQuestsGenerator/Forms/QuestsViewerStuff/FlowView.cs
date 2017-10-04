@@ -85,6 +85,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			AddShape(shape);
 		}
 
+		public void RegisterShapeForNode(Node node, Shape shape)
+		{
+			nodesAndShapes[node] = shape;
+			presentersManager.GetPresenterFor(node).Apply(shape);
+		}
+
 		public void RemoveNodeShape(Shape shape)
 		{
 			nodesAndShapes.Remove(shape);
