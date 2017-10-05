@@ -70,5 +70,17 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		{
 			Context = context;
 		}
+
+		protected void DeleteShapeOnDeselect(Shape shape)
+		{
+			ToolDeselectedAutoCleared += () => shape.Diagram.Shapes.Remove(shape);
+		}
+
+		protected void DeleteShapesOnDeselect(IEnumerable<Shape> shapes)
+		{
+			foreach (var s in shapes) {
+				ToolDeselectedAutoCleared += () => s.Diagram.Shapes.Remove(s);
+			}
+		}
 	}
 }

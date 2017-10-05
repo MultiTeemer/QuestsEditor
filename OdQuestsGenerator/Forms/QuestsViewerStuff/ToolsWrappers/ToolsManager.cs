@@ -26,21 +26,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 		private void Repository_ShapesDeleted(object sender, RepositoryShapesEventArgs e)
 		{
-			if (!flowView.DiagramEdited) {
+			if (!flowView.DiagramEdited && e.Count > 0) {
 				CurrentActiveToolWrapper?.OnShapesDeleted(e.Shapes.ToList());
 			}
 		}
 
 		private void Repository_ShapesUpdated(object sender, RepositoryShapesEventArgs e)
 		{
-			if (!flowView.DiagramEdited) {
+			if (!flowView.DiagramEdited && e.Count > 0) {
 				CurrentActiveToolWrapper?.OnShapesUpdated(e.Shapes.ToList());
 			}
 		}
 
 		private void Repository_ShapesInserted(object sender, RepositoryShapesEventArgs e)
 		{
-			if (!flowView.DiagramEdited) {
+			if (!flowView.DiagramEdited && e.Count > 0) {
 				CurrentActiveToolWrapper?.OnShapesInserted(e.Shapes.ToList());
 			}
 		}
