@@ -3,8 +3,9 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.FindSymbols;
+using OdQuestsGenerator.Data;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
+namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 {
 	abstract class SyntaxRewriter : CSharpSyntaxRewriter
 	{

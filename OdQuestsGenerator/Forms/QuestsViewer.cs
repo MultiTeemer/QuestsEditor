@@ -2,16 +2,19 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Input;
 using Dataweb.NShape;
 using Dataweb.NShape.GeneralShapes;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using OdQuestsGenerator.ApplicationData;
+using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders;
+using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
+using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 using OdQuestsGenerator.Forms.QuestsViewerStuff;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 using OdQuestsGenerator.Utils;
 
@@ -47,7 +50,7 @@ namespace OdQuestsGenerator.Forms
 			editor = new CodeEditor(code);
 			flowView = new FlowView(diagramSetController, project, display, templates);
 			toolsManager = new ToolsManager(toolSetController, flowView);
-			editingContext = new EditingContext(flow, project, history, flowView, code, editor, toolsManager);
+			editingContext = new EditingContext(flow, history, code, editor);
 
 			code.Saved += Code_Saved;
 
@@ -89,12 +92,12 @@ namespace OdQuestsGenerator.Forms
 			UpdateTitle();
 		}
 
-		private void History_Undone(ICommand command)
+		private void History_Undone(Commands.ICommand command)
 		{
 			UpdateTitle();
 		}
 
-		private void History_Done(ICommand command)
+		private void History_Done(Commands.ICommand command, bool firstTime)
 		{
 			UpdateTitle();
 		}
@@ -284,13 +287,13 @@ namespace OdQuestsGenerator.Forms
 			toolsManager.Clear();
 
 			var tool1 = new QuestsViewerStuff.ToolsWrappers.OverloadedTools.SelectionTool();
-			toolsManager.AddTool(tool1, new QuestsManipulatorWrapper(editingContext, tool1));
+			toolsManager.AddTool(tool1, new QuestsManipulatorWrapper(editingContext, tool1, flowView));
 
 			var tool2 = new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate()));
-			toolsManager.AddTool(tool2, new AddLinkWrapper(editingContext, tool2));
+			toolsManager.AddTool(tool2, new AddLinkWrapper(editingContext, tool2, flowView));
 
 			var tool3 = new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate()));
-			toolsManager.AddTool(tool3, new AddQuestWrapper(editingContext, tool3));
+			toolsManager.AddTool(tool3, new AddQuestWrapper(editingContext, tool3, flowView));
 		}
 
 		private void QuestsViewer_KeyUp(object sender, KeyEventArgs e)

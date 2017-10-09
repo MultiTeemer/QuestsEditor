@@ -3,26 +3,26 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Dataweb.NShape;
-using Dataweb.NShape.Advanced;
 using Dataweb.NShape.Controllers;
 using Dataweb.NShape.GeneralShapes;
+using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataValidators;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
+using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class QuestsManipulatorWrapper : ToolWrapper<OverloadedTools.SelectionTool>
+	class QuestsManipulatorWrapper : ToolWrapper<OverloadedTools.SelectionTool, FlowView>
 	{
-		public QuestsManipulatorWrapper(EditingContext context, OverloadedTools.SelectionTool tool)
-			: base(context, tool)
+		public QuestsManipulatorWrapper(EditingContext context, OverloadedTools.SelectionTool tool, FlowView view)
+			: base(context, tool, view)
 		{}
 
 		public override void OnShapesUpdated(List<Shape> affectedShapes)
 		{
 			base.OnShapesUpdated(affectedShapes);
 
-			var shape = affectedShapes.First() as CaptionedShapeBase;
+			var shape = affectedShapes.First() as Box;
 			if (shape != null) {
 				TryToInitializeRenameCommand(shape);
 			}
@@ -37,14 +37,17 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 				var command = new CompositeCommand(Context);
 				foreach (var q in questsToDelete) {
 					var links = Context.Flow.Graph.GetLinksForNode(Context.Flow.Graph.FindNodeForQuest(q));
-					command.AddCommands(links.Select(l => new RemoveLinkCommand(l, Context)));
+					command.AddCommands(links.Select(l => CommandsCreation.RemoveLink(l, Context, DiagramWrapper)));
 				}
-				command.AddCommands(questsToDelete.Select(q => new RemoveQuestCommand(q, Context)));
+				foreach (var q in questsToDelete) {
+					var cmd = CommandsCreation.RemoveQuest(q, Context, Context.Flow.Graph.FindNodeForQuest(q), DiagramWrapper, DiagramWrapper.GetShapeForQuest(q));
+					command.AddCommand(cmd);
+				}
 				Context.History.Do(command);
 			} else {
 				var commands = affectedShapes.Select(FindLinkForShape)
 					.Where(l => l.HasValue)
-					.Select(l => new RemoveLinkCommand(l.Value, Context))
+					.Select(l => CommandsCreation.RemoveLink(l.Value, Context, DiagramWrapper))
 					.ToList();
 				if (commands.Count > 0) {
 					Context.History.Do(new CompositeCommand(Context, commands));
@@ -57,21 +60,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			base.OnKeyUp(keys);
 
 			if (keys == Keys.Enter && Tool.LastPerformedAction == OverloadedTools.SelectionTool.EditAction.EditCaption) {
-				var shape = Tool.LastTouchedShape as CaptionedShapeBase;
+				var shape = Tool.LastTouchedShape as Box;
 				if (shape != null) {
 					TryToInitializeRenameCommand(shape);
-					(Context.FlowView.Display as IDiagramPresenter).CloseCaptionEditor(false);
+					(DiagramWrapper.Display as IDiagramPresenter).CloseCaptionEditor(false);
 				}
 			}
 		}
 
-		private void TryToInitializeRenameCommand(CaptionedShapeBase shape)
+		private void TryToInitializeRenameCommand(Box shape)
 		{
 			var quest = FindQuestForShape(shape);
 			if (quest.Name != shape.Text) {
 				var newName = Regex.Replace(shape.Text, "\\s+", "");
 				if (IsItOkForCodeGeneration.Check(newName)) {
-					Context.History.Do(new RenameQuestCommand(quest, newName, Context));
+					Context.History.Do(CommandsCreation.RenameQuest(quest, quest.Name, newName, Context, DiagramWrapper, shape));
 				} else {
 					shape.SetCaptionText(0, quest.Name);
 				}
@@ -80,12 +83,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 		private Quest FindQuestForShape(Shape shape)
 		{
-			return Context.FlowView.GetNodeForShape(shape)?.Quest;
+			return DiagramWrapper.GetNodeForShape(shape)?.Quest;
 		}
 
 		private Link? FindLinkForShape(Shape shape)
 		{
-			return Context.FlowView.GetLinkForShape(shape);
+			return DiagramWrapper.GetLinkForShape(shape);
 		}
 	}
 }

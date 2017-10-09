@@ -2,8 +2,9 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.Data;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
+namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 {
 	class ClassConstructorCallRemover : SyntaxRewriter
 	{

@@ -2,11 +2,12 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
+using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 using OdQuestsGenerator.Utils;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff
+namespace OdQuestsGenerator.CodeEditing
 {
 	static class CodeFixes
 	{

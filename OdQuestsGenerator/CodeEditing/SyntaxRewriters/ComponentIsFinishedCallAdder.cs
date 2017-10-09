@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Utils;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters
+namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 {
 	class ComponentIsFinishedCallAdder : SyntaxRewriter
 	{

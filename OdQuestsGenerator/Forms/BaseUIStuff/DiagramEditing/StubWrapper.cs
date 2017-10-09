@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using Dataweb.NShape;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
+using OdQuestsGenerator.Commands;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
+namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 {
-	class StubWrapper : ToolWrapper<Tool>
+	class StubWrapper : ToolWrapper<Tool, DiagramWrapper>
 	{
-		public StubWrapper(EditingContext context, Tool tool)
-			: base(context, tool)
+		public StubWrapper(EditingContext context, Tool tool, DiagramWrapper diagramWrapper)
+			: base(context, tool, diagramWrapper)
 		{}
 
 		public override void OnShapesInserted(List<Shape> affectedShapes)

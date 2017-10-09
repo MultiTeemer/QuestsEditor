@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Dataweb.NShape;
+using OdQuestsGenerator.Commands;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
+namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 {
 	interface IToolWrapper
 	{
@@ -18,11 +19,13 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		void OnToolDeselected();
 	}
 
-	abstract class ToolWrapper<TTool> : IToolWrapper
+	abstract class ToolWrapper<TTool, TDiagramWrapper> : IToolWrapper
 		where TTool : Tool
+		where TDiagramWrapper : DiagramWrapper
 	{
 		protected readonly EditingContext Context;
 		protected readonly TTool Tool;
+		protected readonly TDiagramWrapper DiagramWrapper;
 
 		public event Action ToolDeselectedAutoCleared;
 
@@ -39,10 +42,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			ToolDeselectedAutoCleared = null;
 		}
 
-		protected ToolWrapper(EditingContext context, TTool tool)
+		protected ToolWrapper(EditingContext context, TTool tool, TDiagramWrapper diagramWrapper)
 		{
 			Context = context;
 			Tool = tool;
+			DiagramWrapper = diagramWrapper;
 		}
 
 		protected void DeleteShapeOnDeselect(Shape shape)

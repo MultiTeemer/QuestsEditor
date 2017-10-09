@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Forms.QuestsViewerStuff;

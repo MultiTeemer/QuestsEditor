@@ -4,15 +4,16 @@ using System.Windows.Forms;
 using Dataweb.NShape;
 using Dataweb.NShape.GeneralShapes;
 using OdQuestsGenerator.CodeReaders;
+using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
+using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class AddLinkWrapper : ToolWrapper<LinearShapeCreationTool>
+	class AddLinkWrapper : ToolWrapper<LinearShapeCreationTool, FlowView>
 	{
-		public AddLinkWrapper(EditingContext context, LinearShapeCreationTool tool)
-			: base(context, tool)
+		public AddLinkWrapper(EditingContext context, LinearShapeCreationTool tool, FlowView view)
+			: base(context, tool, view)
 		{}
 
 		public override void OnShapesInserted(List<Shape> affectedShapes)
@@ -37,8 +38,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 				}
 
 				if (b1 != null && b2 != null && b1 != b2) {
-					var n1 = Context.FlowView.GetNodeForShape(b1);
-					var n2 = Context.FlowView.GetNodeForShape(b2);
+					var n1 = DiagramWrapper.GetNodeForShape(b1);
+					var n2 = DiagramWrapper.GetNodeForShape(b2);
 					var link = new Link(n1, n2);
 
 					if (!n2.Quest.IsLinksToEditable()) {
@@ -55,21 +56,21 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 						return;
 					}
 
-					Context.FlowView.RegisterShapeForLink(p, link);
+					DiagramWrapper.RegisterShapeForLink(p, link);
 
 					if (!n1.Quest.IsActive() || !n2.Quest.IsActive()) {
 						var command = new CompositeCommand(Context);
 						if (!n1.Quest.IsActive()) {
-							command.AddCommand(new ActivateQuestCommand(n1.Quest, Context.Flow.GetSectorForQuest(n1.Quest), Context));
+							command.AddCommand(CommandsCreation.ActivateQuest(n1.Quest, Context, DiagramWrapper));
 						}
 						if (!n2.Quest.IsActive()) {
-							command.AddCommand(new ActivateQuestCommand(n2.Quest, Context.Flow.GetSectorForQuest(n2.Quest), Context));
+							command.AddCommand(CommandsCreation.ActivateQuest(n2.Quest, Context, DiagramWrapper));
 						}
-						command.AddCommand(new AddLinkCommand(link, Context));
+						command.AddCommand(CommandsCreation.AddLink(link, Context, DiagramWrapper));
 
 						Context.History.Do(command);
 					} else {
-						Context.History.Do(new AddLinkCommand(link, Context));
+						Context.History.Do(CommandsCreation.AddLink(link, Context, DiagramWrapper));
 					}
 				} else {
 					DeleteShapeOnDeselect(p);

@@ -2,15 +2,16 @@
 using System.Linq;
 using Dataweb.NShape;
 using Dataweb.NShape.GeneralShapes;
+using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
+using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class AddQuestWrapper : ToolWrapper<PlanarShapeCreationTool>
+	class AddQuestWrapper : ToolWrapper<PlanarShapeCreationTool, FlowView>
 	{
-		public AddQuestWrapper(EditingContext context, PlanarShapeCreationTool tool)
-			: base(context, tool)
+		public AddQuestWrapper(EditingContext context, PlanarShapeCreationTool tool, FlowView view)
+			: base(context, tool, view)
 		{}
 
 		public override void OnShapesInserted(List<Shape> affectedShapes)
@@ -25,27 +26,28 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			}
 		}
 
-		private void AddNewQuest_FormClosing(AddNewQuest d, Box shape)
+		private void AddNewQuest_FormClosing(AddNewQuest form, Box shape)
 		{
-			if (d.Accepted) {
+			if (form.Accepted) {
 				Command command = null;
 				var quest = Quest.Default;
-				quest.Name = d.QuestName;
-				quest.SectorName = d.Sector.Name;
+				quest.Name = form.QuestName;
+				quest.SectorName = form.Sector.Name;
 
-				if (d.ActivateByDefault) {
+				var addQuestCommand = CommandsCreation.AddQuest(quest, form.Sector, Context, DiagramWrapper, shape);
+				if (form.ActivateByDefault) {
 					var c = new CompositeCommand(Context);
-					c.AddCommand(new AddQuestCommand(quest, d.Sector, shape, Context));
-					c.AddCommand(new ActivateQuestCommand(quest, d.Sector, Context));
+					c.AddCommand(addQuestCommand);
+					c.AddCommand(CommandsCreation.ActivateQuest(quest, Context, DiagramWrapper));
 					command = c;
 				} else {
-					command = new AddQuestCommand(quest, d.Sector, shape, Context);
+					command = addQuestCommand;
 				}
 				Context.History.Do(command);
 
 				shape.SetCaptionText(0, quest.Name);
 			} else {
-				Context.FlowView.RemoveNodeShape(shape);
+				DiagramWrapper.RemoveNodeShape(shape);
 			}
 		}
 	}

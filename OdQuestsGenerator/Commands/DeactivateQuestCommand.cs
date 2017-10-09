@@ -1,7 +1,6 @@
 ﻿using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class DeactivateQuestCommand : Command
 	{

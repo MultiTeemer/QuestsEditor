@@ -1,9 +1,13 @@
-﻿using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
-
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+﻿namespace OdQuestsGenerator.Commands
 {
+	delegate void DoneHandler(bool firstTime);
+	delegate void UndoneHandler();
+
 	interface ICommand
 	{
+		DoneHandler Done { get; set; }
+		UndoneHandler Undone { get; set; }
+
 		void Do();
 		void Undo();
 	}
@@ -11,6 +15,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 	abstract class Command : ICommand
 	{
 		protected readonly EditingContext Context;
+
+		public DoneHandler Done { get; set; }
+		public UndoneHandler Undone { get; set; }
 
 		public abstract void Do();
 		public abstract void Undo();

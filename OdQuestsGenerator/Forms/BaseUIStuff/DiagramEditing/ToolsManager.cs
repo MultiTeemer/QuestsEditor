@@ -3,18 +3,18 @@ using System.Linq;
 using Dataweb.NShape;
 using Dataweb.NShape.Controllers;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
+namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 {
 	class ToolsManager
 	{
-		private readonly FlowView flowView;
+		private readonly DiagramWrapper flowView;
 		private readonly ToolSetController toolSetController;
 		private readonly Dictionary<Tool, IToolWrapper> toolSet = new Dictionary<Tool, IToolWrapper>();
 
 		public IToolWrapper CurrentActiveToolWrapper { get; private set; }
 		public Tool CurrentActiveTool => toolSetController.SelectedTool;
 
-		public ToolsManager(ToolSetController toolSetController, FlowView flowView)
+		public ToolsManager(ToolSetController toolSetController, DiagramWrapper flowView)
 		{
 			this.flowView = flowView;
 			this.toolSetController = toolSetController;

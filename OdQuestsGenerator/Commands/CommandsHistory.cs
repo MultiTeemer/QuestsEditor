@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class CommandsHistory
 	{
@@ -9,7 +9,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 		public int LastPerformedCommandIdx { get; private set; } = -1;
 
-		public event Action<ICommand> Done;
+		public event Action<ICommand, bool> Done;
 		public event Action<ICommand> Undone;
 
 		public void Do(ICommand command)
@@ -24,7 +24,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 			LastPerformedCommandIdx = commands.Count - 1;
 
-			Done?.Invoke(command);
+			command.Done?.Invoke(true);
+			Done?.Invoke(command, true);
 		}
 
 		public void Do()
@@ -33,8 +34,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 				var command = commands[LastPerformedCommandIdx + 1];
 				command.Do();
 				++LastPerformedCommandIdx;
-				Done?.Invoke(command);
-
+				command.Done?.Invoke(false);
+				Done?.Invoke(command, false);
 			}
 		}
 		
@@ -44,6 +45,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 				var command = commands[LastPerformedCommandIdx];
 				command.Undo();
 				--LastPerformedCommandIdx;
+				command.Undone?.Invoke();
 				Undone?.Invoke(command);
 			}
 		}

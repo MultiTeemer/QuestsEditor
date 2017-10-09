@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.CodeEditing;
+using OdQuestsGenerator.CodeEditing.SyntaxRewriters;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class RemoveLinkCommand : Command
 	{
@@ -29,8 +29,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 				Context.Code
 			);
 			snapshot = Context.CodeEditor.ApplySyntaxRewriters(rewriter);
-
-			Context.FlowView.RemoveShapeLink(link);
 		}
 
 		public override void Undo()
@@ -38,8 +36,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 			Context.CodeEditor.ApplySnapshot(snapshot);
 
 			Context.Flow.Graph.AddLink(link);
-
-			Context.FlowView.AddShapeLink(link);
 		}
 
 		private ISymbol GetQuestClassSymbol(Quest quest)

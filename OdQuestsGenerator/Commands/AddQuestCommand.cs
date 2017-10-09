@@ -1,25 +1,23 @@
 ﻿using System.IO;
-using Dataweb.NShape;
 using Microsoft.CodeAnalysis.CSharp;
+using OdQuestsGenerator.CodeEditing;
+using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class AddQuestCommand : Command
 	{
 		private readonly Quest quest;
 		private readonly Sector sector;
 		private readonly CodeBulk codeBulk;
-		private readonly Shape shape;
 
-		public AddQuestCommand(Quest quest, Sector sector, Shape shape, EditingContext context)
+		public AddQuestCommand(Quest quest, Sector sector, EditingContext context)
 			: base(context)
 		{
 			this.quest = quest;
 			this.sector = sector;
-			this.shape = shape;
 
 			codeBulk = CreateCode(quest, sector, Context);
 		}
@@ -32,13 +30,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 			sector.Quests.Add(quest);
 
 			codeBulk.WasModified = true;
-
-			var n = Context.Flow.Graph.FindNodeForQuest(quest);
-			if (shape.Diagram != null) {
-				Context.FlowView.RegisterShapeForNode(n, shape);
-			} else {
-				Context.FlowView.AddShapeForNode(n, shape);
-			}
 		}
 
 		public override void Undo()
@@ -47,8 +38,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 			Context.Code.QuestsAndCodeBulks.Remove(quest);
 			Context.Flow.Graph.RemoveNode(quest);
 			sector.Quests.Remove(quest);
-
-			Context.FlowView.RemoveNodeShape(shape);
 		}
 
 		private static CodeBulk CreateCode(Quest quest, Sector sector, EditingContext context)

@@ -7,27 +7,20 @@ using Dataweb.NShape.WinFormsUI;
 using Microsoft.Msagl.Miscellaneous;
 using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
+using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 {
-	class FlowView
+	class FlowView : DiagramWrapper
 	{
 		public const int ShapeSize = 200;
 
-		public readonly Display Display;
-
-		private readonly DiagramSetController controller;
-		private readonly Project project;
 		private readonly ShapeTemplatesFactory templates;
 		private readonly PresentersManager presentersManager;
 
 		private TwoWayDictionary<Node, Shape> nodesAndShapes = new TwoWayDictionary<Node, Shape>();
 		private TwoWayDictionary<Link, Shape> linksAndArrows = new TwoWayDictionary<Link, Shape>();
-
-		private Diagram diagram;
-
-		public bool DiagramEdited { get; private set; }
 
 		public FlowView(
 			DiagramSetController controller,
@@ -35,10 +28,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			Display display,
 			ShapeTemplatesFactory templates
 		)
+			: base(controller, project, display)
 		{
-			this.controller = controller;
-			this.project = project;
-			this.Display = display;
 			this.templates = templates;
 
 			presentersManager = new PresentersManager(project);

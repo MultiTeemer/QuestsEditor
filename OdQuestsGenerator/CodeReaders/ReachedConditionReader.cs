@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
 using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.CodeReaders

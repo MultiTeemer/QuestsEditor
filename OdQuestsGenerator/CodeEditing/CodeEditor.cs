@@ -4,9 +4,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.SyntaxRewriters;
+using OdQuestsGenerator.CodeEditing.SyntaxRewriters;
+using OdQuestsGenerator.Data;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff
+namespace OdQuestsGenerator.CodeEditing
 {
 	class CodeSnapshot
 	{

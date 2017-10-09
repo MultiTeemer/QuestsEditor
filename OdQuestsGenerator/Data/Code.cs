@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Options;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Utils;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff
+namespace OdQuestsGenerator.Data
 {
 	enum CodeBulkType
 	{

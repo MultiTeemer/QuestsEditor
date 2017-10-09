@@ -2,12 +2,12 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 using OdQuestsGenerator.Utils;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class RenameQuestCommand : Command
 	{
@@ -42,20 +42,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 		private readonly string oldName;
 		private readonly string newName;
 
-		public RenameQuestCommand(Quest quest, string newName, EditingContext context)
+		public RenameQuestCommand(Quest quest, string oldName, string newName, EditingContext context)
 			: base(context)
 		{
 			this.quest = quest;
 			this.newName = newName;
-
-			oldName = quest.Name;
+			this.oldName = oldName;
 		}
 
 		public override void Do()
 		{
 			quest.Name = newName;
 
-			SetViewName(newName);
 			RenameQuestInCode(oldName, newName);
 		}
 
@@ -63,14 +61,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 		{
 			quest.Name = oldName;
 
-			SetViewName(oldName);
 			RenameQuestInCode(newName, oldName);
-		}
-
-		private void SetViewName(string name)
-		{
-			var shape = Context.FlowView.GetShapeForQuest(quest);
-			shape.SetCaptionText(0, name);
 		}
 
 		private void RenameQuestInCode(string oldName, string newName)

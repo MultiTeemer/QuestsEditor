@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
+using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
 
 namespace OdQuestsGenerator.CodeReaders
 {

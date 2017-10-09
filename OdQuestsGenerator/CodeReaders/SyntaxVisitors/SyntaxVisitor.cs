@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
+using OdQuestsGenerator.CodeEditing;
+using OdQuestsGenerator.Data;
 
 namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
 {

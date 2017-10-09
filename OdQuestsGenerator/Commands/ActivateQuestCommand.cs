@@ -2,12 +2,12 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 using OdQuestsGenerator.Utils;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class ActivateQuestCommand : Command
 	{
@@ -44,8 +44,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 			var data = quest.Ensure<InitializationData>();
 			data.InitializationPlaces.Add(sector);
-
-			Context.FlowView.Update();
 		}
 
 		public override void Undo()
@@ -54,8 +52,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 
 			var data = quest.Data.FirstOfType<InitializationData>();
 			data.InitializationPlaces.Remove(sector);
-
-			Context.FlowView.Update();
 		}
 	}
 }

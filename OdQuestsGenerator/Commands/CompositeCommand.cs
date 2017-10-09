@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
+namespace OdQuestsGenerator.Commands
 {
 	class CompositeCommand : Command
 	{
@@ -21,11 +21,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Commands
 		public void AddCommand(ICommand command)
 		{
 			commands.Add(command);
+
+			Done += command.Done;
+			Undone = (UndoneHandler)Delegate.Combine(command.Undone, Undone);
 		}
 
 		public void AddCommands(IEnumerable<ICommand> commands)
 		{
 			this.commands.AddRange(commands);
+			foreach (var cmd in commands) {
+				Done += cmd.Done;
+				Undone = (UndoneHandler)Delegate.Combine(cmd.Undone, Undone);
+			}
 		}
 
 		public override void Do()
