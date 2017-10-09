@@ -42,7 +42,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers.OverloadedTool
 
 			if (!wasEnded) {
 				wasEnded = true;
-				Console.WriteLine((object)LastTouchedShape ?? "null");
 			}
 		}
 	}
