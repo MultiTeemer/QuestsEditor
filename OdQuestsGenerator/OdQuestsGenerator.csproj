@@ -294,6 +294,7 @@
     <Compile Include="Forms\QuestsViewerStuff\SyntaxRewriters\SyntaxRewriter.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddLinkWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddQuestWrapper.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\EditingContext.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\IToolWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\OverloadedTools\SelectionTool.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\QuestsManipulatorWrapper.cs" />
