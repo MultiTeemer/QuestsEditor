@@ -45,8 +45,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
 
 			FillStyle.Name = Guid.NewGuid().ToString();
 			StrokeStyle.Name = Guid.NewGuid().ToString();
-			Project.Design.FillStyles.Add(FillStyle, FillStyle);
-			Project.Design.LineStyles.Add(strokeStyle, strokeStyle);
+			if (!Project.Design.FillStyles.Contains(fillStyle)) {
+				Project.Design.FillStyles.Add(FillStyle, FillStyle);
+			}
+			if (!project.Design.LineStyles.Contains(strokeStyle)) {
+				Project.Design.LineStyles.Add(strokeStyle, strokeStyle);
+			}
 		}
 	}
 
@@ -67,7 +71,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.Presenters
 			Style = style;
 
 			Style.Name = Guid.NewGuid().ToString();
-			project.Design.LineStyles.Add(style, style);
+			if (!project.Design.LineStyles.Contains(style)) {
+				project.Design.LineStyles.Add(style, style);
+			}
 		}
 	}
 }

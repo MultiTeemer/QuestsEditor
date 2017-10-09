@@ -4,10 +4,10 @@ using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class StubWrapper : ToolWrapper
+	class StubWrapper : ToolWrapper<Tool>
 	{
-		public StubWrapper(EditingContext context)
-			: base(context)
+		public StubWrapper(EditingContext context, Tool tool)
+			: base(context, tool)
 		{}
 
 		public override void OnShapesInserted(List<Shape> affectedShapes)

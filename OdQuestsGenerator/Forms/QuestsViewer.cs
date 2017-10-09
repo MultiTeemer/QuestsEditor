@@ -122,7 +122,7 @@ namespace OdQuestsGenerator.Forms
 					SelectSector(0);
 				}
 
-				flowView.Display(flow.Graph);
+				flowView.DisplayFlow(flow.Graph);
 			//} catch (Exception e) {
 				//throw;
 				//MessageBox.Show($"During operation performing exception has been thrown: {e.Message}");
@@ -283,18 +283,17 @@ namespace OdQuestsGenerator.Forms
 		{
 			toolsManager.Clear();
 
-			toolsManager.AddTool(new SelectionTool(), new QuestsManipulatorWrapper(editingContext));
-			toolsManager.AddTool(
-				new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate())),
-				new AddLinkWrapper(editingContext)
-			);
-			toolsManager.AddTool(
-				new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate())),
-				new AddQuestWrapper(editingContext)
-			);
+			var tool1 = new QuestsViewerStuff.ToolsWrappers.OverloadedTools.SelectionTool();
+			toolsManager.AddTool(tool1, new QuestsManipulatorWrapper(editingContext, tool1));
+
+			var tool2 = new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate()));
+			toolsManager.AddTool(tool2, new AddLinkWrapper(editingContext, tool2));
+
+			var tool3 = new PlanarShapeCreationTool(new Template("Quest", templates.GetQuestTemplate()));
+			toolsManager.AddTool(tool3, new AddQuestWrapper(editingContext, tool3));
 		}
 
-		private void display_KeyUp(object sender, KeyEventArgs e)
+		private void QuestsViewer_KeyUp(object sender, KeyEventArgs e)
 		{
 			toolsManager.CurrentActiveToolWrapper?.OnKeyUp(e.KeyCode);
 		}

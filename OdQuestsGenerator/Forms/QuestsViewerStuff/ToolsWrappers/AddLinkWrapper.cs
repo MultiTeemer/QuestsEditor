@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Dataweb.NShape;
@@ -7,14 +6,13 @@ using Dataweb.NShape.GeneralShapes;
 using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
-using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class AddLinkWrapper : ToolWrapper
+	class AddLinkWrapper : ToolWrapper<LinearShapeCreationTool>
 	{
-		public AddLinkWrapper(EditingContext context)
-			: base(context)
+		public AddLinkWrapper(EditingContext context, LinearShapeCreationTool tool)
+			: base(context, tool)
 		{}
 
 		public override void OnShapesInserted(List<Shape> affectedShapes)

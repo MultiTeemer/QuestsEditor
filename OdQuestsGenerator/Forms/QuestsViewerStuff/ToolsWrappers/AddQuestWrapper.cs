@@ -7,10 +7,10 @@ using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class AddQuestWrapper : ToolWrapper
+	class AddQuestWrapper : ToolWrapper<PlanarShapeCreationTool>
 	{
-		public AddQuestWrapper(EditingContext context)
-			: base(context)
+		public AddQuestWrapper(EditingContext context, PlanarShapeCreationTool tool)
+			: base(context, tool)
 		{}
 
 		public override void OnShapesInserted(List<Shape> affectedShapes)

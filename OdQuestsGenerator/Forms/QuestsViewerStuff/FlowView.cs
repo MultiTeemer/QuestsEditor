@@ -15,9 +15,10 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 	{
 		public const int ShapeSize = 200;
 
+		public readonly Display Display;
+
 		private readonly DiagramSetController controller;
 		private readonly Project project;
-		private readonly Display display;
 		private readonly ShapeTemplatesFactory templates;
 		private readonly PresentersManager presentersManager;
 
@@ -37,17 +38,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		{
 			this.controller = controller;
 			this.project = project;
-			this.display = display;
+			this.Display = display;
 			this.templates = templates;
 
 			presentersManager = new PresentersManager(project);
 		}
 
-		public void Display(Graph graph)
+		public void DisplayFlow(Graph graph)
 		{
 			diagram = new Diagram("Foo");
-			display.Diagram = diagram;
 			diagram.Size = new System.Drawing.Size(3000, 1500);
+			Display.Diagram = diagram;
+			project.Repository.InsertAll(diagram);
 
 			InitShapes(graph, diagram);
 			LayoutShapes(graph);

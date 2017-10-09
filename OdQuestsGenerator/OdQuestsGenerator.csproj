@@ -13,6 +13,21 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,15 +54,15 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dataweb.NShape, Version=2.1.0.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
+    <Reference Include="Dataweb.NShape, Version=2.2.1.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Include\Dataweb.NShape.dll</HintPath>
     </Reference>
-    <Reference Include="Dataweb.NShape.GeneralShapes, Version=2.1.0.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
+    <Reference Include="Dataweb.NShape.GeneralShapes, Version=2.2.1.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Include\Dataweb.NShape.GeneralShapes.dll</HintPath>
     </Reference>
-    <Reference Include="Dataweb.NShape.WinFormsUI, Version=2.1.0.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
+    <Reference Include="Dataweb.NShape.WinFormsUI, Version=2.2.1.0, Culture=neutral, PublicKeyToken=1512080cd664963c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Include\Dataweb.NShape.WinFormsUI.dll</HintPath>
     </Reference>
@@ -280,6 +295,7 @@
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddLinkWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddQuestWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\IToolWrapper.cs" />
+    <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\OverloadedTools\SelectionTool.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\QuestsManipulatorWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\StubWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\ToolsManager.cs" />
@@ -357,7 +373,18 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

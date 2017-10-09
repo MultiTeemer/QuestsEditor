@@ -31,7 +31,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QuestsViewer));
-			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager24 = new Dataweb.NShape.RoleBasedSecurityManager();
+			Dataweb.NShape.RoleBasedSecurityManager roleBasedSecurityManager1 = new Dataweb.NShape.RoleBasedSecurityManager();
 			this.openMenuStrip = new System.Windows.Forms.MenuStrip();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openQuestFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -39,15 +39,14 @@ namespace OdQuestsGenerator.Forms
 			this.questNameLabel = new System.Windows.Forms.Label();
 			this.sectorsViewer = new System.Windows.Forms.ListBox();
 			this.questsListBox = new System.Windows.Forms.ListBox();
-			this.display = new Dataweb.NShape.WinFormsUI.Display();
+			this.toolSetController = new Dataweb.NShape.Controllers.ToolSetController();
 			this.diagramSetController = new Dataweb.NShape.Controllers.DiagramSetController();
 			this.project = new Dataweb.NShape.Project(this.components);
 			this.cachedRepository = new Dataweb.NShape.Advanced.CachedRepository();
-			this.toolSetController = new Dataweb.NShape.Controllers.ToolSetController();
-			this.toolsListView = new System.Windows.Forms.ListView();
 			this.toolSetListViewPresenter = new Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter(this.components);
+			this.toolsListView = new System.Windows.Forms.ListView();
+			this.display = new Dataweb.NShape.WinFormsUI.Display();
 			this.openMenuStrip.SuspendLayout();
-			this.display.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// openMenuStrip
@@ -107,33 +106,9 @@ namespace OdQuestsGenerator.Forms
 			this.questsListBox.TabIndex = 5;
 			this.questsListBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.questsListBox_MouseClick);
 			// 
-			// display
+			// toolSetController
 			// 
-			this.display.AllowDrop = true;
-			this.display.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.display.BackColorGradient = System.Drawing.SystemColors.Control;
-			this.display.Controls.Add(this.toolsListView);
-			this.display.DiagramSetController = this.diagramSetController;
-			this.display.GridColor = System.Drawing.Color.Gainsboro;
-			this.display.GridSize = 19;
-			this.display.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.display.Location = new System.Drawing.Point(237, 27);
-			this.display.Name = "display";
-			this.display.PropertyController = null;
-			this.display.RenderingQualityHighQuality = Dataweb.NShape.Advanced.RenderingQuality.MaximumQuality;
-			this.display.RenderingQualityLowQuality = Dataweb.NShape.Advanced.RenderingQuality.MaximumQuality;
-			this.display.SelectionHilightColor = System.Drawing.Color.Firebrick;
-			this.display.SelectionInactiveColor = System.Drawing.Color.Gray;
-			this.display.SelectionInteriorColor = System.Drawing.Color.WhiteSmoke;
-			this.display.SelectionNormalColor = System.Drawing.Color.DarkGreen;
-			this.display.Size = new System.Drawing.Size(606, 733);
-			this.display.SnapToGrid = false;
-			this.display.TabIndex = 6;
-			this.display.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
-			this.display.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
-			this.display.KeyUp += new System.Windows.Forms.KeyEventHandler(this.display_KeyUp);
+			this.toolSetController.DiagramSetController = this.diagramSetController;
 			// 
 			// diagramSetController
 			// 
@@ -142,38 +117,19 @@ namespace OdQuestsGenerator.Forms
 			// 
 			// project
 			// 
-			this.project.AutoLoadLibraries = true;
 			this.project.Description = null;
 			this.project.LibrarySearchPaths = ((System.Collections.Generic.IList<string>)(resources.GetObject("project.LibrarySearchPaths")));
 			this.project.Name = null;
 			this.project.Repository = this.cachedRepository;
-			roleBasedSecurityManager24.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
-			roleBasedSecurityManager24.CurrentRoleName = "Administrator";
-			this.project.SecurityManager = roleBasedSecurityManager24;
+			roleBasedSecurityManager1.CurrentRole = Dataweb.NShape.StandardRole.Administrator;
+			roleBasedSecurityManager1.CurrentRoleName = "Administrator";
+			this.project.SecurityManager = roleBasedSecurityManager1;
 			// 
 			// cachedRepository
 			// 
 			this.cachedRepository.ProjectName = null;
 			this.cachedRepository.Store = null;
 			this.cachedRepository.Version = 0;
-			// 
-			// toolSetController
-			// 
-			this.toolSetController.DiagramSetController = this.diagramSetController;
-			// 
-			// toolsListView
-			// 
-			this.toolsListView.FullRowSelect = true;
-			this.toolsListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.toolsListView.HideSelection = false;
-			this.toolsListView.Location = new System.Drawing.Point(0, 0);
-			this.toolsListView.MultiSelect = false;
-			this.toolsListView.Name = "toolsListView";
-			this.toolsListView.ShowItemToolTips = true;
-			this.toolsListView.Size = new System.Drawing.Size(76, 129);
-			this.toolsListView.TabIndex = 8;
-			this.toolsListView.UseCompatibleStateImageBehavior = false;
-			this.toolsListView.View = System.Windows.Forms.View.List;
 			// 
 			// toolSetListViewPresenter
 			// 
@@ -182,14 +138,52 @@ namespace OdQuestsGenerator.Forms
 			this.toolSetListViewPresenter.ShowDefaultContextMenu = true;
 			this.toolSetListViewPresenter.ToolSetController = this.toolSetController;
 			// 
+			// toolsListView
+			// 
+			this.toolsListView.FullRowSelect = true;
+			this.toolsListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+			this.toolsListView.HideSelection = false;
+			this.toolsListView.Location = new System.Drawing.Point(226, 27);
+			this.toolsListView.MultiSelect = false;
+			this.toolsListView.Name = "toolsListView";
+			this.toolsListView.ShowItemToolTips = true;
+			this.toolsListView.Size = new System.Drawing.Size(76, 129);
+			this.toolsListView.TabIndex = 10;
+			this.toolsListView.UseCompatibleStateImageBehavior = false;
+			this.toolsListView.View = System.Windows.Forms.View.List;
+			// 
+			// display
+			// 
+			this.display.AllowDrop = true;
+			this.display.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.display.BackColorGradient = System.Drawing.SystemColors.Control;
+			this.display.DiagramSetController = this.diagramSetController;
+			this.display.GridColor = System.Drawing.Color.Gainsboro;
+			this.display.GridSize = 19;
+			this.display.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.display.Location = new System.Drawing.Point(226, 27);
+			this.display.Name = "display";
+			this.display.PropertyController = null;
+			this.display.SelectionHilightColor = System.Drawing.Color.Firebrick;
+			this.display.SelectionInactiveColor = System.Drawing.Color.Gray;
+			this.display.SelectionInteriorColor = System.Drawing.Color.WhiteSmoke;
+			this.display.SelectionNormalColor = System.Drawing.Color.DarkGreen;
+			this.display.Size = new System.Drawing.Size(607, 700);
+			this.display.TabIndex = 9;
+			this.display.ToolPreviewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(119)))), ((int)(((byte)(136)))), ((int)(((byte)(153)))));
+			this.display.ToolPreviewColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(70)))), ((int)(((byte)(130)))), ((int)(((byte)(180)))));
+			// 
 			// QuestsViewer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(1048, 772);
-			this.Controls.Add(this.display);
+			this.Controls.Add(this.toolsListView);
 			this.Controls.Add(this.questsListBox);
+			this.Controls.Add(this.display);
 			this.Controls.Add(this.sectorsViewer);
 			this.Controls.Add(this.questNameLabel);
 			this.Controls.Add(this.statesViewer);
@@ -200,9 +194,9 @@ namespace OdQuestsGenerator.Forms
 			this.Text = "OD Quests Editor";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.QuestsViewer_Load);
+			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.QuestsViewer_KeyUp);
 			this.openMenuStrip.ResumeLayout(false);
 			this.openMenuStrip.PerformLayout();
-			this.display.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -217,12 +211,12 @@ namespace OdQuestsGenerator.Forms
 		private System.Windows.Forms.Label questNameLabel;
 		private System.Windows.Forms.ListBox sectorsViewer;
 		private System.Windows.Forms.ListBox questsListBox;
-		private Dataweb.NShape.WinFormsUI.Display display;
+		private Dataweb.NShape.Controllers.ToolSetController toolSetController;
 		private Dataweb.NShape.Controllers.DiagramSetController diagramSetController;
 		private Dataweb.NShape.Project project;
-		private Dataweb.NShape.Controllers.ToolSetController toolSetController;
-		private System.Windows.Forms.ListView toolsListView;
-		private Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter toolSetListViewPresenter;
 		private Dataweb.NShape.Advanced.CachedRepository cachedRepository;
+		private Dataweb.NShape.WinFormsUI.ToolSetListViewPresenter toolSetListViewPresenter;
+		private System.Windows.Forms.ListView toolsListView;
+		private Dataweb.NShape.WinFormsUI.Display display;
 	}
 }

@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Dataweb.NShape;
 using Dataweb.NShape.Advanced;
+using Dataweb.NShape.Controllers;
 using Dataweb.NShape.GeneralShapes;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataValidators;
@@ -9,10 +12,10 @@ using OdQuestsGenerator.Forms.QuestsViewerStuff.Commands;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class QuestsManipulatorWrapper : ToolWrapper
+	class QuestsManipulatorWrapper : ToolWrapper<OverloadedTools.SelectionTool>
 	{
-		public QuestsManipulatorWrapper(EditingContext context)
-			: base(context)
+		public QuestsManipulatorWrapper(EditingContext context, OverloadedTools.SelectionTool tool)
+			: base(context, tool)
 		{}
 
 		public override void OnShapesUpdated(List<Shape> affectedShapes)
@@ -21,15 +24,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 			var shape = affectedShapes.First() as CaptionedShapeBase;
 			if (shape != null) {
-				var quest = FindQuestForShape(shape);
-				if (quest.Name != shape.Text) {
-					var newName = shape.Text.Trim();
-					if (IsItOkForCodeGeneration.Check(newName)) {
-						Context.History.Do(new RenameQuestCommand(quest, shape.Text, Context));
-					} else {
-						shape.SetCaptionText(0, quest.Name);
-					}
-				}
+				TryToInitializeRenameCommand(shape);
 			}
 		}
 
@@ -53,6 +48,32 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					.ToList();
 				if (commands.Count > 0) {
 					Context.History.Do(new CompositeCommand(Context, commands));
+				}
+			}
+		}
+
+		public override void OnKeyUp(Keys keys)
+		{
+			base.OnKeyUp(keys);
+
+			if (keys == Keys.Enter && Tool.LastPerformedAction == OverloadedTools.SelectionTool.EditAction.EditCaption) {
+				var shape = Tool.LastTouchedShape as CaptionedShapeBase;
+				if (shape != null) {
+					TryToInitializeRenameCommand(shape);
+					(Context.FlowView.Display as IDiagramPresenter).CloseCaptionEditor(false);
+				}
+			}
+		}
+
+		private void TryToInitializeRenameCommand(CaptionedShapeBase shape)
+		{
+			var quest = FindQuestForShape(shape);
+			if (quest.Name != shape.Text) {
+				var newName = Regex.Replace(shape.Text, "\\s+", "");
+				if (IsItOkForCodeGeneration.Check(newName)) {
+					Context.History.Do(new RenameQuestCommand(quest, newName, Context));
+				} else {
+					shape.SetCaptionText(0, quest.Name);
 				}
 			}
 		}

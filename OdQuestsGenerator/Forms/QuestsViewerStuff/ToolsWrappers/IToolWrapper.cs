@@ -49,9 +49,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		}
 	}
 
-	abstract class ToolWrapper : IToolWrapper
+	abstract class ToolWrapper<TTool> : IToolWrapper
+		where TTool : Tool
 	{
 		protected readonly EditingContext Context;
+		protected readonly TTool Tool;
 
 		public event Action ToolDeselectedAutoCleared;
 
@@ -66,9 +68,10 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			ToolDeselectedAutoCleared = null;
 		}
 
-		protected ToolWrapper(EditingContext context)
+		protected ToolWrapper(EditingContext context, TTool tool)
 		{
 			Context = context;
+			Tool = tool;
 		}
 
 		protected void DeleteShapeOnDeselect(Shape shape)
