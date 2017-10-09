@@ -15,6 +15,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		void OnShapesDeleted(List<Shape> affectedShapes);
 		void OnShapesInserted(List<Shape> affectedShapes);
 		void OnShapesUpdated(List<Shape> affectedShapes);
+		void OnShapeClick(Shape shape);
+		void OnShapeDoubleClick(Shape shape);
 		void OnToolDeselected();
 	}
 
@@ -61,6 +63,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		public virtual void OnShapesDeleted(List<Shape> affectedShapes) {}
 		public virtual void OnShapesInserted(List<Shape> affectedShapes) {}
 		public virtual void OnShapesUpdated(List<Shape> affectedShapes) {}
+		public virtual void OnShapeClick(Shape shape) {}
+		public virtual void OnShapeDoubleClick(Shape shape) {}
 
 		public virtual void OnToolDeselected()
 		{

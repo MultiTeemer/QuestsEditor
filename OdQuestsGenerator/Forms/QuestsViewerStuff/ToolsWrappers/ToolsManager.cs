@@ -22,6 +22,22 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			toolSetController.Project.Repository.ShapesInserted += Repository_ShapesInserted;
 			toolSetController.Project.Repository.ShapesUpdated += Repository_ShapesUpdated;
 			toolSetController.Project.Repository.ShapesDeleted += Repository_ShapesDeleted;
+			flowView.Display.ShapeClick += Display_ShapeClick;
+			flowView.Display.ShapeDoubleClick += Display_ShapeDoubleClick;
+		}
+
+		private void Display_ShapeDoubleClick(object sender, DiagramPresenterShapeClickEventArgs e)
+		{
+			if (e.Shape != null) {
+				CurrentActiveToolWrapper?.OnShapeDoubleClick(e.Shape);
+			}
+		}
+
+		private void Display_ShapeClick(object sender, DiagramPresenterShapeClickEventArgs e)
+		{
+			if (e.Shape != null) {
+				CurrentActiveToolWrapper?.OnShapeClick(e.Shape);
+			}
 		}
 
 		private void Repository_ShapesDeleted(object sender, RepositoryShapesEventArgs e)
