@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers;
 using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.CodeEditing
@@ -27,11 +26,11 @@ namespace OdQuestsGenerator.CodeEditing
 			{
 				base.VisitObjectCreationExpression(node);
 
-				if (Result != null) return;
-
-				var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
-				if (model.GetTypeInfo(node).Type == type) {
-					Result = node.GetParentOfType<StatementSyntax>();
+				if (Result == null) {
+					var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
+					if (model.GetTypeInfo(node).Type == type) {
+						Result = node.GetParentOfType<StatementSyntax>();
+					}
 				}
 			}
 		}
@@ -48,36 +47,35 @@ namespace OdQuestsGenerator.CodeEditing
 
 			var lastStatement = block.Statements.First();
 			var lastStatementPos = 0;
-			foreach (var q in linkedQuests) {
-				var finder = new InitializationStatementsFinder(context.Code, GetQuestClassSymbol(q, context));
+			foreach (var linkedQuest in linkedQuests) {
+				var finder = new InitializationStatementsFinder(
+					context.Code,
+					context.CodeEditor.GetQuestClassSymbol(linkedQuest)
+				);
 				finder.Visit(block);
-				var s = finder.Result;
-				var pos = block.Statements.IndexOf(s);
+				var initStatement = finder.Result;
+				var pos = block.Statements.IndexOf(initStatement);
 				if (pos > lastStatementPos) {
-					lastStatement = s;
+					lastStatement = initStatement;
 					lastStatementPos = pos;
 				}
 			}
 
-			var f = new InitializationStatementsFinder(context.Code, GetQuestClassSymbol(quest, context));
-			f.Visit(block);
-			var replacee = f.Result;
+			var replaceeFinder = new InitializationStatementsFinder(
+				context.Code,
+				context.CodeEditor.GetQuestClassSymbol(quest)
+			);
+			replaceeFinder.Visit(block);
+			var replacee = replaceeFinder.Result;
 			var idx = block.Statements.IndexOf(replacee);
 
 			if (idx < lastStatementPos) {
-				var ss = block.Statements.RemoveAt(idx);
-				ss = ss.Insert(lastStatementPos, replacee);
-
-				cb.Tree = cb.Tree.GetRoot().ReplaceNode(cb.Tree.GetSectorInitializationFunction(), init.WithBody(block.WithStatements(ss))).SyntaxTree;
+				var newStatements = block.Statements.RemoveAt(idx).Insert(lastStatementPos, replacee);
+				cb.Tree = cb.Tree.GetRoot().ReplaceNode(
+					cb.Tree.GetSectorInitializationFunction(),
+					init.WithBody(block.WithStatements(newStatements))
+				).SyntaxTree;
 			}
-		}
-
-		private static ISymbol GetQuestClassSymbol(Quest quest, EditingContext Context)
-		{
-			var cb = Context.Code.QuestsAndCodeBulks[quest];
-			var decl = cb.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Last();
-
-			return Context.CodeEditor.GetSymbolFor(decl, cb);
 		}
 	}
 }

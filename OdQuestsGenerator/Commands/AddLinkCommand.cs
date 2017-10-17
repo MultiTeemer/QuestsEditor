@@ -22,8 +22,8 @@ namespace OdQuestsGenerator.Commands
 
 		public override void Do()
 		{
-			var sym1 = GetQuestClassSymbol(link.Node1.Quest);
-			var sym2 = GetQuestClassSymbol(link.Node2.Quest);
+			var sym1 = Context.CodeEditor.GetQuestClassSymbol(link.Node1.Quest);
+			var sym2 = Context.CodeEditor.GetQuestClassSymbol(link.Node2.Quest);
 			var rewriter = new ComponentIsFinishedCallAdder(
 				link.Node1.Quest,
 				link.Node2.Quest,
@@ -43,14 +43,6 @@ namespace OdQuestsGenerator.Commands
 			Context.Flow.Graph.RemoveLink(link);
 
 			Context.CodeEditor.ApplySnapshot(snapshot);
-		}
-
-		private ISymbol GetQuestClassSymbol(Quest quest)
-		{
-			var cb = Context.Code.QuestsAndCodeBulks[quest];
-			var decl = cb.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Last();
-
-			return Context.CodeEditor.GetSymbolFor(decl, cb);
 		}
 	}
 }

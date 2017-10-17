@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
 using OdQuestsGenerator.CodeEditing.SyntaxRewriters;
@@ -120,6 +121,14 @@ namespace OdQuestsGenerator.CodeEditing
 			}
 
 			code.SetSolution(newSolution);
+		}
+
+		public ISymbol GetQuestClassSymbol(Quest quest)
+		{
+			var cb = code.QuestsAndCodeBulks[quest];
+			var decl = cb.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Last();
+
+			return GetSymbolFor(decl, cb);
 		}
 
 		public static string FormatQuestNameForVar(string questName) => $"{char.ToLower(questName[0])}{questName.Substring(1)}Quest";
