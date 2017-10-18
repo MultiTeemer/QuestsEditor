@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
@@ -37,44 +38,60 @@ namespace OdQuestsGenerator.CodeEditing
 
 		public static void FixQuestInitializationOrder(Quest quest, EditingContext context)
 		{
-			var cb = context.Code.SectorsAndCodeBulks[context.Flow.GetSectorForQuest(quest)];
-			var init = context.Code.GetMappedCode(cb).GetSyntaxTreeAsync().Result.GetSectorInitializationFunction();
-			var block = init.Body;
-
-			var model = context.Code.Compilation.GetSemanticModel(block.SyntaxTree);
 			var sector = context.Flow.GetSectorForQuest(quest);
-			var linkedQuests = sector.Quests.Where(q => context.Flow.Graph.ExistsLink(q, quest));
 
-			var lastStatement = block.Statements.First();
-			var lastStatementPos = 0;
-			foreach (var linkedQuest in linkedQuests) {
-				var finder = new InitializationStatementsFinder(
-					context.Code,
-					context.CodeEditor.GetQuestClassSymbol(linkedQuest)
-				);
-				finder.Visit(block);
-				var initStatement = finder.Result;
-				var pos = block.Statements.IndexOf(initStatement);
-				if (pos > lastStatementPos) {
-					lastStatement = initStatement;
-					lastStatementPos = pos;
+			var questsToProcess = new Queue<Quest>();
+			questsToProcess.Enqueue(quest);
+
+			var processedQuests = new HashSet<Quest>();
+
+			while (questsToProcess.Any()) {
+				var curQuest = questsToProcess.Dequeue();
+				processedQuests.Add(curQuest);
+				var cb = context.Code.SectorsAndCodeBulks[context.Flow.GetSectorForQuest(curQuest)];
+				var init = context.Code.GetMappedCode(cb).GetSyntaxTreeAsync().Result.GetSectorInitializationFunction();
+				var block = init.Body;
+				var model = context.Code.Compilation.GetSemanticModel(block.SyntaxTree);
+				var linkedQuests = sector.Quests.Where(q => context.Flow.Graph.ExistsLink(q, curQuest));
+
+				var lastStatement = block.Statements.First();
+				var lastStatementPos = 0;
+				foreach (var linkedQuest in linkedQuests) {
+					var finder = new InitializationStatementsFinder(
+						context.Code,
+						context.CodeEditor.GetQuestClassSymbol(linkedQuest)
+					);
+					finder.Visit(block);
+					var initStatement = finder.Result;
+					var pos = block.Statements.IndexOf(initStatement);
+					if (pos > lastStatementPos) {
+						lastStatement = initStatement;
+						lastStatementPos = pos;
+					}
 				}
-			}
 
-			var replaceeFinder = new InitializationStatementsFinder(
-				context.Code,
-				context.CodeEditor.GetQuestClassSymbol(quest)
-			);
-			replaceeFinder.Visit(block);
-			var replacee = replaceeFinder.Result;
-			var idx = block.Statements.IndexOf(replacee);
+				var replaceeFinder = new InitializationStatementsFinder(
+					context.Code,
+					context.CodeEditor.GetQuestClassSymbol(curQuest)
+				);
+				replaceeFinder.Visit(block);
+				var replacee = replaceeFinder.Result;
+				var idx = block.Statements.IndexOf(replacee);
 
-			if (idx < lastStatementPos) {
-				var newStatements = block.Statements.RemoveAt(idx).Insert(lastStatementPos, replacee);
-				cb.Tree = cb.Tree.GetRoot().ReplaceNode(
-					cb.Tree.GetSectorInitializationFunction(),
-					init.WithBody(block.WithStatements(newStatements))
-				).SyntaxTree;
+				if (idx < lastStatementPos) {
+					var newStatements = block.Statements.RemoveAt(idx).Insert(lastStatementPos, replacee);
+					cb.Tree = cb.Tree.GetRoot().ReplaceNode(
+						cb.Tree.GetSectorInitializationFunction(),
+						init.WithBody(block.WithStatements(newStatements))
+					).SyntaxTree;
+
+					var relatedQuests = sector.Quests.Where(q => context.Flow.Graph.ExistsLink(curQuest, q));
+					foreach (var relatedQuest in relatedQuests) {
+						if (!processedQuests.Contains(relatedQuest)) {
+							questsToProcess.Enqueue(relatedQuest);
+						}
+					}
+				}
 			}
 		}
 	}
