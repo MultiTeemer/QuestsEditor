@@ -29,6 +29,8 @@ namespace OdQuestsGenerator.Commands
 				Context.Code
 			);
 			snapshot = Context.CodeEditor.ApplySyntaxRewriters(rewriter);
+
+			Context.Flow.Graph.RemoveLink(link);
 		}
 
 		public override void Undo()
