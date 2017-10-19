@@ -51,7 +51,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 			};
 
 		public static RenameQuestCommand RenameQuest(Quest quest, string oldName, string newName, EditingContext context, FlowView flowView, Box shape) =>
-			new RenameQuestCommand(quest, newName, oldName, context) {
+			new RenameQuestCommand(quest, oldName, newName, context) {
 				Done = (_) => SetCaption(shape, newName),
 				Undone = () => SetCaption(shape, oldName),
 			};
