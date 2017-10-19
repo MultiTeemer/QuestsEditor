@@ -1,10 +1,6 @@
-﻿using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using OdQuestsGenerator.CodeEditing;
+﻿using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeEditing.SyntaxRewriters;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Commands
 {
@@ -22,12 +18,9 @@ namespace OdQuestsGenerator.Commands
 
 		public override void Do()
 		{
-			var sym1 = Context.CodeEditor.GetQuestClassSymbol(link.Node1.Quest);
 			var sym2 = Context.CodeEditor.GetQuestClassSymbol(link.Node2.Quest);
 			var rewriter = new ComponentIsFinishedCallAdder(
 				link.Node1.Quest,
-				link.Node2.Quest,
-				sym1,
 				sym2,
 				Context.Code
 			);

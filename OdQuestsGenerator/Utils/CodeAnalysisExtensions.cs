@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -10,11 +12,12 @@ namespace OdQuestsGenerator.Utils
 		{
 			if (node is MemberAccessExpressionSyntax) {
 				return node.AccessToComponentIsFinishedProperty();
-			} else if (node is BinaryExpressionSyntax) {
-				var bes = node as BinaryExpressionSyntax;
+			}
+
+			if (node is BinaryExpressionSyntax bes) {
 				return bes.OperatorToken.ToString() == "&&"
-					&& bes.Left.IsEditableInterQuestLinkExpression()
-					&& bes.Right.IsEditableInterQuestLinkExpression();
+						&& bes.Left.IsEditableInterQuestLinkExpression()
+						&& bes.Right.IsEditableInterQuestLinkExpression();
 			}
 
 			return false;
@@ -24,8 +27,9 @@ namespace OdQuestsGenerator.Utils
 		{
 			if (node is MemberAccessExpressionSyntax) {
 				return 1;
-			} else if (node is BinaryExpressionSyntax) {
-				var bes = node as BinaryExpressionSyntax;
+			}
+
+			if (node is BinaryExpressionSyntax bes) {
 				return bes.Left.CountOfLinks() + bes.Right.CountOfLinks();
 			}
 
@@ -47,6 +51,38 @@ namespace OdQuestsGenerator.Utils
 			return tree.GetRoot().DescendantNodes()
 				.OfType<MethodDeclarationSyntax>()
 				.FirstOrDefault(m => m.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.MethodDeclaration) && m.Identifier.ValueText == "Initialize");
+		}
+
+		public static ClassDeclarationSyntax GetQuestClass(this SyntaxTree tree)
+		{
+			return tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().LastOrDefault();
+		}
+
+		public static List<Tuple<string, MethodDeclarationSyntax>> GetAllStatesMethods(this SyntaxTree tree)
+		{
+			var classDecl = tree.GetQuestClass();
+			if (classDecl == null) {
+				throw new Exception("Couldn't find quest class in syntax tree");
+			}
+
+			var stateMethods = classDecl.DescendantNodes()
+				.OfType<MethodDeclarationSyntax>()
+				.Where(m => m.AttributeLists.Count > 0 && m.AttributeLists.Any(al => al.Attributes.Any(attr => attr.Name.ToString() == "State")))
+				.ToList();
+
+			var res = new List<Tuple<string, MethodDeclarationSyntax>>();
+
+			foreach (var sm in stateMethods) {
+				var attr = sm.DescendantNodes().OfType<AttributeSyntax>().First(a => a.Name.ToString() == "State");
+				res.Add(Tuple.Create(attr.GetQuestStateName(), sm));
+			}
+
+			return res;
+		}
+
+		public static string GetQuestStateName(this AttributeSyntax attributeSyntax)
+		{
+			return attributeSyntax.ArgumentList.Arguments[0].Expression.As<MemberAccessExpressionSyntax>()?.Name?.ToString();
 		}
 	}
 }

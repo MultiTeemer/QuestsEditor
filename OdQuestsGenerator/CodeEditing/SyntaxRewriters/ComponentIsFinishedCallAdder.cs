@@ -9,30 +9,25 @@ namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 {
 	class ComponentIsFinishedCallAdder : SyntaxRewriter
 	{
-		private readonly Quest quest1;
-		private readonly Quest quest2;
+		private readonly Quest quest;
+		private readonly ISymbol typeOfNextQuest;
 
-		private readonly ISymbol type1;
-		private readonly ISymbol type2;
-
-		public ComponentIsFinishedCallAdder(Quest quest1, Quest quest2, ISymbol type1, ISymbol type2, Code code)
+		public ComponentIsFinishedCallAdder(Quest quest, ISymbol typeOfNextQuest, Code code)
 			: base(code)
 		{
-			this.quest1 = quest1;
-			this.quest2 = quest2;
-			this.type1 = type1;
-			this.type2 = type2;
+			this.quest = quest;
+			this.typeOfNextQuest = typeOfNextQuest;
 		}
 
-		public override IReadOnlyList<DocumentId> GetDocumentsIdsToModify() => GetIdsOfDocsWithReferencesToSymbol(type2);
+		public override IReadOnlyList<DocumentId> GetDocumentsIdsToModify() => GetIdsOfDocsWithReferencesToSymbol(typeOfNextQuest);
 
 		public override SyntaxNode VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
 		{
 			var model = Compilation.GetSemanticModel(node.SyntaxTree);
 			var callableType = model.GetTypeInfo(node).Type;
-			if (callableType == type2) {
+			if (ReferenceEquals(callableType, typeOfNextQuest)) {
 				var linkExpr = node.Initializer.FindLinkExpression();
-				var newLinkText = $"{ CodeEditor.FormatQuestNameForVar(quest1.Name) }.Component.IsFinished";
+				var newLinkText = $"{ CodeEditor.FormatQuestNameForVar(quest.Name) }.Component.IsFinished";
 				var newInitializer = node.Initializer;
 				if (linkExpr == null) {
 					var linkExprText = $"ReachedCondition = {newLinkText}";

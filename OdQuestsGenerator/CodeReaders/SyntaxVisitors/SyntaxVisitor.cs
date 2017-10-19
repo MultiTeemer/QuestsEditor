@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.Data;
 
 namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
@@ -9,14 +8,14 @@ namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
 	{
 		protected readonly Code Code;
 
-		protected CodeBulk currentCodeBulk;
+		protected CodeBulk CurrentCodeBulk;
 
 		public void Visit(CodeBulk codeBulk)
 		{
-			currentCodeBulk = codeBulk;
+			CurrentCodeBulk = codeBulk;
 			var doc = Code.GetMappedCode(codeBulk);
 			Visit(doc.GetSyntaxRootAsync().Result);
-			currentCodeBulk = null;
+			CurrentCodeBulk = null;
 		}
 
 		public override void Visit(SyntaxNode node)

@@ -26,10 +26,11 @@ namespace OdQuestsGenerator.Commands
 			Undone = (UndoneHandler)Delegate.Combine(command.Undone, Undone);
 		}
 
-		public void AddCommands(IEnumerable<ICommand> commands)
+		public void AddCommands(IEnumerable<ICommand> commandsToAdd)
 		{
-			this.commands.AddRange(commands);
-			foreach (var cmd in commands) {
+			commands.AddRange(commandsToAdd);
+
+			foreach (var cmd in commandsToAdd) {
 				Done += cmd.Done;
 				Undone = (UndoneHandler)Delegate.Combine(cmd.Undone, Undone);
 			}

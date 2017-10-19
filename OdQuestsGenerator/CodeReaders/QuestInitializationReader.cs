@@ -2,10 +2,8 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
 using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.CodeReaders
@@ -45,7 +43,7 @@ namespace OdQuestsGenerator.CodeReaders
 				var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
 
 				if (model.GetTypeInfo(node).Type == questTypeToFind) {
-					var sector = Code.SectorsAndCodeBulks[currentCodeBulk];
+					var sector = Code.SectorsAndCodeBulks[CurrentCodeBulk];
 					Results.AddIfNotContains(sector);
 				}
 			}

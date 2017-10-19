@@ -31,8 +31,8 @@ namespace OdQuestsGenerator.Commands
 					var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
 					var decl = node.Declaration.Variables.First();
 					var val = decl.Initializer?.Value;
-					if (model.GetTypeInfo(val).Type == type) {
-						Results[decl] = currentCodeBulk;
+					if (ReferenceEquals(model.GetTypeInfo(val).Type, type)) {
+						Results[decl] = CurrentCodeBulk;
 					}
 				}
 			}
@@ -54,33 +54,33 @@ namespace OdQuestsGenerator.Commands
 		{
 			quest.Name = newName;
 
-			RenameQuestInCode(oldName, newName);
+			RenameQuestInCode(newName);
 		}
 
 		public override void Undo()
 		{
 			quest.Name = oldName;
 
-			RenameQuestInCode(newName, oldName);
+			RenameQuestInCode(oldName);
 		}
 
-		private void RenameQuestInCode(string oldName, string newName)
+		private void RenameQuestInCode(string name)
 		{
 			var codeBulk = Context.Code.QuestsAndCodeBulks[quest];
 			var enumDecl = codeBulk.Tree.GetRoot().GetFirstOfType<EnumDeclarationSyntax>();
 			var componentDecl = codeBulk.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().First();
 			var questDecl = codeBulk.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Last();
 
-			var componentName = newName;
-			var enumName = $"{newName}QuestState";
-			var questName = $"{newName}Quest";
+			var componentName = name;
+			var enumName = $"{name}QuestState";
+			var questName = $"{name}Quest";
 
 			var finder = new LocalVarsFinder(Context.Code, Context.CodeEditor.GetSymbolFor(questDecl, codeBulk));
 			foreach (var sectorCode in Context.Code.SectorsCode) {
 				finder.Visit(sectorCode);
 			}
 			foreach (var kv in finder.Results) {
-				Context.CodeEditor.Rename(kv.Value, kv.Key, CodeEditor.FormatQuestNameForVar(newName));
+				Context.CodeEditor.Rename(kv.Value, kv.Key, CodeEditor.FormatQuestNameForVar(name));
 			}
 
 			Context.CodeEditor.Rename(codeBulk, questDecl, questName);

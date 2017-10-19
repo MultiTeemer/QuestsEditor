@@ -66,14 +66,8 @@ namespace OdQuestsGenerator.Utils
 		public bool Contains(TType1 val) => dict1.ContainsKey(val);
 		public bool Contains(TType2 val) => dict2.ContainsKey(val);
 
-		public IEnumerator<KeyValuePair<TType1, TType2>> GetEnumerator()
-		{
-			return dict1.GetEnumerator();
-		}
+		public IEnumerator<KeyValuePair<TType1, TType2>> GetEnumerator() => dict1.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return dict1.GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() => dict1.GetEnumerator();
 	}
 }

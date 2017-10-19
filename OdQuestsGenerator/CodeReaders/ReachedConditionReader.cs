@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OdQuestsGenerator.CodeEditing;
@@ -36,8 +35,7 @@ namespace OdQuestsGenerator.CodeReaders
 				{
 					base.VisitMemberAccessExpression(node);
 
-					var left = node.Expression as MemberAccessExpressionSyntax;
-					if (left != null) {
+					if (node.Expression is MemberAccessExpressionSyntax left) {
 						var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
 						var type = model.GetTypeInfo(left.Expression).Type;
 						var questName = CodeEditor.FromQuestClassNametoQuestName(type.Name);
@@ -60,7 +58,7 @@ namespace OdQuestsGenerator.CodeReaders
 			{
 				base.VisitObjectCreationExpression(node);
 
-				var linkExpr = node.Initializer != null ? node.Initializer.FindLinkExpression() : null;
+				var linkExpr = node.Initializer?.FindLinkExpression();
 				if (linkExpr != null) {
 					var model = Code.Compilation.GetSemanticModel(node.SyntaxTree);
 					var linkedQuestType = model.GetTypeInfo(node).Type;

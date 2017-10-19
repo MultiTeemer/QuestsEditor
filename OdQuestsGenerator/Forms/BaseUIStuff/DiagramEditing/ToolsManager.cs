@@ -18,12 +18,22 @@ namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 		{
 			this.flowView = flowView;
 			this.toolSetController = toolSetController;
+
 			toolSetController.ToolSelected += ToolSetController_ToolSelected;
 			toolSetController.Project.Repository.ShapesInserted += Repository_ShapesInserted;
 			toolSetController.Project.Repository.ShapesUpdated += Repository_ShapesUpdated;
 			toolSetController.Project.Repository.ShapesDeleted += Repository_ShapesDeleted;
+
 			flowView.Display.ShapeClick += Display_ShapeClick;
 			flowView.Display.ShapeDoubleClick += Display_ShapeDoubleClick;
+			flowView.Display.ShapeMoved += Display_ShapeMoved;
+		}
+
+		private void Display_ShapeMoved(object sender, DiagramPresenterShapeEventArgs e)
+		{
+			if (e.Shape != null) {
+				CurrentActiveToolWrapper?.OnShapeMoved(e.Shape);
+			}
 		}
 
 		private void Display_ShapeDoubleClick(object sender, DiagramPresenterShapeClickEventArgs e)
@@ -83,7 +93,10 @@ namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 		private void ActivateTool(Tool tool)
 		{
 			CurrentActiveToolWrapper?.OnToolDeselected();
+
 			CurrentActiveToolWrapper = toolSet[tool];
+
+			CurrentActiveToolWrapper.OnToolSelected();
 		}
 	}
 }

@@ -26,21 +26,21 @@ namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 		{
 			var model = Compilation.GetSemanticModel(node.SyntaxTree);
 			var callableType = model.GetTypeInfo(node).Type;
-			if (callableType == typeOfExpression) {
+			if (ReferenceEquals(callableType, typeOfExpression)) {
 				var linkExpr = node.Initializer.FindLinkExpression();
 				if (linkExpr.Right.IsEditableInterQuestLinkExpression()) {
 					var linksCount = linkExpr.Right.CountOfLinks();
 					if (linksCount == 1) {
 						return node.WithInitializer(node.Initializer.RemoveNode(linkExpr, SyntaxRemoveOptions.KeepNoTrivia));
-					} else {
-						var txt = linkExpr.Right.ToString();
-						var linkTxt = $"{CodeEditor.FormatQuestClassNameForVar(typeToRemove.Name)}.Component.IsFinished";
-						var newTxt = Regex.Replace(Regex.Replace(txt, $"&&\\s+{linkTxt}\\s?", ""), $"\\s?{linkTxt}\\s+&&", "");
-						var newLinkExpr = linkExpr.WithRight(SyntaxFactory.ParseExpression(newTxt));
-						var newInitializer = node.Initializer.ReplaceNode(linkExpr, newLinkExpr);
-
-						return node.WithInitializer(newInitializer);
 					}
+
+					var txt = linkExpr.Right.ToString();
+					var linkTxt = $"{CodeEditor.FormatQuestClassNameForVar(typeToRemove.Name)}.Component.IsFinished";
+					var newTxt = Regex.Replace(Regex.Replace(txt, $"&&\\s+{linkTxt}\\s?", ""), $"\\s?{linkTxt}\\s+&&", "");
+					var newLinkExpr = linkExpr.WithRight(SyntaxFactory.ParseExpression(newTxt));
+					var newInitializer = node.Initializer.ReplaceNode(linkExpr, newLinkExpr);
+
+					return node.WithInitializer(newInitializer);
 				}
 
 				return node;

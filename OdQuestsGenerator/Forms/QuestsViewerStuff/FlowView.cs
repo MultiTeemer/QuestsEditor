@@ -19,8 +19,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private readonly ShapeTemplatesFactory templates;
 		private readonly PresentersManager presentersManager;
 
-		private TwoWayDictionary<Node, Shape> nodesAndShapes = new TwoWayDictionary<Node, Shape>();
-		private TwoWayDictionary<Link, Shape> linksAndArrows = new TwoWayDictionary<Link, Shape>();
+		private readonly TwoWayDictionary<Node, Shape> nodesAndShapes = new TwoWayDictionary<Node, Shape>();
+		private readonly TwoWayDictionary<Link, Shape> linksAndArrows = new TwoWayDictionary<Link, Shape>();
 
 		public FlowView(
 			DiagramSetController controller,
@@ -37,12 +37,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public void DisplayFlow(Graph graph)
 		{
-			diagram = new Diagram("Foo");
-			diagram.Size = new System.Drawing.Size(3000, 1500);
-			Display.Diagram = diagram;
-			project.Repository.InsertAll(diagram);
-
-			InitShapes(graph, diagram);
+			InitDiagram(new System.Drawing.Size(3000, 1500));
+			InitShapes(graph, Diagram);
 			LayoutShapes(graph);
 		}
 
@@ -120,24 +116,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			presentersManager.GetPresenterFor(link).Apply(shape);
 		}
 
-		private void AddShape(Shape shape)
-		{
-			diagram.Shapes.Add(shape);
-			DiagramEdited = true;
-			project.Repository.Insert(shape, diagram);
-			DiagramEdited = false;
-		}
-
-		private void RemoveShape(Shape shape)
-		{
-			if (diagram.Shapes.Contains(shape)) {
-				diagram.Shapes.Remove(shape);
-				DiagramEdited = true;
-				project.Repository.Delete(shape);
-				DiagramEdited = false;
-			}
-		}
-
 		private void InitShapes(Graph graph, Diagram diagram)
 		{
 			foreach (var n in graph.Nodes) {
@@ -160,10 +138,11 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			var geomGraph = new Microsoft.Msagl.Core.Layout.GeometryGraph();
 			var layoutSettings = new Microsoft.Msagl.Layout.Layered.SugiyamaLayoutSettings();
 
-			Func<Node, Microsoft.Msagl.Core.Layout.Node> ensureNode = node => {
+			Microsoft.Msagl.Core.Layout.Node EnsureNode(Node node)
+			{
 				var res = geomGraph.Nodes.FirstOrDefault(n => n.UserData == node);
 				if (res == null) {
-					var _node = new Microsoft.Msagl.Core.Layout.Node(
+					var geomNode = new Microsoft.Msagl.Core.Layout.Node(
 						Microsoft.Msagl.Core.Geometry.Curves.CurveFactory.CreateRectangle(
 							ShapeSize,
 							ShapeSize,
@@ -172,16 +151,17 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 						node
 					);
 
-					geomGraph.Nodes.Add(_node);
-					return _node;
-				} else {
-					return res;
+					geomGraph.Nodes.Add(geomNode);
+
+					return geomNode;
 				}
-			};
+
+				return res;
+			}
 
 			foreach (var l in graph.Links) {
-				var n1 = ensureNode(l.Node1);
-				var n2 = ensureNode(l.Node2);
+				var n1 = EnsureNode(l.Node1);
+				var n2 = EnsureNode(l.Node2);
 				var e = new Microsoft.Msagl.Core.Layout.Edge(n1, n2);
 				geomGraph.Edges.Add(e);
 			}
@@ -192,7 +172,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 				var pos = geomGraph.Nodes.FirstOrDefault(n => n.UserData == kv.Key)?.Center;
 				if (pos.HasValue) {
 					kv.Value.X = (int)pos.Value.X + ShapeSize;
-					kv.Value.Y = diagram.Height - (int)pos.Value.Y + ShapeSize / 2;
+					kv.Value.Y = Diagram.Height - (int)pos.Value.Y + ShapeSize / 2;
 				}
 			}
 
@@ -202,20 +182,22 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		private void LayoutFreeShapes(Microsoft.Msagl.Core.Layout.GeometryGraph geometry)
 		{
 			var xs = geometry.Nodes.Select(n => n.Center.X);
-			var right = xs.Count() > 0 ? xs.Max() + ShapeSize * 3 : ShapeSize;
+			var right = xs.Any() ? xs.Max() + ShapeSize * 3 : ShapeSize;
 			var freeShapes = nodesAndShapes.Where(kv => geometry.Nodes.All(n => n.UserData != kv.Key)).Select(kv => kv.Value).ToArray();
 			var priorities = freeShapes.Select(s => {
 				var q = nodesAndShapes[s].Quest;
 				if (!q.IsLinksToEditable()) {
 					return 3;
-				} else if (!q.IsActive()) {
-					return 2;
-				} else {
-					return 1;
 				}
+
+				if (!q.IsActive()) {
+					return 2;
+				}
+
+				return 1;
 			}).ToArray();
 			Array.Sort(priorities, freeShapes);
-			var width = diagram.Size.Width - right;
+			var width = Diagram.Size.Width - right;
 			var columnsCount = Math.Max(1, width / ShapeSize - 1);
 			int curColumn = 0;
 			int curRow = 0;

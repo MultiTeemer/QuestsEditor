@@ -1,6 +1,4 @@
-﻿using OdQuestsGenerator.CodeEditing;
-using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
+﻿using OdQuestsGenerator.Data;
 
 namespace OdQuestsGenerator.CodeReaders
 {

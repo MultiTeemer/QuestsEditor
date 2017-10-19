@@ -3,7 +3,7 @@ using System.Linq;
 using Dataweb.NShape;
 using Dataweb.NShape.Controllers;
 
-namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers.OverloadedTools
+namespace OdQuestsGenerator.Forms.BaseUIStuff.OverloadedTools
 {
 	class SelectionTool : Dataweb.NShape.SelectionTool
 	{

@@ -53,10 +53,7 @@ namespace OdQuestsGenerator.Data
 			links.RemoveAll(l => l.Contains(node));
 		}
 
-		public void RemoveNode(Quest quest)
-		{
-			RemoveNode(FindNodeForQuest(quest));
-		}
+		public void RemoveNode(Quest quest) => RemoveNode(FindNodeForQuest(quest));
 
 		public void AddLink(Node n1, Node n2, bool bidirectional = false)
 		{
@@ -84,39 +81,18 @@ namespace OdQuestsGenerator.Data
 			}
 		}
 
-		public void RemoveLink(Link link)
-		{
-			links.Remove(link);
-		}
+		public void RemoveLink(Link link) => links.Remove(link);
 
-		public Node FindNodeForQuest(Quest quest)
-		{
-			return nodes.FirstOrDefault(n => n.Quest == quest);
-		}
+		public Node FindNodeForQuest(Quest quest) => nodes.FirstOrDefault(n => n.Quest == quest);
 
-		public Node FindNodeForQuest(string questName)
-		{
-			return nodes.FirstOrDefault(n => n.Quest.Name == questName);
-		}
+		public Node FindNodeForQuest(string questName) => nodes.FirstOrDefault(n => n.Quest.Name == questName);
 
-		public bool ExistsLink(Node node1, Node node2)
-		{
-			return links.Any(l => l.Node1 == node1 && l.Node2 == node2);
-		}
+		public bool ExistsLink(Node node1, Node node2) => links.Any(l => l.Node1 == node1 && l.Node2 == node2);
 
-		public bool ExistsLink(Quest quest1, Quest quest2)
-		{
-			return ExistsLink(FindNodeForQuest(quest1), FindNodeForQuest(quest2));
-		}
+		public bool ExistsLink(Quest quest1, Quest quest2) => ExistsLink(FindNodeForQuest(quest1), FindNodeForQuest(quest2));
 
-		public bool ExistsLink(Link link)
-		{
-			return links.Contains(link);
-		}
+		public bool ExistsLink(Link link) => links.Contains(link);
 
-		public IEnumerable<Link> GetLinksForNode(Node node)
-		{
-			return links.Where(l => l.Contains(node));
-		}
+		public IEnumerable<Link> GetLinksForNode(Node node) => links.Where(l => l.Contains(node));
 	}
 }

@@ -12,9 +12,9 @@ using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
-	class QuestsManipulatorWrapper : ToolWrapper<OverloadedTools.SelectionTool, FlowView>
+	class QuestsManipulatorWrapper : ToolWrapper<BaseUIStuff.OverloadedTools.SelectionTool, FlowView>
 	{
-		public QuestsManipulatorWrapper(EditingContext context, OverloadedTools.SelectionTool tool, FlowView view)
+		public QuestsManipulatorWrapper(EditingContext context, BaseUIStuff.OverloadedTools.SelectionTool tool, FlowView view)
 			: base(context, tool, view)
 		{}
 
@@ -59,12 +59,24 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 		{
 			base.OnKeyUp(keys);
 
-			if (keys == Keys.Enter && Tool.LastPerformedAction == OverloadedTools.SelectionTool.EditAction.EditCaption) {
+			if (keys == Keys.Enter && Tool.LastPerformedAction == BaseUIStuff.OverloadedTools.SelectionTool.EditAction.EditCaption) {
 				var shape = Tool.LastTouchedShape as Box;
 				if (shape != null) {
 					TryToInitializeRenameCommand(shape);
 					(DiagramWrapper.Display as IDiagramPresenter).CloseCaptionEditor(false);
 				}
+			}
+		}
+
+		public override void OnShapeDoubleClick(Shape shape)
+		{
+			base.OnShapeDoubleClick(shape);
+
+			var box = shape as Box;
+			if (box != null) {
+				var form = new QuestFlowViewer(FindQuestForShape(box), Context);
+				form.Show();
+				form.Shown += (s, a) => form.Focus();
 			}
 		}
 

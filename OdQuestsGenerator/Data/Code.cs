@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
-using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.Data
@@ -136,8 +135,9 @@ namespace OdQuestsGenerator.Data
 		public CodeBulk RenameFile(CodeBulk codeBulk, string newFileName)
 		{
 			var newPath = Path.Combine(Path.GetDirectoryName(codeBulk.PathToFile), newFileName);
-			var newCb = new CodeBulk(codeBulk.Type, codeBulk.Tree, newPath);
-			newCb.WasModified = true;
+			var newCb = new CodeBulk(codeBulk.Type, codeBulk.Tree, newPath) {
+				WasModified = true,
+			};
 
 			Quest quest = null;
 			Sector sector = null;
@@ -197,7 +197,7 @@ namespace OdQuestsGenerator.Data
 		}
 
 		public IReadOnlyList<CodeBulk> CodeBulksOfTypes(params CodeBulkType[] types) =>
-			types.SelectMany(type => CodeBulksOfType(type)).ToList();
+			types.SelectMany(CodeBulksOfType).ToList();
 
 		public void SetSolution(Solution solution)
 		{
@@ -254,7 +254,7 @@ namespace OdQuestsGenerator.Data
 
 		private void WriteCodeToFile(SyntaxTree tree, string filePath)
 		{
-			using (var writer = new StreamWriter(File.OpenWrite(filePath))) {
+			using (var writer = new StreamWriter(filePath, append: false, encoding: new UTF8Encoding(true))) {
 				var workspace = new AdhocWorkspace();
 				var res = Formatter.Format(tree.GetRoot(), workspace, GetFormattingOptions(workspace));
 				writer.WriteLine(res);
@@ -287,8 +287,8 @@ namespace OdQuestsGenerator.Data
 		private void BuildSolution()
 		{
 			var ws = new AdhocWorkspace();
-			var Mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
-			var references = new List<MetadataReference>() { Mscorlib };
+			var mscorlib = MetadataReference.CreateFromFile(typeof(object).Assembly.Location);
+			var references = new List<MetadataReference> { mscorlib };
 			var projInfo = ProjectInfo.Create(
 				ProjectId.CreateNewId(),
 				VersionStamp.Default,

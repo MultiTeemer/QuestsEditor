@@ -25,9 +25,8 @@ namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 		{
 			var model = Compilation.GetSemanticModel(node.SyntaxTree);
 			var expr = node.Expression;
-			var oces = expr as ObjectCreationExpressionSyntax;
-			if (oces != null) {
-				if (model.GetTypeInfo(expr).Type == typeToRemove) {
+			if (expr is ObjectCreationExpressionSyntax oces) {
+				if (ReferenceEquals(model.GetTypeInfo(expr).Type, typeToRemove)) {
 					return null;
 				}
 			}
@@ -40,7 +39,7 @@ namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 			if (node.Declaration.Variables.Count == 1) {
 				var model = Compilation.GetSemanticModel(node.SyntaxTree);
 				var type = model.GetTypeInfo(node.Declaration.Variables.First().Initializer.Value).Type;
-				if (type == typeToRemove) {
+				if (ReferenceEquals(type, typeToRemove)) {
 					return null;
 				}
 			}

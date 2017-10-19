@@ -14,8 +14,10 @@ namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 		void OnShapesDeleted(List<Shape> affectedShapes);
 		void OnShapesInserted(List<Shape> affectedShapes);
 		void OnShapesUpdated(List<Shape> affectedShapes);
+		void OnShapeMoved(Shape shape);
 		void OnShapeClick(Shape shape);
 		void OnShapeDoubleClick(Shape shape);
+		void OnToolSelected();
 		void OnToolDeselected();
 	}
 
@@ -33,8 +35,10 @@ namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 		public virtual void OnShapesDeleted(List<Shape> affectedShapes) {}
 		public virtual void OnShapesInserted(List<Shape> affectedShapes) {}
 		public virtual void OnShapesUpdated(List<Shape> affectedShapes) {}
+		public virtual void OnShapeMoved(Shape shape) {}
 		public virtual void OnShapeClick(Shape shape) {}
 		public virtual void OnShapeDoubleClick(Shape shape) {}
+		public virtual void OnToolSelected() {}
 
 		public virtual void OnToolDeselected()
 		{

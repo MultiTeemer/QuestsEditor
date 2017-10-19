@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Data;
 
@@ -16,6 +15,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			typeof(ConfigReader),
 			typeof(ReachedConditionReader),
 			typeof(QuestInitializationReader),
+			typeof(QuestActionsReader),
 		};
 
 		private readonly Code code;
@@ -28,11 +28,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		public Flow Load(string folder)
 		{
 			var gameDir = Directory.EnumerateDirectories(folder).FirstOrDefault(p => p.EndsWith(".Game"));
-			if (gameDir == null) {
-				throw new Exception("Couldn't find \"*.Game\" directory");
-			}
 
-			code.PathToProject = gameDir;
+			code.PathToProject = gameDir ?? throw new Exception("Couldn't find \"*.Game\" directory");
 
 			var sectorsDir = Path.Combine(gameDir, "Sectors");
 			if (!Directory.Exists(sectorsDir)) {

@@ -51,10 +51,8 @@ namespace OdQuestsGenerator.CodeEditing
 				var cb = context.Code.SectorsAndCodeBulks[context.Flow.GetSectorForQuest(curQuest)];
 				var init = context.Code.GetMappedCode(cb).GetSyntaxTreeAsync().Result.GetSectorInitializationFunction();
 				var block = init.Body;
-				var model = context.Code.Compilation.GetSemanticModel(block.SyntaxTree);
 				var linkedQuests = sector.Quests.Where(q => context.Flow.Graph.ExistsLink(q, curQuest));
 
-				var lastStatement = block.Statements.First();
 				var lastStatementPos = 0;
 				foreach (var linkedQuest in linkedQuests) {
 					var finder = new InitializationStatementsFinder(
@@ -65,7 +63,6 @@ namespace OdQuestsGenerator.CodeEditing
 					var initStatement = finder.Result;
 					var pos = block.Statements.IndexOf(initStatement);
 					if (pos > lastStatementPos) {
-						lastStatement = initStatement;
 						lastStatementPos = pos;
 					}
 				}

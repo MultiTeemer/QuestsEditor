@@ -2,14 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Input;
 using Dataweb.NShape;
 using Dataweb.NShape.GeneralShapes;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using OdQuestsGenerator.ApplicationData;
 using OdQuestsGenerator.CodeEditing;
-using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
@@ -32,6 +30,7 @@ namespace OdQuestsGenerator.Forms
 		private readonly ToolsManager toolsManager;
 		private readonly CommandsHistory history = new CommandsHistory();
 		private readonly EditingContext editingContext;
+		private readonly ShortcutsReader shortcutsReader;
 
 		private Flow flow;
 		private Quest selectedQuest;
@@ -51,6 +50,7 @@ namespace OdQuestsGenerator.Forms
 			flowView = new FlowView(diagramSetController, project, display, templates);
 			toolsManager = new ToolsManager(toolSetController, flowView);
 			editingContext = new EditingContext(flow, history, code, editor);
+			shortcutsReader = new ShortcutsReader(code, history);
 
 			code.Saved += Code_Saved;
 
@@ -58,32 +58,8 @@ namespace OdQuestsGenerator.Forms
 			history.Undone += History_Undone;
 		}
 
-		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-		{
-			if (keyData.HasFlag(Keys.Control)) {
-				if (keyData.HasFlag(Keys.S)) {
-					code.Save();
-
-					return true;
-				} else if (keyData.HasFlag(Keys.Z)) {
-					history.Undo();
-
-					return true;
-				} else if (keyData.HasFlag(Keys.Y)) {
-					history.Do();
-
-					return true;
-				} else if (keyData.HasFlag(Keys.C)) {
-					var firstIncompleteQuest = flow.Sectors.SelectMany(s => s.Quests).FirstOrDefault(q => !q.IsActive());
-					if (firstIncompleteQuest != null) {
-						history.Do(new ActivateQuestCommand(firstIncompleteQuest, flow.GetSectorForQuest(firstIncompleteQuest), editingContext));
-						flowView.Update();
-					}
-				}
-			}
-
-			return base.ProcessCmdKey(ref msg, keyData);
-		}
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData) =>
+			shortcutsReader.ProcessCmdKey(ref msg, keyData) ?? base.ProcessCmdKey(ref msg, keyData);
 
 		private void Code_Saved()
 		{
@@ -270,7 +246,7 @@ namespace OdQuestsGenerator.Forms
 		private void InitProject()
 		{
 			var programFilesDir = Environment.GetEnvironmentVariable(
-				string.Format("ProgramFiles{0}", (IntPtr.Size == sizeof(long)) ? "(x86)" : "")
+				$"ProgramFiles{((IntPtr.Size == sizeof(long)) ? "(x86)" : "")}"
 			);
 			project.LibrarySearchPaths.Add(
 				Path.Combine(programFilesDir, string.Format("dataweb{0}NShape{0}bin", Path.DirectorySeparatorChar))
@@ -286,7 +262,7 @@ namespace OdQuestsGenerator.Forms
 		{
 			toolsManager.Clear();
 
-			var tool1 = new QuestsViewerStuff.ToolsWrappers.OverloadedTools.SelectionTool();
+			var tool1 = new BaseUIStuff.OverloadedTools.SelectionTool();
 			toolsManager.AddTool(tool1, new QuestsManipulatorWrapper(editingContext, tool1, flowView));
 
 			var tool2 = new LinearShapeCreationTool(new Template("Link", templates.GetLinkTemplate()));

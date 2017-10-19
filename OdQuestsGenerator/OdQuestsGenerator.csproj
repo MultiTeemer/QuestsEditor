@@ -199,6 +199,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationData\Preferences.cs" />
+    <Compile Include="CodeReaders\QuestActionsAnalysis\Analyzers.cs" />
+    <Compile Include="CodeReaders\QuestActionsReader.cs" />
     <Compile Include="CodeReaders\ConfigReader.cs" />
     <Compile Include="CodeReaders\ICodeReader.cs" />
     <Compile Include="CodeReaders\QuestInitializationReader.cs" />
@@ -206,6 +208,7 @@
     <Compile Include="CodeReaders\ReachedConditionReader.cs" />
     <Compile Include="CodeReaders\SectorReader.cs" />
     <Compile Include="CodeReaders\SyntaxVisitors\SyntaxVisitor.cs" />
+    <Compile Include="Commands\RemoveQuestActionCommand.cs" />
     <Compile Include="DataTransformers\FromCodeTransformer.cs" />
     <Compile Include="DataTransformers\Templates\QuestClassTemplate.cs">
       <AutoGen>True</AutoGen>
@@ -232,6 +235,7 @@
     </Compile>
     <Compile Include="DataTransformers\Templates\StateTaskTemplate.Fields.cs" />
     <Compile Include="DataTransformers\ToCodeTransformer.cs" />
+    <Compile Include="Data\QuestAction.cs" />
     <Compile Include="Data\Flow.cs" />
     <Compile Include="Data\Graph.cs" />
     <Compile Include="DataValidators\IsItOkForCodeGeneration.cs" />
@@ -244,6 +248,17 @@
     <Compile Include="Forms\AddNewQuest.Designer.cs">
       <DependentUpon>AddNewQuest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\BaseUIStuff\DiagramEditing\ShortcutsReader.cs" />
+    <Compile Include="Forms\QuestFlowViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\QuestFlowViewer.Designer.cs">
+      <DependentUpon>QuestFlowViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\QuestFlowViewerStuff\QuestActionPresenter.cs" />
+    <Compile Include="Forms\QuestFlowViewerStuff\QuestFlowView.cs" />
+    <Compile Include="Forms\QuestFlowViewerStuff\ToolsWrappers\CommandsCreation.cs" />
+    <Compile Include="Forms\QuestFlowViewerStuff\ToolsWrappers\QuestActionManipulatorWrapper.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\CommandsCreation.cs" />
     <Compile Include="Forms\BaseUIStuff\DiagramEditing\DiagramWrapper.cs" />
     <Compile Include="Forms\EnterNewQuestName.cs">
@@ -298,7 +313,7 @@
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\AddQuestWrapper.cs" />
     <Compile Include="Commands\EditingContext.cs" />
     <Compile Include="Forms\BaseUIStuff\DiagramEditing\IToolWrapper.cs" />
-    <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\OverloadedTools\SelectionTool.cs" />
+    <Compile Include="Forms\BaseUIStuff\OverloadedTools\SelectionTool.cs" />
     <Compile Include="Forms\QuestsViewerStuff\ToolsWrappers\QuestsManipulatorWrapper.cs" />
     <Compile Include="Forms\BaseUIStuff\DiagramEditing\StubWrapper.cs" />
     <Compile Include="Forms\BaseUIStuff\DiagramEditing\ToolsManager.cs" />
@@ -320,6 +335,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GenerateQuestStub.resx">
       <DependentUpon>GenerateQuestStub.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\QuestFlowViewer.resx">
+      <DependentUpon>QuestFlowViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\QuestState.resx">
       <DependentUpon>QuestState.cs</DependentUpon>

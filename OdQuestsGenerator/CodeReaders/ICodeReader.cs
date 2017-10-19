@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using OdQuestsGenerator.CodeEditing;
 using OdQuestsGenerator.Data;
-using OdQuestsGenerator.Forms.QuestsViewerStuff;
 
 namespace OdQuestsGenerator.CodeReaders
 {
@@ -22,7 +20,7 @@ namespace OdQuestsGenerator.CodeReaders
 
 	static class CodeReadersRepo
 	{
-		private static Dictionary<Type, ICodeReader> readers = new Dictionary<Type, ICodeReader>();
+		private static readonly Dictionary<Type, ICodeReader> readers = new Dictionary<Type, ICodeReader>();
 
 		static CodeReadersRepo()
 		{
@@ -31,6 +29,7 @@ namespace OdQuestsGenerator.CodeReaders
 			RegisterReaderType<ConfigReader>();
 			RegisterReaderType<ReachedConditionReader>();
 			RegisterReaderType<QuestInitializationReader>();
+			RegisterReaderType<QuestActionsReader>();
 		}
 
 		public static void RegisterReaderType(Type type)

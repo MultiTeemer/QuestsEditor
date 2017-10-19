@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.Rename;
@@ -43,12 +42,6 @@ namespace OdQuestsGenerator.CodeEditing
 			var model = code.Compilation.GetSemanticModel(syntaxTree);
 			var locDecl = syntaxTree.GetRoot().DescendantNodesAndSelf().First(n => n.IsEquivalentTo(decl));
 			var symbol = model.GetDeclaredSymbol(locDecl);
-
-			var options = code.Solution.Workspace.Options;
-
-			var refs = SymbolFinder
-				.FindReferencesAsync(symbol, code.Solution)
-				.Result;
 
 			var modifiedDocs = SymbolFinder
 				.FindReferencesAsync(symbol, code.Solution)
@@ -129,6 +122,28 @@ namespace OdQuestsGenerator.CodeEditing
 			var decl = cb.Tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().Last();
 
 			return GetSymbolFor(decl, cb);
+		}
+
+		public CodeSnapshot RemoveNode(string annotation, CodeBulk codeBulk)
+		{
+			var res = new CodeSnapshot();
+			res.PreviousCode[codeBulk] = codeBulk.Tree;
+
+			var node = codeBulk.Tree.GetRoot().GetAnnotatedNodes(annotation).Single();
+			codeBulk.Tree = codeBulk.Tree.GetRoot().RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia).SyntaxTree;
+
+			return res;
+		}
+
+		public CodeSnapshot InsertAfter(SyntaxNode node, string annotation, CodeBulk codeBulk)
+		{
+			var res = new CodeSnapshot();
+			res.PreviousCode[codeBulk] = codeBulk.Tree;
+
+			var mark = codeBulk.Tree.GetRoot().GetAnnotatedNodes(annotation).Single();
+			codeBulk.Tree = codeBulk.Tree.GetRoot().InsertNodesAfter(mark, new[] { node }).SyntaxTree;
+
+			return res;
 		}
 
 		public static string FormatQuestNameForVar(string questName) => $"{char.ToLower(questName[0])}{questName.Substring(1)}Quest";

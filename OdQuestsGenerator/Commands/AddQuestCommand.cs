@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Microsoft.CodeAnalysis.CSharp;
 using OdQuestsGenerator.CodeEditing;
-using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.DataTransformers;
 
@@ -42,7 +41,13 @@ namespace OdQuestsGenerator.Commands
 
 		private static CodeBulk CreateCode(Quest quest, Sector sector, EditingContext context)
 		{
-			var path = Path.Combine(context.Code.PathToProject, "Sectors", sector.Name, "Quests", CodeEditor.FormatQuestNameToFileName(quest.Name));
+			var path = Path.Combine(
+				context.Code.PathToProject,
+				"Sectors",
+				sector.Name,
+				"Quests",
+				CodeEditor.FormatQuestNameToFileName(quest.Name)
+			);
 			var tree = SyntaxFactory.ParseSyntaxTree(ToCodeTransformer.Transform(quest));
 
 			return new CodeBulk(CodeBulkType.Quest, tree, path);
