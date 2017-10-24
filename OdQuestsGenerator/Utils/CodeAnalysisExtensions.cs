@@ -46,17 +46,13 @@ namespace OdQuestsGenerator.Utils
 				&& expr.As<MemberAccessExpressionSyntax>().Name.Identifier.ValueText == "IsFinished"
 				&& expr.As<MemberAccessExpressionSyntax>().Expression.As<MemberAccessExpressionSyntax>()?.Name.Identifier.ValueText == "Component";
 
-		public static MethodDeclarationSyntax GetSectorInitializationFunction(this SyntaxTree tree)
-		{
-			return tree.GetRoot().DescendantNodes()
-				.OfType<MethodDeclarationSyntax>()
-				.FirstOrDefault(m => m.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.MethodDeclaration) && m.Identifier.ValueText == "Initialize");
-		}
+		public static MethodDeclarationSyntax GetSectorInitializationFunction(this SyntaxTree tree) =>
+			tree.GetRoot().DescendantNodes()
+			.OfType<MethodDeclarationSyntax>()
+			.FirstOrDefault(m => m.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.MethodDeclaration) && m.Identifier.ValueText == "Initialize");
 
-		public static ClassDeclarationSyntax GetQuestClass(this SyntaxTree tree)
-		{
-			return tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().LastOrDefault();
-		}
+		public static ClassDeclarationSyntax GetQuestClass(this SyntaxTree tree) =>
+			tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().LastOrDefault();
 
 		public static List<Tuple<string, MethodDeclarationSyntax>> GetAllStatesMethods(this SyntaxTree tree)
 		{
