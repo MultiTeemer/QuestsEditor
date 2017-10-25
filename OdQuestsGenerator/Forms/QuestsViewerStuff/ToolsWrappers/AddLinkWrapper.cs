@@ -61,10 +61,24 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					if (!n1.Quest.IsActive() || !n2.Quest.IsActive()) {
 						var command = new CompositeCommand(Context);
 						if (!n1.Quest.IsActive()) {
-							command.AddCommand(CommandsCreation.ActivateQuest(n1.Quest, Context, DiagramWrapper));
+							command.AddCommand(
+								CommandsCreation.ActivateQuest(
+									n1.Quest,
+									Context.Flow.GetSectorForQuest(n1.Quest),
+									Context,
+									DiagramWrapper
+								)
+							);
 						}
 						if (!n2.Quest.IsActive()) {
-							command.AddCommand(CommandsCreation.ActivateQuest(n2.Quest, Context, DiagramWrapper));
+							command.AddCommand(
+								CommandsCreation.ActivateQuest(
+									n2.Quest,
+									Context.Flow.GetSectorForQuest(n2.Quest),
+									Context,
+									DiagramWrapper
+								)
+							);
 						}
 						command.AddCommand(CommandsCreation.AddLink(link, Context, DiagramWrapper));
 

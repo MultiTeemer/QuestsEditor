@@ -7,8 +7,8 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 {
 	static class CommandsCreation
 	{
-		public static ActivateQuestCommand ActivateQuest(Quest quest, EditingContext context, FlowView flowView) =>
-			new ActivateQuestCommand(quest, context.Flow.GetSectorForQuest(quest), context) {
+		public static ActivateQuestCommand ActivateQuest(Quest quest, Sector sector, EditingContext context, FlowView flowView) =>
+			new ActivateQuestCommand(quest, sector, context) {
 				Done = (_) => flowView.Update(),
 				Undone = flowView.Update,
 			};
