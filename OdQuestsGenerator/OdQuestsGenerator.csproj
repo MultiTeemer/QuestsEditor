@@ -235,6 +235,7 @@
     </Compile>
     <Compile Include="DataTransformers\Templates\StateTaskTemplate.Fields.cs" />
     <Compile Include="DataTransformers\ToCodeTransformer.cs" />
+    <Compile Include="DataValidators\GraphValidation.cs" />
     <Compile Include="Data\QuestAction.cs" />
     <Compile Include="Data\Flow.cs" />
     <Compile Include="Data\Graph.cs" />

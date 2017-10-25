@@ -19,10 +19,7 @@ namespace OdQuestsGenerator.Data
 			Node2 = node2;
 		}
 
-		public bool Contains(Node node)
-		{
-			return Node1 == node || Node2 == node;
-		}
+		public bool Contains(Node node) => Node1 == node || Node2 == node;
 	}
 
 	class Graph
@@ -94,5 +91,7 @@ namespace OdQuestsGenerator.Data
 		public bool ExistsLink(Link link) => links.Contains(link);
 
 		public IEnumerable<Link> GetLinksForNode(Node node) => links.Where(l => l.Contains(node));
+
+		public IEnumerable<Link> GetOutcomingLinksForNode(Node node) => links.Where(l => l.Node1 == node);
 	}
 }

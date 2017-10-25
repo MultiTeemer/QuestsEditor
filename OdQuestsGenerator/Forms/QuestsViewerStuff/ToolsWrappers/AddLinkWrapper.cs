@@ -6,6 +6,7 @@ using Dataweb.NShape.GeneralShapes;
 using OdQuestsGenerator.CodeReaders;
 using OdQuestsGenerator.Commands;
 using OdQuestsGenerator.Data;
+using OdQuestsGenerator.DataValidators;
 using OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing;
 
 namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
@@ -40,7 +41,6 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 				if (b1 != null && b2 != null && b1 != b2) {
 					var n1 = DiagramWrapper.GetNodeForShape(b1);
 					var n2 = DiagramWrapper.GetNodeForShape(b2);
-					var link = new Link(n1, n2);
 
 					if (!n2.Quest.IsLinksToEditable()) {
 						DeleteShapeOnDeselect(p);
@@ -49,9 +49,20 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 						return;
 					}
 
+					var link = new Link(n1, n2);
+
 					if (Context.Flow.Graph.ExistsLink(link)) {
 						DeleteShapeOnDeselect(p);
 						var msg = $"Couldn't create link from {n1.Quest.Name} to {n2.Quest.Name} quest - link already exists.";
+						MessageBox.Show(msg);
+						return;
+					}
+
+					(var loopForms, var loop) = GraphValidation.LoopForms(Context.Flow.Graph, link);
+					if (loopForms) {
+						DeleteShapeOnDeselect(p);
+						var loopStringRepresentation = string.Join(" - ", loop.Select(q => q.Quest.Name));
+						var msg = $"Couldn't create link from {n1.Quest.Name} to {n2.Quest.Name} quest - loop forms: {loopStringRepresentation}.";
 						MessageBox.Show(msg);
 						return;
 					}
