@@ -52,8 +52,12 @@ namespace OdQuestsGenerator.Forms
 
 		private void UpdateAddBtn()
 		{
-			addBtn.Enabled = IsItOkForCodeGeneration.Check(questNameTextBox.Text) && sectorsComboBox.SelectedIndex != -1;
+			addBtn.Enabled = sectorsComboBox.SelectedIndex != -1
+				&& IsQuestNameAcceptible(questNameTextBox.Text, sectors[sectorsComboBox.SelectedIndex]);
 		}
+
+		private bool IsQuestNameAcceptible(string questName, Sector sector) =>
+			IsItOkForCodeGeneration.Check(questName) && sector.Quests.All(q => q.Name != questName);
 
 		private void addBtn_Click(object sender, System.EventArgs e)
 		{
