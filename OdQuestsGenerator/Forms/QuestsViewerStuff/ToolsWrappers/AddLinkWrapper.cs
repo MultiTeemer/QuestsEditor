@@ -31,9 +31,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 				Box b2 = null;
 
 				foreach (var s in p.Diagram.Shapes.Except(p)) {
-					if (s.ContainsPoint(p1.X, p1.Y)) {
+					if (b1 == null && s.ContainsPoint(p1.X, p1.Y)) {
 						b1 = s as Box;
-					} else if (s.ContainsPoint(p2.X, p2.Y)) {
+					} else if (b2 == null && s.ContainsPoint(p2.X, p2.Y)) {
 						b2 = s as Box;
 					}
 				}
