@@ -28,7 +28,7 @@ namespace OdQuestsGenerator.CodeEditing.SyntaxRewriters
 			var callableType = model.GetTypeInfo(node).Type;
 			if (ReferenceEquals(callableType, typeOfExpression)) {
 				var linkExpr = node.Initializer.FindLinkExpression();
-				if (linkExpr.Right.IsEditableInterQuestLinkExpression()) {
+				if (linkExpr != null && linkExpr.Right.IsEditableInterQuestLinkExpression()) {
 					var linksCount = linkExpr.Right.CountOfLinks();
 					if (linksCount == 1) {
 						return node.WithInitializer(node.Initializer.RemoveNode(linkExpr, SyntaxRemoveOptions.KeepNoTrivia));
