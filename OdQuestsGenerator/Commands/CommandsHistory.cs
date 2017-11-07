@@ -49,5 +49,11 @@ namespace OdQuestsGenerator.Commands
 				Undone?.Invoke(command);
 			}
 		}
+
+		public void Clear()
+		{
+			commands.Clear();
+			LastPerformedCommandIdx = -1;
+		}
 	}
 }

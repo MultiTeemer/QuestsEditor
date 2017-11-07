@@ -68,12 +68,12 @@ namespace OdQuestsGenerator.Forms
 			UpdateTitle();
 		}
 
-		private void History_Undone(Commands.ICommand command)
+		private void History_Undone(ICommand command)
 		{
 			UpdateTitle();
 		}
 
-		private void History_Done(Commands.ICommand command, bool firstTime)
+		private void History_Done(ICommand command, bool firstTime)
 		{
 			UpdateTitle();
 		}
@@ -91,9 +91,11 @@ namespace OdQuestsGenerator.Forms
 		private void LoadSectors()
 		{
 			//try {
+				history.Clear();
+				code.Clear();
+
 				flow = loader.Load(selectedFolder);
 				editingContext.Flow = flow;
-				//editor.Initialize();
 
 				FillSectors();
 
@@ -207,6 +209,10 @@ namespace OdQuestsGenerator.Forms
 					Program.Preferences.LastProjectPath = selectedFolder;
 					SavePreferences();
 					LoadSectors();
+
+					lastSavedActionIdx = -1;
+
+					UpdateTitle();
 				}
 			}
 		}

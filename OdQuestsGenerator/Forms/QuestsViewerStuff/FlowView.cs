@@ -37,6 +37,10 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 
 		public void DisplayFlow(Graph graph)
 		{
+			if (Diagram != null) {
+				Clear();
+			}
+
 			InitDiagram(new System.Drawing.Size(3000, 1500));
 			InitShapes(graph, Diagram);
 			LayoutShapes(graph);
@@ -52,15 +56,9 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 			}
 		}
 
-		public Node GetNodeForShape(Shape shape)
-		{
-			return nodesAndShapes.Contains(shape) ? nodesAndShapes[shape] : null;
-		}
+		public Node GetNodeForShape(Shape shape) => nodesAndShapes.Contains(shape) ? nodesAndShapes[shape] : null;
 
-		public Link? GetLinkForShape(Shape shape)
-		{
-			return linksAndArrows.Contains(shape) ? linksAndArrows[shape] : (Link?)null;
-		}
+		public Link? GetLinkForShape(Shape shape) => linksAndArrows.Contains(shape) ? linksAndArrows[shape] : (Link?)null;
 
 		public CaptionedShapeBase GetShapeForQuest(Quest quest)
 		{
@@ -114,6 +112,14 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff
 		{
 			linksAndArrows.Add(link, shape);
 			presentersManager.GetPresenterFor(link).Apply(shape);
+		}
+
+		public override void Clear()
+		{
+			linksAndArrows.Clear();
+			nodesAndShapes.Clear();
+
+			ClearDiagram();
 		}
 
 		private void InitShapes(Graph graph, Diagram diagram)

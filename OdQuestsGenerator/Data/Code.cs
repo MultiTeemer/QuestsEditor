@@ -83,6 +83,21 @@ namespace OdQuestsGenerator.Data
 			BuildSolution();
 		}
 
+		public void Clear()
+		{
+			codeBulks.Clear();
+			bulksToDelete.Clear();
+			bulksToAdd.Clear();
+			pathsToProjectFiles.Clear();
+			fileToCodeBulk.Clear();
+
+			CodeBulksAndDocumentsIds.Clear();
+			QuestsAndCodeBulks.Clear();
+			SectorsAndCodeBulks.Clear();
+
+			BuildSolution();
+		}
+
 		public void AddPathToProjectFile(string path)
 		{
 			pathsToProjectFiles.Add(path);

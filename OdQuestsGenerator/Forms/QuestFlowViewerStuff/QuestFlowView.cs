@@ -74,6 +74,13 @@ namespace OdQuestsGenerator.Forms.QuestFlowViewerStuff
 			Diagram.Height = GetBottomOfAllShapes() + ShapeHeight / 2 + Gap;
 		}
 
+		public override void Clear()
+		{
+			ActionsAndShapes.Clear();
+
+			ClearDiagram();
+		}
+
 		private void InitShapes(Quest quest)
 		{
 			ActionsAndShapes.Clear();

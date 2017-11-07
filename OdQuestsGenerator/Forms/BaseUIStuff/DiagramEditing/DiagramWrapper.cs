@@ -5,7 +5,7 @@ using Dataweb.NShape.WinFormsUI;
 
 namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 {
-	class DiagramWrapper
+	abstract class DiagramWrapper
 	{
 		public readonly Display Display;
 
@@ -25,6 +25,16 @@ namespace OdQuestsGenerator.Forms.BaseUIStuff.DiagramEditing
 			Controller = controller;
 			Project = project;
 			Display = display;
+		}
+
+		public abstract void Clear();
+
+		protected void ClearDiagram()
+		{
+			DiagramEdited = true;
+			Project.Repository.DeleteAll(Diagram);
+			Diagram.Shapes.Clear();
+			DiagramEdited = false;
 		}
 
 		protected void InitDiagram(Size size)
