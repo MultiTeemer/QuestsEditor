@@ -38,6 +38,12 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 				Undone = () => flowView.AddShapeForNode(node, shape),
 			};
 
+		public static DeactivateQuestCommand DeactivateQuest(Quest quest, EditingContext context, FlowView flowView) =>
+			new DeactivateQuestCommand(quest, context) {
+				Done = (_) => flowView.Update(),
+				Undone = flowView.Update,
+			};
+
 		public static AddLinkCommand AddLink(Link link, EditingContext context, FlowView flowView) =>
 			new AddLinkCommand(link, context) {
 				Done = (_) => flowView.AddShapeLink(link),

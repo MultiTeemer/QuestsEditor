@@ -39,10 +39,18 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					var links = Context.Flow.Graph.GetLinksForNode(Context.Flow.Graph.FindNodeForQuest(q));
 					command.AddCommands(links.Select(l => CommandsCreation.RemoveLink(l, Context, DiagramWrapper)));
 				}
-				foreach (var q in questsToDelete) {
-					var cmd = CommandsCreation.RemoveQuest(q, Context, Context.Flow.Graph.FindNodeForQuest(q), DiagramWrapper, DiagramWrapper.GetShapeForQuest(q));
-					command.AddCommand(cmd);
-				}
+				command.AddCommands(questsToDelete.Select(
+					q => CommandsCreation.DeactivateQuest(q, Context, DiagramWrapper)
+				));
+				command.AddCommands(questsToDelete.Select(
+					q => CommandsCreation.RemoveQuest(
+						q,
+						Context,
+						Context.Flow.Graph.FindNodeForQuest(q),
+						DiagramWrapper,
+						DiagramWrapper.GetShapeForQuest(q))
+					)
+				);
 				Context.History.Do(command);
 			} else {
 				var commands = affectedShapes.Select(FindLinkForShape)

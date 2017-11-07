@@ -42,16 +42,16 @@ namespace OdQuestsGenerator.Commands
 
 			cb.Tree = newTree;
 
-			var data = quest.Data.Ensure<InitializationData>();
-			data.InitializationPlaces.Add(sector);
+			var data = quest.Data.Ensure<ActivationData>();
+			data.Sectors.Add(sector);
 		}
 
 		public override void Undo()
 		{
 			Context.CodeEditor.ApplySnapshot(snapshot);
 
-			var data = quest.Data.Records.FirstOfType<InitializationData>();
-			data.InitializationPlaces.Remove(sector);
+			var data = quest.Data.Records.FirstOfType<ActivationData>();
+			data.Sectors.Remove(sector);
 		}
 	}
 }

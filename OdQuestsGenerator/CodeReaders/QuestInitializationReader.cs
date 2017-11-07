@@ -8,21 +8,25 @@ using OdQuestsGenerator.Utils;
 
 namespace OdQuestsGenerator.CodeReaders
 {
-	class InitializationData : IData
+	class ActivationData : IData
 	{
-		public readonly List<Sector> InitializationPlaces = new List<Sector>();
+		public List<Sector> Sectors { get; set; } = new List<Sector>();
+
+		public ActivationData Clone() => new ActivationData {
+			Sectors = Sectors.Select(p => p).ToList(),
+		};
 	}
 
-	public static class InitializationDataQuestExtensions
+	public static class ActivationDataQuestExtensions
 	{
 		public static bool IsActive(this Quest quest)
 		{
-			var initData = quest.Data.Records.FirstOfTypeOrDefault<InitializationData>();
-			return initData != null && initData.InitializationPlaces.Count > 0;
+			var initData = quest.Data.Records.FirstOfTypeOrDefault<ActivationData>();
+			return initData != null && initData.Sectors.Count > 0;
 		}
 	}
 
-	class QuestInitializationReader : CodeReader
+	class QuestActivationReader : CodeReader
 	{
 		private class QuestInitializationFinder : SyntaxVisitor
 		{
@@ -61,8 +65,8 @@ namespace OdQuestsGenerator.CodeReaders
 			}
 
 			var quest = code.QuestsAndCodeBulks[codeBulk];
-			var data = quest.Data.Ensure<InitializationData>();
-			data.InitializationPlaces.AddRange(visitor.Results);
+			var data = quest.Data.Ensure<ActivationData>();
+			data.Sectors.AddRange(visitor.Results);
 		}
 	}
 }
