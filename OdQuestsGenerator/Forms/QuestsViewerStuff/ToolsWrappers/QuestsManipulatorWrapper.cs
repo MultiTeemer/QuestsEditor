@@ -34,7 +34,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 			var questsToDelete = affectedShapes.OfType<Box>().Select(FindQuestForShape).ToList();
 			if (questsToDelete.Count > 0) {
-				var command = new CompositeCommand(Context);
+				var command = new CompositeCommand();
 				foreach (var q in questsToDelete) {
 					var links = Context.Flow.Graph.GetLinksForNode(Context.Flow.Graph.FindNodeForQuest(q));
 					command.AddCommands(links.Select(l => CommandsCreation.RemoveLink(l, Context, DiagramWrapper)));
@@ -50,7 +50,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					.Select(l => CommandsCreation.RemoveLink(l.Value, Context, DiagramWrapper))
 					.ToList();
 				if (commands.Count > 0) {
-					Context.History.Do(new CompositeCommand(Context, commands));
+					Context.History.Do(new CompositeCommand(commands));
 				}
 			}
 		}

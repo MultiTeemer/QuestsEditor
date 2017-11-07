@@ -36,7 +36,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 
 				var addQuestCommand = CommandsCreation.AddQuest(quest, form.Sector, Context, DiagramWrapper, shape);
 				if (form.ActivateByDefault) {
-					var c = new CompositeCommand(Context);
+					var c = new CompositeCommand();
 					c.AddCommand(addQuestCommand);
 					c.AddCommand(CommandsCreation.ActivateQuest(quest, form.Sector, Context, DiagramWrapper));
 					command = c;

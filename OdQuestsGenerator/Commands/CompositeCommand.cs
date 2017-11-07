@@ -8,12 +8,12 @@ namespace OdQuestsGenerator.Commands
 	{
 		private readonly List<ICommand> commands = new List<ICommand>();
 
-		public CompositeCommand(EditingContext context)
-			: base(context)
+		public CompositeCommand()
+			: base(null)
 		{}
 
-		public CompositeCommand(EditingContext context, IEnumerable<ICommand> commands)
-			: this(context)
+		public CompositeCommand(IEnumerable<ICommand> commands)
+			: this()
 		{
 			AddCommands(commands);
 		}

@@ -70,7 +70,7 @@ namespace OdQuestsGenerator.Forms.QuestsViewerStuff.ToolsWrappers
 					DiagramWrapper.RegisterShapeForLink(p, link);
 
 					if (!n1.Quest.IsActive() || !n2.Quest.IsActive()) {
-						var command = new CompositeCommand(Context);
+						var command = new CompositeCommand();
 
 						void InitQuestActivationCommand(Quest quest) =>
 							command.AddCommand(
