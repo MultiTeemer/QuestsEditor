@@ -1,10 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis.CSharp;
 using OdQuestsGenerator.Data;
 
 namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
 {
-	abstract class SyntaxVisitor : CSharpSyntaxVisitor
+	abstract class SyntaxVisitor : CSharpSyntaxWalker
 	{
 		protected readonly Code Code;
 
@@ -18,16 +17,9 @@ namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
 			CurrentCodeBulk = null;
 		}
 
-		public override void Visit(SyntaxNode node)
-		{
-			foreach (var n in node.DescendantNodesAndSelf()) {
-				base.Visit(n);
-			}
-		}
-
 		protected SyntaxVisitor(Code code)
 		{
-			this.Code = code;
+			Code = code;
 		}
 	}
 }
