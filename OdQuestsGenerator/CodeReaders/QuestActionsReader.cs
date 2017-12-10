@@ -37,7 +37,7 @@ namespace OdQuestsGenerator.CodeReaders
 
 			foreach (var stateDesk in stateNameToMethod) {
 				var state = quest.States.First(s => s.Name == stateDesk.Item1);
-				var data = state.Ensure<QuestActionsData>();
+				var data = state.Data.Ensure<QuestActionsData>();
 
 				foreach (var statement in stateDesk.Item2.Body.Statements) {
 					var wasInitialized = false;

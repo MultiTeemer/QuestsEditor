@@ -20,7 +20,8 @@ namespace OdQuestsGenerator.Commands
 			this.quest = quest;
 
 			data = quest.States
-				.First(s => s.Ensure<QuestActionsData>().Actions.Contains(action))
+				.First(s => s.Data.Ensure<QuestActionsData>().Actions.Contains(action))
+				.Data
 				.Ensure<QuestActionsData>();
 			idx = data.Actions.IndexOf(action);
 		}

@@ -42,7 +42,7 @@ namespace OdQuestsGenerator.Commands
 
 			cb.Tree = newTree;
 
-			var data = quest.Ensure<InitializationData>();
+			var data = quest.Data.Ensure<InitializationData>();
 			data.InitializationPlaces.Add(sector);
 		}
 
@@ -50,7 +50,7 @@ namespace OdQuestsGenerator.Commands
 		{
 			Context.CodeEditor.ApplySnapshot(snapshot);
 
-			var data = quest.Data.FirstOfType<InitializationData>();
+			var data = quest.Data.Records.FirstOfType<InitializationData>();
 			data.InitializationPlaces.Remove(sector);
 		}
 	}

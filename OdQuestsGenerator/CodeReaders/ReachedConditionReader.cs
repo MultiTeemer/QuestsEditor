@@ -13,10 +13,7 @@ namespace OdQuestsGenerator.CodeReaders
 
 	public static class NotEditableLinksQuestExtensions
 	{
-		public static bool IsLinksToEditable(this Quest quest)
-		{
-			return quest.Data.FirstOfTypeOrDefault<NotEditableLinks>() == null;
-		}
+		public static bool IsLinksToEditable(this Quest quest) => quest.Data.Records.FirstOfTypeOrDefault<NotEditableLinks>() == null;
 	}
 
 	class ReachedConditionReader : CodeReader
@@ -100,7 +97,7 @@ namespace OdQuestsGenerator.CodeReaders
 			}
 			foreach (var notEditableQuest in linksReader.NotEditableResults) {
 				var n = flow.Graph.FindNodeForQuest(notEditableQuest);
-				n.Quest.Ensure<NotEditableLinks>();
+				n.Quest.Data.Ensure<NotEditableLinks>();
 			}
 		}
 	}

@@ -17,7 +17,7 @@ namespace OdQuestsGenerator.CodeReaders
 	{
 		public static bool IsActive(this Quest quest)
 		{
-			var initData = quest.Data.FirstOfTypeOrDefault<InitializationData>();
+			var initData = quest.Data.Records.FirstOfTypeOrDefault<InitializationData>();
 			return initData != null && initData.InitializationPlaces.Count > 0;
 		}
 	}
@@ -61,7 +61,7 @@ namespace OdQuestsGenerator.CodeReaders
 			}
 
 			var quest = code.QuestsAndCodeBulks[codeBulk];
-			var data = quest.Ensure<InitializationData>();
+			var data = quest.Data.Ensure<InitializationData>();
 			data.InitializationPlaces.AddRange(visitor.Results);
 		}
 	}

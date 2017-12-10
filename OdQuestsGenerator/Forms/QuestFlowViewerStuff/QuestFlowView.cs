@@ -57,7 +57,7 @@ namespace OdQuestsGenerator.Forms.QuestFlowViewerStuff
 
 			var curY = 0;
 			for (int i = 0; i < CurrentQuest.States.Count; ++i) {
-				var actions = CurrentQuest.States[i].Ensure<QuestActionsData>().Actions;
+				var actions = CurrentQuest.States[i].Data.Ensure<QuestActionsData>().Actions;
 				foreach (var action in actions) {
 					var shape = ActionsAndShapes[action];
 					shape.X = ShapeWidth / 2 + ShapeShiftX;
@@ -85,7 +85,7 @@ namespace OdQuestsGenerator.Forms.QuestFlowViewerStuff
 
 		private void InitShapes(State state)
 		{
-			foreach (var action in state.Ensure<QuestActionsData>().Actions) {
+			foreach (var action in state.Data.Ensure<QuestActionsData>().Actions) {
 				var shape = (Box)Project.ShapeTypes["Box"].CreateInstance();
 				shape.Width = ShapeWidth;
 				shape.Height = ShapeHeight;
