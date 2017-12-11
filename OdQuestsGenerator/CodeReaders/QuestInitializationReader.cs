@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using OdQuestsGenerator.CodeReaders.SyntaxVisitors;
 using OdQuestsGenerator.Data;
 using OdQuestsGenerator.Utils;
 
@@ -28,7 +27,7 @@ namespace OdQuestsGenerator.CodeReaders
 
 	class QuestActivationReader : CodeReader
 	{
-		private class QuestInitializationFinder : SyntaxVisitor
+		private class QuestInitializationFinder : SyntaxVisitors.SyntaxWalker
 		{
 			private readonly ISymbol questTypeToFind;
 

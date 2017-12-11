@@ -11,7 +11,7 @@ namespace OdQuestsGenerator.CodeEditing
 {
 	static class CodeFixes
 	{
-		private class InitializationStatementsFinder : SyntaxVisitor
+		private class InitializationStatementsFinder : CodeReaders.SyntaxVisitors.SyntaxWalker
 		{
 			public StatementSyntax Result { get; private set; }
 

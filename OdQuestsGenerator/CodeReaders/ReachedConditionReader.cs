@@ -18,9 +18,9 @@ namespace OdQuestsGenerator.CodeReaders
 
 	class ReachedConditionReader : CodeReader
 	{
-		private class LinksReader : SyntaxVisitor
+		private class LinksReader : SyntaxWalker
 		{
-			private class QuestNameFetcher : SyntaxVisitor
+			private class QuestNameFetcher : SyntaxWalker
 			{
 				public readonly List<string> Results = new List<string>();
 

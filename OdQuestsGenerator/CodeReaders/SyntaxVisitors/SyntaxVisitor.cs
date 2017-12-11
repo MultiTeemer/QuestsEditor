@@ -3,7 +3,7 @@ using OdQuestsGenerator.Data;
 
 namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
 {
-	abstract class SyntaxVisitor : CSharpSyntaxWalker
+	abstract class SyntaxWalker : CSharpSyntaxWalker
 	{
 		protected readonly Code Code;
 
@@ -17,7 +17,7 @@ namespace OdQuestsGenerator.CodeReaders.SyntaxVisitors
 			CurrentCodeBulk = null;
 		}
 
-		protected SyntaxVisitor(Code code)
+		protected SyntaxWalker(Code code)
 		{
 			Code = code;
 		}

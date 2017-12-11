@@ -11,7 +11,7 @@ namespace OdQuestsGenerator.Commands
 {
 	class RenameQuestCommand : Command
 	{
-		class LocalVarsFinder : SyntaxVisitor
+		class LocalVarsFinder : CodeReaders.SyntaxVisitors.SyntaxWalker
 		{
 			public readonly Dictionary<VariableDeclaratorSyntax, CodeBulk> Results = new Dictionary<VariableDeclaratorSyntax, CodeBulk>();
 
